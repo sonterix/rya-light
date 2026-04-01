@@ -3,17 +3,34 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useState } from 'react';
 
+import type { CreativeContent } from '@/types/creative';
+import {
+  isCampaignContent,
+  isMessagingContent,
+  isOpportunityContent,
+  isPersonaContent,
+} from '@/types/creative';
+
 import type { WorkflowType } from './use-creative';
+
+function hasError(body: unknown): body is { error: string } {
+  if (body === null || typeof body !== 'object' || !('error' in body)) return false;
+  return typeof body.error === 'string';
+}
+
+function isCreativeContent(value: unknown): value is CreativeContent {
+  return isPersonaContent(value) || isCampaignContent(value) || isMessagingContent(value) || isOpportunityContent(value);
+}
 
 export interface UseRefineCreativeResult {
   refine: (
-    existingContent: Record<string, unknown>,
+    existingContent: CreativeContent,
     refinementInstruction: string,
     audienceId: string,
-    onComplete?: (content: Record<string, unknown>) => void,
+    onComplete?: (content: CreativeContent) => void,
   ) => Promise<void>;
   isRefining: boolean;
-  partialContent: Record<string, unknown> | null;
+  partialContent: CreativeContent | null;
   error: string | null;
 }
 
@@ -23,15 +40,15 @@ export function useRefineCreative(
 ): UseRefineCreativeResult {
   const queryClient = useQueryClient();
   const [isRefining, setIsRefining] = useState(false);
-  const [partialContent, setPartialContent] = useState<Record<string, unknown> | null>(null);
+  const [partialContent, setPartialContent] = useState<CreativeContent | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const refine = useCallback(
     async (
-      existingContent: Record<string, unknown>,
+      existingContent: CreativeContent,
       refinementInstruction: string,
       audienceId: string,
-      onComplete?: (content: Record<string, unknown>) => void,
+      onComplete?: (content: CreativeContent) => void,
     ) => {
       setError(null);
       setPartialContent(null);
@@ -51,8 +68,9 @@ export function useRefineCreative(
         });
 
         if (!res.ok) {
-          const body = (await res.json()) as { error?: string };
-          throw new Error(body.error ?? 'Refinement failed');
+          const body: unknown = await res.json();
+          if (hasError(body)) throw new Error(body.error);
+          throw new Error('Refinement failed');
         }
 
         if (!res.body) {
@@ -71,8 +89,8 @@ export function useRefineCreative(
 
           try {
             const parsed: unknown = JSON.parse(accumulated);
-            if (typeof parsed === 'object' && parsed !== null) {
-              setPartialContent(parsed as Record<string, unknown>);
+            if (isCreativeContent(parsed)) {
+              setPartialContent(parsed);
             }
           } catch {
             // Incomplete JSON - keep accumulating
@@ -83,9 +101,11 @@ export function useRefineCreative(
           throw new Error('Refinement returned empty response. The AI provider may be unavailable.');
         }
 
-        const finalParsed = JSON.parse(accumulated) as Record<string, unknown>;
-        setPartialContent(finalParsed);
-        onComplete?.(finalParsed);
+        const finalParsed: unknown = JSON.parse(accumulated);
+        if (isCreativeContent(finalParsed)) {
+          setPartialContent(finalParsed);
+          onComplete?.(finalParsed);
+        }
 
         void queryClient.invalidateQueries({ queryKey: ['creative'] });
       } catch (err) {

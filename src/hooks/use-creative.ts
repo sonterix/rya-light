@@ -1,8 +1,18 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import type { CreativeOutput } from '@/db/schema';
+import type { CreativeContent, WorkflowType } from '@/types/creative';
 
-export type WorkflowType = 'persona' | 'campaign' | 'messaging' | 'opportunity';
+export type { WorkflowType };
+
+function hasError(body: unknown): body is { error: string } {
+  if (body === null || typeof body !== 'object' || !('error' in body)) return false;
+  return typeof body.error === 'string';
+}
+
+function hasData<T>(body: unknown): body is { data: T } {
+  return body !== null && typeof body === 'object' && 'data' in body;
+}
 
 async function fetchCreativeOutputs(
   audienceId: string | null,
@@ -17,12 +27,12 @@ async function fetchCreativeOutputs(
   const body: unknown = await res.json();
 
   if (!res.ok) {
-    const errorBody = body as { error?: string };
-    throw new Error(errorBody.error ?? 'Failed to fetch creative outputs');
+    if (hasError(body)) throw new Error(body.error);
+    throw new Error('Failed to fetch creative outputs');
   }
 
-  const successBody = body as { data: CreativeOutput[] };
-  return successBody.data;
+  if (!hasData<CreativeOutput[]>(body)) throw new Error('Unexpected response');
+  return body.data;
 }
 
 async function fetchCreativeOutput(id: string): Promise<CreativeOutput> {
@@ -30,17 +40,17 @@ async function fetchCreativeOutput(id: string): Promise<CreativeOutput> {
   const body: unknown = await res.json();
 
   if (!res.ok) {
-    const errorBody = body as { error?: string };
-    throw new Error(errorBody.error ?? 'Failed to fetch creative output');
+    if (hasError(body)) throw new Error(body.error);
+    throw new Error('Failed to fetch creative output');
   }
 
-  const successBody = body as { data: CreativeOutput };
-  return successBody.data;
+  if (!hasData<CreativeOutput>(body)) throw new Error('Unexpected response');
+  return body.data;
 }
 
 async function patchCreativeOutput(
   id: string,
-  content: Record<string, unknown>,
+  content: CreativeContent,
 ): Promise<CreativeOutput> {
   const res = await fetch(`/api/creative/${id}`, {
     method: 'PATCH',
@@ -50,12 +60,12 @@ async function patchCreativeOutput(
   const body: unknown = await res.json();
 
   if (!res.ok) {
-    const errorBody = body as { error?: string };
-    throw new Error(errorBody.error ?? 'Failed to update creative output');
+    if (hasError(body)) throw new Error(body.error);
+    throw new Error('Failed to update creative output');
   }
 
-  const successBody = body as { data: CreativeOutput };
-  return successBody.data;
+  if (!hasData<CreativeOutput>(body)) throw new Error('Unexpected response');
+  return body.data;
 }
 
 async function deleteCreativeOutput(id: string): Promise<void> {
@@ -63,8 +73,8 @@ async function deleteCreativeOutput(id: string): Promise<void> {
   const body: unknown = await res.json();
 
   if (!res.ok) {
-    const errorBody = body as { error?: string };
-    throw new Error(errorBody.error ?? 'Failed to delete creative output');
+    if (hasError(body)) throw new Error(body.error);
+    throw new Error('Failed to delete creative output');
   }
 }
 
@@ -82,7 +92,10 @@ export function useCreativeOutputs(
 export function useCreativeOutput(id: string | null) {
   return useQuery({
     queryKey: ['creative', 'single', id],
-    queryFn: () => fetchCreativeOutput(id as string),
+    queryFn: () => {
+      if (!id) throw new Error('No output ID');
+      return fetchCreativeOutput(id);
+    },
     enabled: id !== null,
   });
 }
@@ -91,7 +104,7 @@ export function usePatchCreativeOutput() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, content }: { id: string; content: Record<string, unknown> }) =>
+    mutationFn: ({ id, content }: { id: string; content: CreativeContent }) =>
       patchCreativeOutput(id, content),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['creative'] });
@@ -118,8 +131,8 @@ async function fetchOpenAIStatus(): Promise<boolean> {
     return false;
   }
 
-  const successBody = body as { data: { configured: boolean } };
-  return successBody.data.configured;
+  if (!hasData<{ configured: boolean }>(body)) return false;
+  return body.data.configured;
 }
 
 export function useOpenAIStatus() {

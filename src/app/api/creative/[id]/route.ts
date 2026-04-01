@@ -6,6 +6,13 @@ import { z } from 'zod';
 import { db } from '@/db';
 import { creativeOutputs } from '@/db/schema';
 import { getAuthUser } from '@/lib/supabase/auth';
+import type { CreativeContent } from '@/types/creative';
+import {
+  isCampaignContent,
+  isMessagingContent,
+  isOpportunityContent,
+  isPersonaContent,
+} from '@/types/creative';
 
 interface RouteContext {
   params: Promise<{ id: string }>;
@@ -14,6 +21,10 @@ interface RouteContext {
 const patchBodySchema = z.object({
   content: z.record(z.string(), z.unknown()),
 });
+
+function isCreativeContent(value: unknown): value is CreativeContent {
+  return isPersonaContent(value) || isCampaignContent(value) || isMessagingContent(value) || isOpportunityContent(value);
+}
 
 export async function GET(
   _req: NextRequest,
@@ -74,6 +85,13 @@ export async function PATCH(
 
   if (existing.userId !== auth.user.id) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  }
+
+  if (!isCreativeContent(parsed.data.content)) {
+    return NextResponse.json(
+      { error: 'Invalid content structure' },
+      { status: 400 },
+    );
   }
 
   const [updated] = await db

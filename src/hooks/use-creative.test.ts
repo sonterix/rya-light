@@ -6,6 +6,8 @@ import React from 'react';
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
 
+import type { CreativeContent } from '@/types/creative';
+
 import { useCreativeOutput, useCreativeOutputs, useDeleteCreativeOutput, useOpenAIStatus, usePatchCreativeOutput } from './use-creative';
 
 function createWrapper() {
@@ -171,27 +173,43 @@ describe('usePatchCreativeOutput', () => {
   });
 
   it('calls PATCH endpoint with id and content', async () => {
+    const updatedContent: CreativeContent = {
+      name: 'Updated',
+      demographicSummary: 'Ages 25-34',
+      topInterests: [],
+      lifestyleDescription: 'Active lifestyle',
+      howToReachThem: 'Social media',
+    };
+
     mockFetch.mockResolvedValue({
       ok: true,
-      json: () => Promise.resolve({ data: { ...TEST_OUTPUT, content: { name: 'Updated' } } }),
+      json: () => Promise.resolve({ data: { ...TEST_OUTPUT, content: updatedContent } }),
     });
 
     const { result } = renderHook(() => usePatchCreativeOutput(), {
       wrapper: createWrapper(),
     });
 
-    result.current.mutate({ id: 'out-1', content: { name: 'Updated' } });
+    result.current.mutate({ id: 'out-1', content: updatedContent });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
     expect(mockFetch).toHaveBeenCalledWith('/api/creative/out-1', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ content: { name: 'Updated' } }),
+      body: JSON.stringify({ content: updatedContent }),
     });
   });
 
   it('handles patch error', async () => {
+    const updatedContent: CreativeContent = {
+      name: 'Updated',
+      demographicSummary: 'Ages 25-34',
+      topInterests: [],
+      lifestyleDescription: 'Active lifestyle',
+      howToReachThem: 'Social media',
+    };
+
     mockFetch.mockResolvedValue({
       ok: false,
       json: () => Promise.resolve({ error: 'Not found' }),
@@ -201,7 +219,7 @@ describe('usePatchCreativeOutput', () => {
       wrapper: createWrapper(),
     });
 
-    result.current.mutate({ id: 'out-1', content: { name: 'Updated' } });
+    result.current.mutate({ id: 'out-1', content: updatedContent });
 
     await waitFor(() => expect(result.current.isError).toBe(true));
   });

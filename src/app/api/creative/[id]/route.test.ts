@@ -31,12 +31,20 @@ const mockDbUpdate = vi.mocked(db.update);
 
 const TEST_USER_ID = 'user-123';
 const OTHER_USER_ID = 'user-456';
+const TEST_PERSONA_CONTENT = {
+  name: 'Alex',
+  demographicSummary: 'Ages 25-34',
+  topInterests: [],
+  lifestyleDescription: 'Active lifestyle',
+  howToReachThem: 'Social media',
+};
+
 const TEST_OUTPUT = {
   id: 'out-1',
   userId: TEST_USER_ID,
   audienceId: 'aud-1',
   type: 'persona',
-  content: { name: 'Alex' },
+  content: TEST_PERSONA_CONTENT,
   createdAt: new Date('2026-01-01'),
   updatedAt: new Date('2026-01-01'),
 };
@@ -251,7 +259,8 @@ describe('PATCH /api/creative/[id]', () => {
     };
     mockDbSelect.mockReturnValue(mockSelectChain as never);
 
-    const updatedOutput = { ...TEST_OUTPUT, content: { name: 'Updated' } };
+    const updatedContent = { ...TEST_PERSONA_CONTENT, name: 'Updated Alex' };
+    const updatedOutput = { ...TEST_OUTPUT, content: updatedContent };
     const mockUpdateChain = {
       set: vi.fn().mockReturnThis(),
       where: vi.fn().mockResolvedValue([updatedOutput]),
@@ -259,12 +268,12 @@ describe('PATCH /api/creative/[id]', () => {
     mockDbUpdate.mockReturnValue(mockUpdateChain as never);
 
     const res = await PATCH(
-      makePatchRequest('out-1', { content: { name: 'Updated' } }),
+      makePatchRequest('out-1', { content: updatedContent }),
       { params: Promise.resolve({ id: 'out-1' }) },
     );
 
     expect(res.status).toBe(200);
     const body = await res.json();
-    expect(body.data.content).toEqual({ name: 'Updated' });
+    expect(body.data.content).toEqual(updatedContent);
   });
 });

@@ -10,9 +10,19 @@ vi.mock('@tanstack/react-query', () => ({
 
 import { act, renderHook, waitFor } from '@testing-library/react';
 
+import type { CreativeContent } from '@/types/creative';
+
 import { useRefineCreative } from './use-refine-creative';
 
 const TEST_OUTPUT_ID = 'out-1';
+
+const TEST_PERSONA_CONTENT: CreativeContent = {
+  name: 'Alex',
+  demographicSummary: 'Ages 25-34',
+  topInterests: [],
+  lifestyleDescription: 'Active lifestyle',
+  howToReachThem: 'Social media',
+};
 
 describe('useRefineCreative', () => {
   beforeEach(() => {
@@ -30,9 +40,16 @@ describe('useRefineCreative', () => {
 
   it('calls generate endpoint with refinement params', async () => {
     const mockEncoder = new TextEncoder();
+    const refined = JSON.stringify({
+      name: 'Refined Alex',
+      demographicSummary: 'Ages 25-34',
+      topInterests: [],
+      lifestyleDescription: 'Active lifestyle',
+      howToReachThem: 'Social media',
+    });
     const stream = new ReadableStream({
       start(controller) {
-        controller.enqueue(mockEncoder.encode('{"name":"Refined Alex"}'));
+        controller.enqueue(mockEncoder.encode(refined));
         controller.close();
       },
     });
@@ -49,7 +66,7 @@ describe('useRefineCreative', () => {
 
     await act(async () => {
       await result.current.refine(
-        { name: 'Alex' },
+        TEST_PERSONA_CONTENT,
         'Make it shorter',
         'aud-1',
         onComplete,
@@ -64,20 +81,28 @@ describe('useRefineCreative', () => {
       }),
     );
 
-    const callBody = JSON.parse(
-      (mockFetch.mock.calls[0] as Array<{ body: string }>)[1].body as string,
-    );
-    expect(callBody.audience_id).toBe('aud-1');
-    expect(callBody.type).toBe('persona');
-    expect(callBody.existing_content).toEqual({ name: 'Alex' });
-    expect(callBody.refinement_instruction).toBe('Make it shorter');
+    const callArgs = mockFetch.mock.calls[0] as [string, { body: string }];
+    const callBody: unknown = JSON.parse(callArgs[1].body);
+    expect(callBody).toEqual(expect.objectContaining({
+      audience_id: 'aud-1',
+      type: 'persona',
+      existing_content: TEST_PERSONA_CONTENT,
+      refinement_instruction: 'Make it shorter',
+    }));
   });
 
   it('sets isRefining false after stream completes', async () => {
     const mockEncoder = new TextEncoder();
+    const refined = JSON.stringify({
+      name: 'Done',
+      demographicSummary: 'Ages 25-34',
+      topInterests: [],
+      lifestyleDescription: 'Active lifestyle',
+      howToReachThem: 'Social media',
+    });
     const stream = new ReadableStream({
       start(controller) {
-        controller.enqueue(mockEncoder.encode('{"name":"Done"}'));
+        controller.enqueue(mockEncoder.encode(refined));
         controller.close();
       },
     });
@@ -89,7 +114,7 @@ describe('useRefineCreative', () => {
     );
 
     await act(async () => {
-      await result.current.refine({ name: 'Alex' }, 'Make shorter', 'aud-1');
+      await result.current.refine(TEST_PERSONA_CONTENT, 'Make shorter', 'aud-1');
     });
 
     expect(result.current.isRefining).toBe(false);
@@ -106,7 +131,7 @@ describe('useRefineCreative', () => {
     );
 
     await act(async () => {
-      await result.current.refine({ name: 'Alex' }, 'Make shorter', 'aud-1');
+      await result.current.refine(TEST_PERSONA_CONTENT, 'Make shorter', 'aud-1');
     });
 
     await waitFor(() => expect(result.current.error).toBe('Unauthorized'));
@@ -114,9 +139,16 @@ describe('useRefineCreative', () => {
 
   it('calls onComplete with parsed content when stream finishes', async () => {
     const mockEncoder = new TextEncoder();
+    const refinedContent = {
+      name: 'Refined',
+      demographicSummary: 'Ages 18-25',
+      topInterests: [],
+      lifestyleDescription: 'Casual lifestyle',
+      howToReachThem: 'Email',
+    };
     const stream = new ReadableStream({
       start(controller) {
-        controller.enqueue(mockEncoder.encode('{"name":"Refined"}'));
+        controller.enqueue(mockEncoder.encode(JSON.stringify(refinedContent)));
         controller.close();
       },
     });
@@ -129,9 +161,9 @@ describe('useRefineCreative', () => {
     );
 
     await act(async () => {
-      await result.current.refine({ name: 'Alex' }, 'Make shorter', 'aud-1', onComplete);
+      await result.current.refine(TEST_PERSONA_CONTENT, 'Make shorter', 'aud-1', onComplete);
     });
 
-    expect(onComplete).toHaveBeenCalledWith({ name: 'Refined' });
+    expect(onComplete).toHaveBeenCalledWith(refinedContent);
   });
 });
