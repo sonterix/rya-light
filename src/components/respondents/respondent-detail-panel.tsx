@@ -146,7 +146,7 @@ export function RespondentDetailPanel({ respondentId }: Props) {
   const detailGroups = buildDetailGroups(respondent);
 
   return (
-    <div className="space-y-6 bg-muted/30 p-6">
+    <div className="space-y-6 bg-muted p-6">
       {detailGroups.map((group) => (
         <DetailGroup key={group.title} title={group.title} fields={group.fields} />
       ))}

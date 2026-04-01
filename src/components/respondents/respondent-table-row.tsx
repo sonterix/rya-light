@@ -23,7 +23,7 @@ export function RespondentTableRow({ respondent, isExpanded, onToggle }: Props) 
   return (
     <>
       <tr
-        className="cursor-pointer border-b border-border transition-colors hover:bg-muted/50"
+        className={`cursor-pointer border-b border-border transition-colors hover:bg-muted/50 ${isExpanded ? 'bg-muted/50' : ''}`}
         onClick={onToggle}
         aria-expanded={isExpanded}
       >
