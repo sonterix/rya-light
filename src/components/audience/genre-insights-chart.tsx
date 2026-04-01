@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
-import { Bar, BarChart, Cell, LabelList, ResponsiveContainer, XAxis, YAxis } from 'recharts';
+import { Bar, BarChart, LabelList, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 
 import type { GenreInsight } from '@/hooks/use-audiences';
 import { useAudienceInsights } from '@/hooks/use-audiences';
@@ -54,12 +54,22 @@ interface GenreBarChartProps {
 }
 
 function GenreBarChart({ entries }: GenreBarChartProps) {
+  const visibleEntries = entries.filter((entry) => entry.pct > 0);
+
+  if (visibleEntries.length === 0) {
+    return (
+      <p className="py-4 text-sm text-muted-foreground">
+        No genres with high interest ratings for this audience.
+      </p>
+    );
+  }
+
   return (
-    <div style={{ width: '100%', height: entries.length * 40 + 16 }}>
+    <div style={{ width: '100%', height: visibleEntries.length * 44 + 16 }}>
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
           layout="vertical"
-          data={entries}
+          data={visibleEntries}
           margin={{ top: 4, right: 56, left: 8, bottom: 4 }}
           barCategoryGap="20%"
         >
@@ -67,19 +77,16 @@ function GenreBarChart({ entries }: GenreBarChartProps) {
           <YAxis
             type="category"
             dataKey="name"
-            width={160}
-            tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }}
+            width={200}
+            tick={{ fontSize: 13 }}
             axisLine={false}
             tickLine={false}
           />
-          <Bar dataKey="pct" radius={[0, 4, 4, 0]} barSize={20}>
-            {entries.map((_entry, index) => (
-              <Cell key={`cell-${index}`} fill="hsl(var(--chart-1))" />
-            ))}
+          <Bar dataKey="pct" radius={[0, 4, 4, 0]} barSize={22} fill="var(--primary)">
             <LabelList
               dataKey="pctLabel"
               position="right"
-              style={{ fontSize: 12, fontWeight: 500, fill: 'hsl(var(--foreground))' }}
+              style={{ fontSize: 12, fontWeight: 500 }}
             />
           </Bar>
         </BarChart>
@@ -172,10 +179,5 @@ export function GenreInsightsChart({ audienceId }: Props) {
     );
   }
 
-  return (
-    <div className="space-y-4">
-      <h2 className="text-lg font-semibold">Genre Insights</h2>
-      <InsightsContent audienceId={audienceId} />
-    </div>
-  );
+  return <InsightsContent audienceId={audienceId} />;
 }

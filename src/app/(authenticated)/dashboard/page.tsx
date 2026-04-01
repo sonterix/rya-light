@@ -8,6 +8,7 @@ import { AudienceEditSheet } from '@/components/audience/audience-edit-sheet';
 import { AudienceGrid } from '@/components/audience/audience-grid';
 import { GenreInsightsChart } from '@/components/audience/genre-insights-chart';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { Audience } from '@/db/schema';
 import { useAudiences } from '@/hooks/use-audiences';
 import { useAudienceStore } from '@/stores/audience-store';
@@ -49,10 +50,19 @@ export default function DashboardPage() {
           <AudienceGrid onEdit={setEditingAudienceId} />
         </div>
 
-        <div className="flex flex-col gap-4">
-          <h2 className="text-sm font-medium uppercase tracking-wider text-muted-foreground">Genre Insights</h2>
-          <GenreInsightsChart audienceId={selectedAudienceId} />
-        </div>
+        <Card>
+          <CardHeader>
+            <CardTitle>Genre Insights</CardTitle>
+            {selectedAudience && (
+              <p className="text-sm text-muted-foreground">
+                Top content interests for {selectedAudience.name}
+              </p>
+            )}
+          </CardHeader>
+          <CardContent>
+            <GenreInsightsChart audienceId={selectedAudienceId} />
+          </CardContent>
+        </Card>
       </div>
 
       <AudienceCreateSheet
