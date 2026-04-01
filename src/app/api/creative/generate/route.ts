@@ -31,6 +31,19 @@ const requestBodySchema = z.object({
   refinement_instruction: z.string().optional(),
 });
 
+function countField(respondentData: Respondent[], accessor: (r: Respondent) => string): string {
+  const counts = new Map<string, number>();
+  for (const r of respondentData) {
+    const val = accessor(r);
+    counts.set(val, (counts.get(val) ?? 0) + 1);
+  }
+  const total = respondentData.length;
+  return Array.from(counts.entries())
+    .sort((a, b) => b[1] - a[1])
+    .map(([label, n]) => `${label}: ${Math.round((n / total) * 100)}%`)
+    .join(', ');
+}
+
 function buildDemographicsSummary(respondentData: Respondent[]): string {
   if (respondentData.length === 0) {
     return 'No demographic data available.';
@@ -38,36 +51,19 @@ function buildDemographicsSummary(respondentData: Respondent[]): string {
 
   const count = respondentData.length;
   const avgAge = Math.round(respondentData.reduce((sum, r) => sum + r.age, 0) / count);
+  const avgIncome = Math.round(respondentData.reduce((sum, r) => sum + r.householdIncomeUsd, 0) / count);
 
-  const genderCounts = new Map<string, number>();
-  for (const r of respondentData) {
-    genderCounts.set(r.gender, (genderCounts.get(r.gender) ?? 0) + 1);
-  }
-  const genderBreakdown = Array.from(genderCounts.entries())
-    .sort((a, b) => b[1] - a[1])
-    .map(([g, n]) => `${g}: ${Math.round((n / count) * 100)}%`)
-    .join(', ');
-
-  const regionCounts = new Map<string, number>();
-  for (const r of respondentData) {
-    regionCounts.set(r.region, (regionCounts.get(r.region) ?? 0) + 1);
-  }
-  const topRegions = Array.from(regionCounts.entries())
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 3)
-    .map(([region]) => region)
-    .join(', ');
-
-  const avgIncome = Math.round(
-    respondentData.reduce((sum, r) => sum + r.householdIncomeUsd, 0) / count,
-  );
-
-  return (
-    `${count} respondents. Average age: ${avgAge}. ` +
-    `Gender breakdown: ${genderBreakdown}. ` +
-    `Top regions: ${topRegions}. ` +
-    `Average household income: $${avgIncome.toLocaleString()}.`
-  );
+  return [
+    `${count} respondents.`,
+    `Average age: ${avgAge}.`,
+    `Gender: ${countField(respondentData, (r) => r.gender)}.`,
+    `Regions: ${countField(respondentData, (r) => r.region)}.`,
+    `Community: ${countField(respondentData, (r) => r.communityType)}.`,
+    `Education: ${countField(respondentData, (r) => r.education)}.`,
+    `Employment: ${countField(respondentData, (r) => r.employmentStatus)}.`,
+    `Parent status: ${countField(respondentData, (r) => r.parentStatus)}.`,
+    `Average household income: $${avgIncome.toLocaleString()}.`,
+  ].join(' ');
 }
 
 const REFINEMENT_SYSTEM_SUFFIX = [
@@ -154,48 +150,53 @@ export async function POST(req: NextRequest): Promise<Response> {
   const audienceContext = [
     `Audience name: ${audience.name}`,
     `Demographics: ${demographicsSummary}`,
-    `Top genre interests (by average interest score 1-5):`,
+    `Top genre interests (scale: 1=highest interest, 5=unfamiliar; lower score = stronger interest):`,
     ...topGenres.map(
       (g) =>
-        `- ${g.genreName}: avg interest ${parseFloat(g.avgInterest).toFixed(2)}, ` +
-        `${Math.round(parseFloat(g.pctHighlyInterested) * 100)}% highly interested`,
+        `- ${g.genreName}: avg score ${parseFloat(g.avgInterest).toFixed(2)}, ` +
+        `${Math.round(parseFloat(g.pctHighlyInterested) * 100)}% rated it highly interested (1 or 2)`,
     ),
   ].join('\n');
 
   const userId = auth.user.id;
 
   if (type === 'opportunity') {
-    // Include all genres for gap analysis, highlighting low/neutral interest (avg <= 3)
-    const lowAndNeutralGenres = genreSummaryRows.filter(
-      (g) => parseFloat(g.avgInterest) <= 3,
-    );
     const highInterestGenres = genreSummaryRows.filter(
-      (g) => parseFloat(g.avgInterest) > 3,
+      (g) => parseFloat(g.avgInterest) <= 2.5,
+    );
+    const gapGenres = genreSummaryRows.filter(
+      (g) => parseFloat(g.avgInterest) > 2.5,
     );
 
     const opportunityContext = [
       `Audience name: ${audience.name}`,
       `Demographics: ${demographicsSummary}`,
-      `High-interest genres (avg interest > 3):`,
-      ...highInterestGenres.slice(0, 10).map(
+      `Scale: 1=highest interest, 5=unfamiliar. Lower score = stronger interest.`,
+      ``,
+      `Strong-interest genres (avg score <= 2.5, audience already engaged):`,
+      ...highInterestGenres.map(
         (g) =>
-          `- ${g.genreName}: avg interest ${parseFloat(g.avgInterest).toFixed(2)}, ` +
+          `- ${g.genreName}: avg score ${parseFloat(g.avgInterest).toFixed(2)}, ` +
           `${Math.round(parseFloat(g.pctHighlyInterested) * 100)}% highly interested`,
       ),
-      `Low/neutral-interest genres (avg interest <= 3, these are the gap opportunities):`,
-      ...lowAndNeutralGenres.map(
+      ``,
+      `Low/neutral-interest genres (avg score > 2.5, these are the WHITE SPACE gap opportunities):`,
+      ...gapGenres.map(
         (g) =>
-          `- ${g.genreName}: avg interest ${parseFloat(g.avgInterest).toFixed(2)}, ` +
+          `- ${g.genreName}: avg score ${parseFloat(g.avgInterest).toFixed(2)}, ` +
           `${Math.round(parseFloat(g.pctHighlyInterested) * 100)}% highly interested`,
       ),
     ].join('\n');
 
     const opportunityBaseSystem = [
-      'You are an audience insights strategist specializing in finding non-obvious content opportunities.',
-      'Your task is to cross-reference an audience\'s demographic traits with genres they currently show low or neutral interest in.',
-      'Identify where unexpected connections exist between who the audience is and what they\'re not yet engaging with.',
-      'Each opportunity should clearly explain the gap genre, the specific audience trait that creates the opportunity, a creative crossover concept, and your reasoning.',
-      'Focus on surprising but plausible bridges — not obvious recommendations.',
+      'You are an audience insights strategist specializing in white space analysis.',
+      'Your task is to find non-obvious content opportunities by combining audience demographic traits with genres they currently show LOW or NEUTRAL interest in (high average score = low interest).',
+      'The interest scale is 1=highest interest, 5=unfamiliar. Genres with avg score > 2.5 are the gap/white space opportunities.',
+      'For each opportunity, provide: gapGenre (the underused genre), audienceTrait (the specific demographic trait that creates the opportunity),',
+      'crossoverConcept (a creative concept that bridges the gap genre with the audience\'s existing interests or traits),',
+      'reasoning (why this connection is plausible despite low current interest),',
+      'and confidence ("high", "medium", or "low" based on how strong the demographic-genre bridge is).',
+      'Focus on surprising but plausible bridges that competitors are likely missing.',
     ].join(' ');
 
     const opportunitySystem = isRefinementMode
@@ -234,9 +235,14 @@ export async function POST(req: NextRequest): Promise<Response> {
 
   if (type === 'persona') {
     const personaBaseSystem = [
-      'You are an audience insights expert. Your task is to synthesize audience demographics and genre interests into a structured persona profile.',
-      'Generate a realistic, specific, and actionable persona based on the provided audience data.',
+      'You are an audience insights expert working for a marketing strategist.',
+      'Synthesize the provided audience demographics and genre interests into a one-page persona snapshot.',
       'The persona should feel like a real person who represents this audience segment.',
+      'Your output must include: a persona name, a demographicSummary (2-3 sentences summarizing age, gender, region, income, lifestyle),',
+      'topInterests (array of objects with genreName and interestLevel score from the audience data),',
+      'a lifestyleDescription (paragraph about daily life, habits, media consumption, values),',
+      'and howToReachThem (specific channels, platforms, content formats, and timing to reach this persona).',
+      'Ground every detail in the actual audience data provided. Do not invent demographics that contradict the data.',
     ].join(' ');
 
     const personaSystem = isRefinementMode
@@ -275,9 +281,13 @@ export async function POST(req: NextRequest): Promise<Response> {
 
   if (type === 'messaging') {
     const messagingBaseSystem = [
-      'You are an audience messaging strategist. Your task is to generate 3-5 distinct messaging angles for communicating with this audience.',
-      'Each angle must be grounded in a specific audience trait or genre interest - not generic marketing advice.',
-      'Make each angle feel differentiated, with a unique emotional hook and a concrete sample headline.',
+      'You are a messaging strategist for a marketing team.',
+      'Generate 3-5 distinct messaging angles based on the audience\'s top genres and demographics.',
+      'Each angle must include: a name (angle label), tone (1-2 word tone descriptor like "Warm, grounded" or "Aspirational, bold"),',
+      'sampleHeadline (a concrete headline a copywriter could use), emotionalHook (the emotional lever this angle pulls),',
+      'and keyTrait (the specific audience genre interest or demographic trait this angle leverages, e.g., "Meditation interest + parent status").',
+      'Each angle must be grounded in a specific data point from the audience - not generic marketing advice.',
+      'Make each angle feel differentiated from the others in tone and approach.',
     ].join(' ');
 
     const messagingSystem = isRefinementMode
@@ -316,9 +326,14 @@ export async function POST(req: NextRequest): Promise<Response> {
 
   // type === 'campaign'
   const campaignBaseSystem = [
-    'You are a creative campaign strategist. Your task is to generate 3-5 campaign concepts tailored to a specific audience.',
-    'Each concept must clearly leverage specific genres the audience cares about and be informed by their demographic profile.',
-    'Make each concept distinct, creative, and actionable. Concepts should feel differentiated from each other.',
+    'You are a creative campaign strategist for a marketing team.',
+    'Generate 3-5 campaign concepts tailored to the provided audience data.',
+    'Each concept must include: a name (campaign title), tagline (short punchy line),',
+    'description (2-3 sentences explaining the concept and how it connects to the audience),',
+    'targetGenres (array of genre names from the audience data that this campaign leverages),',
+    'and suggestedFormat (e.g., "Connected TV series", "Instagram Reels", "Podcast sponsorship", "Email campaign").',
+    'Each concept must clearly leverage specific genres the audience cares about and be informed by their demographics.',
+    'Make each concept distinct and actionable. A marketer should be able to take these to a creative brief.',
   ].join(' ');
 
   const campaignSystem = isRefinementMode
