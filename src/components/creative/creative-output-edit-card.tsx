@@ -67,7 +67,7 @@ function EditableCampaignContent({ content, onFieldSave }: { content: CampaignCo
   return (
     <div className="flex flex-col gap-4 text-sm">
       {content.concepts.map((concept, i) => (
-        <div key={i} className="rounded-lg border border-border bg-muted/30 p-4">
+        <div key={i} className="flex flex-col gap-1.5 rounded-lg border border-border bg-muted/30 p-4">
           <div className="mb-2 flex items-baseline justify-between gap-2">
             <EditableField
               value={concept.name ?? ''}
@@ -91,7 +91,7 @@ function EditableCampaignContent({ content, onFieldSave }: { content: CampaignCo
               const updated = { ...content, concepts: content.concepts.map((c, idx) => idx === i ? { ...c, tagline: v } : c) };
               onFieldSave(updated as unknown as Record<string, unknown>);
             }}
-            className="mb-2 italic text-muted-foreground"
+            className="italic text-muted-foreground"
           />
           <EditableField
             value={concept.description ?? ''}
@@ -120,7 +120,7 @@ function EditableMessagingContent({ content, onFieldSave }: { content: Messaging
   return (
     <div className="flex flex-col gap-4 text-sm">
       {content.angles.map((angle, i) => (
-        <div key={i} className="rounded-lg border border-border bg-muted/30 p-4">
+        <div key={i} className="flex flex-col gap-1.5 rounded-lg border border-border bg-muted/30 p-4">
           <div className="mb-2 flex items-baseline justify-between gap-2">
             <EditableField
               value={angle.name ?? ''}
@@ -137,15 +137,17 @@ function EditableMessagingContent({ content, onFieldSave }: { content: Messaging
               </span>
             )}
           </div>
-          <EditableField
-            value={angle.sampleHeadline ?? ''}
-            placeholder="Sample headline"
-            onSave={(v) => {
-              const updated = { ...content, angles: content.angles.map((a, idx) => idx === i ? { ...a, sampleHeadline: v } : a) };
-              onFieldSave(updated as unknown as Record<string, unknown>);
-            }}
-            className="mb-2 border-l-2 border-l-primary/30 pl-3 italic"
-          />
+          <div className="border-l-2 border-l-primary/30 pl-3">
+            <EditableField
+              value={angle.sampleHeadline ?? ''}
+              placeholder="Sample headline"
+              onSave={(v) => {
+                const updated = { ...content, angles: content.angles.map((a, idx) => idx === i ? { ...a, sampleHeadline: v } : a) };
+                onFieldSave(updated as unknown as Record<string, unknown>);
+              }}
+              className="italic"
+            />
+          </div>
           <EditableField
             value={angle.emotionalHook ?? ''}
             placeholder="Emotional hook"
@@ -178,7 +180,7 @@ function EditableOpportunityContent({ content, onFieldSave }: { content: Opportu
   return (
     <div className="flex flex-col gap-4 text-sm">
       {content.opportunities.map((item, i) => (
-        <div key={i} className="rounded-lg border border-border bg-muted/30 p-4">
+        <div key={i} className="flex flex-col gap-1.5 rounded-lg border border-border bg-muted/30 p-4">
           <div className="mb-2 flex items-baseline justify-between gap-2">
             <EditableField
               value={item.gapGenre ?? ''}
