@@ -190,4 +190,75 @@ describe('POST /api/creative/generate', () => {
     expect(mockStreamText).toHaveBeenCalledOnce();
     expect(res.status).toBe(200);
   });
+
+  it('calls streamText and returns streaming response for campaign type', async () => {
+    mockAuth();
+
+    const audienceSelectChain = {
+      from: vi.fn().mockReturnThis(),
+      where: vi.fn().mockResolvedValue([TEST_AUDIENCE]),
+    };
+    const summarySelectChain = {
+      from: vi.fn().mockReturnThis(),
+      innerJoin: vi.fn().mockReturnThis(),
+      where: vi.fn().mockReturnThis(),
+      orderBy: vi.fn().mockResolvedValue([]),
+    };
+    const respondentSelectChain = {
+      from: vi.fn().mockResolvedValue([]),
+    };
+
+    let callCount = 0;
+    mockDbSelect.mockImplementation(() => {
+      callCount++;
+      if (callCount === 1) return audienceSelectChain as never;
+      if (callCount === 2) return summarySelectChain as never;
+      return respondentSelectChain as never;
+    });
+
+    const fakeStreamResponse = new Response('streaming data', { status: 200 });
+    mockStreamResponse(fakeStreamResponse);
+
+    const req = makeRequest({ audience_id: TEST_AUDIENCE_ID, type: 'campaign' });
+    const res = await POST(req);
+
+    expect(mockStreamText).toHaveBeenCalledOnce();
+    expect(res.status).toBe(200);
+  });
+
+  it('uses campaign schema when type is campaign', async () => {
+    mockAuth();
+
+    const audienceSelectChain = {
+      from: vi.fn().mockReturnThis(),
+      where: vi.fn().mockResolvedValue([TEST_AUDIENCE]),
+    };
+    const summarySelectChain = {
+      from: vi.fn().mockReturnThis(),
+      innerJoin: vi.fn().mockReturnThis(),
+      where: vi.fn().mockReturnThis(),
+      orderBy: vi.fn().mockResolvedValue([]),
+    };
+    const respondentSelectChain = {
+      from: vi.fn().mockResolvedValue([]),
+    };
+
+    let callCount = 0;
+    mockDbSelect.mockImplementation(() => {
+      callCount++;
+      if (callCount === 1) return audienceSelectChain as never;
+      if (callCount === 2) return summarySelectChain as never;
+      return respondentSelectChain as never;
+    });
+
+    const fakeStreamResponse = new Response('streaming data', { status: 200 });
+    mockStreamResponse(fakeStreamResponse);
+
+    const req = makeRequest({ audience_id: TEST_AUDIENCE_ID, type: 'campaign' });
+    await POST(req);
+
+    const callArgs = mockStreamText.mock.calls[0]?.[0];
+    expect(callArgs).toBeDefined();
+    expect(callArgs?.system).toContain('campaign');
+  });
 });

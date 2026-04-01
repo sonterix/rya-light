@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 
+import { CampaignConceptsCard } from '@/components/creative/campaign-concepts-card';
 import { CreativeOutputList } from '@/components/creative/creative-output-list';
 import { NoAudiencePrompt } from '@/components/creative/no-audience-prompt';
 import { PersonaCard } from '@/components/creative/persona-card';
@@ -10,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { useAudiences } from '@/hooks/use-audiences';
 import type { WorkflowType } from '@/hooks/use-creative';
 import { useCreativeOutputs, useOpenAIStatus } from '@/hooks/use-creative';
+import { useGenerateCampaign } from '@/hooks/use-generate-campaign';
 import { useGeneratePersona } from '@/hooks/use-generate-persona';
 import { useAudienceStore } from '@/stores/audience-store';
 
@@ -21,13 +23,21 @@ export default function CreativePage() {
   const { data: outputs, isLoading: outputsLoading } = useCreativeOutputs(selectedAudienceId, selectedType);
   const { data: openAIConfigured } = useOpenAIStatus();
 
-  const { generate, isGenerating, partialPersona, error: generateError } = useGeneratePersona();
+  const { generate: generatePersona, isGenerating: isGeneratingPersona, partialPersona, error: personaError } = useGeneratePersona();
+  const { generate: generateCampaign, isGenerating: isGeneratingCampaign, partialCampaign, error: campaignError } = useGenerateCampaign();
 
   const selectedAudience = audiences?.find((a) => a.id === selectedAudienceId);
 
+  const isGenerating = selectedType === 'persona' ? isGeneratingPersona : isGeneratingCampaign;
+  const generateError = selectedType === 'persona' ? personaError : campaignError;
+
   function handleGenerate() {
     if (!selectedAudienceId) return;
-    generate(selectedAudienceId);
+    if (selectedType === 'persona') {
+      generatePersona(selectedAudienceId);
+    } else if (selectedType === 'campaign') {
+      generateCampaign(selectedAudienceId);
+    }
   }
 
   if (!selectedAudienceId) {
@@ -60,10 +70,17 @@ export default function CreativePage() {
         onSelectType={setSelectedType}
       />
 
-      {(isGenerating || partialPersona) && (
+      {selectedType === 'persona' && (isGeneratingPersona || partialPersona) && (
         <div className="flex flex-col gap-2">
           <h2 className="text-lg font-medium">Generating Persona</h2>
-          <PersonaCard persona={partialPersona} isGenerating={isGenerating} />
+          <PersonaCard persona={partialPersona} isGenerating={isGeneratingPersona} />
+        </div>
+      )}
+
+      {selectedType === 'campaign' && (isGeneratingCampaign || partialCampaign) && (
+        <div className="flex flex-col gap-2">
+          <h2 className="text-lg font-medium">Generating Campaign Concepts</h2>
+          <CampaignConceptsCard campaign={partialCampaign} isGenerating={isGeneratingCampaign} />
         </div>
       )}
 
