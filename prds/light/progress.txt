@@ -13,3 +13,26 @@
 
 Shared Utilities (new this iteration)
 - getSupabaseEnv(): validates and returns Supabase URL + anon key from env vars, lives at src/lib/supabase/env.ts
+
+[2026-04-01] Issue(s) 002, 004, 005: Seed data and setup script / Sign in and sign up page / App shell with sidebar and providers
+- Recovered from interrupted prior run; code was committed to main but statuses were not updated
+- Seed SQL inserts demo user (john@example.com), 12 respondents, 10 genres, 120 interest ratings, sample audience, 10 genre summaries, 4 creative outputs
+- Setup script (scripts/setup.sh) prompts for OpenAI key, starts Supabase, captures credentials, writes .env.local, resets DB, starts dev server; npm run setup added
+- Auth page at /auth with Sign In / Sign Up tabs, email + password validation, Supabase browser client auth, loading states, inline error display
+- Authenticated layout at src/app/(authenticated)/layout.tsx with shadcn Sidebar (togglable), user email display, sign out
+- React Query provider (src/components/providers/query-provider.tsx) wraps app in root layout
+- Zustand audience store (src/stores/audience-store.ts) with selectedAudienceId, setAudienceId, clearAudienceId
+- Toaster (sonner) mounted in root layout at bottom-right; Skeleton component available
+- Placeholder pages at /respondents, /dashboard, /creative inside authenticated layout
+- Genre summary computation utility (src/lib/genre-summaries.ts) with computeGenreSummaries function
+- Fixed import ordering lint issues in shadcn sheet.tsx and sidebar.tsx
+- 93 total tests across 10 test files, all passing
+- setup.sh uses grep -oP (PCRE) for DB port extraction, which requires GNU grep on macOS (may need adjustment)
+
+Shared Utilities (new this iteration)
+- computeGenreSummaries(): computes avg_interest, pct_highly_interested, respondent_count per genre from interest entries, lives at src/lib/genre-summaries.ts
+- createClient() (browser): creates Supabase browser client, lives at src/lib/supabase/client.ts
+- createClient() (server): creates Supabase server client with cookie handling, lives at src/lib/supabase/server.ts
+- QueryProvider: React Query client provider, lives at src/components/providers/query-provider.tsx
+- useAudienceStore: Zustand store for selected audience ID, lives at src/stores/audience-store.ts
+- AppSidebar: shared sidebar component with nav and sign out, lives at src/components/shared/app-sidebar.tsx

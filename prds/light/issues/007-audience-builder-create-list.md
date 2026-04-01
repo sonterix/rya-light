@@ -1,7 +1,7 @@
 ---
 id: 007
 title: Audience builder - create and list
-status: Blocked
+status: Ready
 priority: 3
 attempts: 0
 blocked_by: ["001-database-schema-migrations-rls.md", "005-app-shell-sidebar-providers.md"]

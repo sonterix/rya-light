@@ -1,9 +1,9 @@
 ---
 id: 004
 title: Sign in and sign up page
-status: Ready
+status: Done
 priority: 2
-attempts: 0
+attempts: 1
 blocked_by: ["003-supabase-auth-clients-middleware.md"]
 user_stories: [1, 2]
 created: 2026-04-01

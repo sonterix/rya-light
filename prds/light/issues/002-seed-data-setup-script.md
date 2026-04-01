@@ -1,9 +1,9 @@
 ---
 id: 002
 title: Seed data and setup script
-status: Ready
+status: Done
 priority: 2
-attempts: 0
+attempts: 1
 blocked_by: ["001-database-schema-migrations-rls.md"]
 user_stories: [58, 59, 60, 61, 62]
 created: 2026-04-01
