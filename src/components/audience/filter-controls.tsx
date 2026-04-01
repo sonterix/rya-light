@@ -9,13 +9,13 @@ import { Label } from '@/components/ui/label';
 import type { AudienceFilters } from '@/lib/filter-matching';
 
 const AUDIENCE_CATEGORIES = [
+  'Affluent Culture Seekers',
+  'Competitive Sports Fans',
+  'Emerging Tech Professionals',
   'Wellness-Oriented Parents',
-  'Tech Enthusiasts',
-  'Budget Shoppers',
-  'Outdoor Adventurers',
 ];
 
-const GENDERS = ['Female', 'Male', 'Non-binary', 'Prefer not to say'];
+const GENDERS = ['Female', 'Male', 'Non-Binary'];
 
 const REGIONS = ['Northeast', 'South', 'Midwest', 'West'];
 
@@ -27,28 +27,24 @@ const STATES = [
   'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY',
 ];
 
-const COMMUNITY_TYPES = ['Urban', 'Suburban', 'Rural'];
+const COMMUNITY_TYPES = ['Urban', 'Suburban'];
 
-const PARENT_STATUSES = ['Parent', 'Non-Parent'];
+const PARENT_STATUSES = ['Parent', 'Not the parent'];
 
 const EDUCATIONS = [
-  'High School or Less',
-  "Some College",
-  "Associate's Degree",
-  "Bachelor's Degree",
-  "Master's Degree",
-  'Doctoral Degree',
+  'High school graduate',
+  'Some college',
+  'Completed 4-year college',
+  'Post-graduate degree',
 ];
 
 const EMPLOYMENT_STATUSES = [
-  'Employed',
-  'Self-Employed',
-  'Unemployed',
+  'Work full-time',
+  'Work part-time',
   'Retired',
-  'Student',
 ];
 
-const HOME_OWNERSHIPS = ['Own', 'Rent', 'Other'];
+const HOME_OWNERSHIPS = ['Own a house', 'Own a condo or a coop', 'Rent an apartment'];
 
 interface MultiSelectProps {
   label: string;
