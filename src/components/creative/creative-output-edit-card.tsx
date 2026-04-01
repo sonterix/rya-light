@@ -156,9 +156,11 @@ function EditableMessagingContent({ content, onFieldSave }: { content: Messaging
             className="text-muted-foreground"
           />
           {angle.keyTrait && (
-            <span className="mt-2 inline-block rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
-              {angle.keyTrait}
-            </span>
+            <div className="mt-2">
+              <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+                {angle.keyTrait}
+              </span>
+            </div>
           )}
         </div>
       ))}
