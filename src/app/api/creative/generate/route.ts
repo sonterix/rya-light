@@ -14,15 +14,16 @@ import {
   type Respondent,
 } from '@/db/schema';
 import { applyFilters } from '@/lib/filter-matching';
+import { campaignSchema } from '@/lib/schemas/campaign-schema';
 import { personaSchema } from '@/lib/schemas/persona-schema';
 import { getAuthUser } from '@/lib/supabase/auth';
-import type { PersonaContent } from '@/types/creative';
+import type { CampaignContent, PersonaContent } from '@/types/creative';
 
 export const maxDuration = 60;
 
 const requestBodySchema = z.object({
   audience_id: z.string().uuid(),
-  type: z.literal('persona'),
+  type: z.union([z.literal('persona'), z.literal('campaign')]),
 });
 
 function buildDemographicsSummary(respondentData: Respondent[]): string {
@@ -80,7 +81,7 @@ export async function POST(req: NextRequest): Promise<Response> {
     );
   }
 
-  const { audience_id } = parsed.data;
+  const { audience_id, type } = parsed.data;
 
   const [audience] = await db
     .select()
@@ -132,26 +133,59 @@ export async function POST(req: NextRequest): Promise<Response> {
 
   const userId = auth.user.id;
 
+  if (type === 'persona') {
+    const result = streamText({
+      model: openai('gpt-4o-mini'),
+      output: Output.object({ schema: personaSchema }),
+      system: [
+        'You are an audience insights expert. Your task is to synthesize audience demographics and genre interests into a structured persona profile.',
+        'Generate a realistic, specific, and actionable persona based on the provided audience data.',
+        'The persona should feel like a real person who represents this audience segment.',
+      ].join(' '),
+      prompt: audienceContext,
+      onFinish: async ({ text }) => {
+        try {
+          const parsedOutput = personaSchema.safeParse(JSON.parse(text));
+          if (!parsedOutput.success) return;
+
+          const content: PersonaContent = parsedOutput.data;
+
+          await db.insert(creativeOutputs).values({
+            userId,
+            audienceId: audience_id,
+            type: 'persona',
+            content,
+          });
+        } catch {
+          // Save failure does not affect streaming response
+        }
+      },
+    });
+
+    return result.toTextStreamResponse();
+  }
+
+  // type === 'campaign'
   const result = streamText({
     model: openai('gpt-4o-mini'),
-    output: Output.object({ schema: personaSchema }),
+    output: Output.object({ schema: campaignSchema }),
     system: [
-      'You are an audience insights expert. Your task is to synthesize audience demographics and genre interests into a structured persona profile.',
-      'Generate a realistic, specific, and actionable persona based on the provided audience data.',
-      'The persona should feel like a real person who represents this audience segment.',
+      'You are a creative campaign strategist. Your task is to generate 3-5 campaign concepts tailored to a specific audience.',
+      'Each concept must clearly leverage specific genres the audience cares about and be informed by their demographic profile.',
+      'Make each concept distinct, creative, and actionable. Concepts should feel differentiated from each other.',
     ].join(' '),
     prompt: audienceContext,
     onFinish: async ({ text }) => {
       try {
-        const parsedOutput = personaSchema.safeParse(JSON.parse(text));
+        const parsedOutput = campaignSchema.safeParse(JSON.parse(text));
         if (!parsedOutput.success) return;
 
-        const content: PersonaContent = parsedOutput.data;
+        const content: CampaignContent = parsedOutput.data;
 
         await db.insert(creativeOutputs).values({
           userId,
           audienceId: audience_id,
-          type: 'persona',
+          type: 'campaign',
           content,
         });
       } catch {
