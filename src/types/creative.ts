@@ -23,9 +23,16 @@ export interface CampaignContent {
   concepts: CampaignConcept[];
 }
 
+export interface MessagingAngle {
+  name: string | null;
+  tone: string | null;
+  sampleHeadline: string | null;
+  emotionalHook: string | null;
+  keyTrait: string | null;
+}
+
 export interface MessagingContent {
-  primary_message: string;
-  value_propositions?: string[];
+  angles: MessagingAngle[];
 }
 
 export interface OpportunityContent {
