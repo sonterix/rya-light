@@ -203,7 +203,7 @@ function EditableOpportunityContent({ content, onFieldSave }: { content: Opportu
             }}
             className="mb-2"
           />
-          <div className="rounded-md border border-border bg-surface-container-high/60 p-3">
+          <div className="mt-2 rounded-md border border-border bg-surface-container-high/60 p-3">
             <p className="mb-0.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">Reasoning</p>
             <EditableField
               value={item.reasoning ?? ''}
