@@ -1,7 +1,7 @@
 ---
 id: 012
 title: Audience Persona workflow with streaming foundation
-status: Blocked
+status: Ready
 priority: 5
 attempts: 0
 blocked_by: ["011-creative-page-layout-output-management.md"]

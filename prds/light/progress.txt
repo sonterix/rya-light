@@ -59,3 +59,14 @@ Shared Utilities (new this iteration)
 - useAudiences(): React Query hook for user's audiences, lives at src/hooks/use-audiences.ts
 - useCreateAudience(): mutation hook for creating audiences, lives at src/hooks/use-audiences.ts
 - useRespondentsForPreview(): React Query hook for all respondents (filter preview), lives at src/hooks/use-audiences.ts
+
+[2026-04-01] Recovery: Issue(s) 009, 011 recovered from interrupted run
+- Issue 009 (Audience update and delete): recovered from worktree branch with 4 commits. PATCH/DELETE /api/audiences/[id], auto-save edit sheet with debouncing, delete with confirmation and toast, zero-match warning
+- Issue 011 (Creative page layout and output management): already committed to main in prior run (6bce217), status updated to Done
+- Merged issue 009 worktree into main, all 264 tests pass, typecheck clean, lint clean
+- Unblocked issue 012 (Audience Persona workflow with streaming foundation)
+
+Shared Utilities (from recovery)
+- useUpdateAudience(): mutation hook for PATCH /api/audiences/[id], lives at src/hooks/use-audiences.ts
+- useDeleteAudience(): mutation hook for DELETE /api/audiences/[id], lives at src/hooks/use-audiences.ts
+- AudienceEditSheet: edit sheet component with auto-save, lives at src/components/audience/audience-edit-sheet.tsx

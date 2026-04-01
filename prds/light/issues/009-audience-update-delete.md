@@ -1,9 +1,9 @@
 ---
 id: 009
 title: Audience update and delete
-status: Ready
+status: Done
 priority: 4
-attempts: 0
+attempts: 1
 blocked_by: ["007-audience-builder-create-list.md"]
 user_stories: [21, 25]
 created: 2026-04-01

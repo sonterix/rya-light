@@ -1,9 +1,9 @@
 ---
 id: 011
 title: Creative page layout and output management
-status: Ready
+status: Done
 priority: 4
-attempts: 0
+attempts: 1
 blocked_by: ["005-app-shell-sidebar-providers.md", "007-audience-builder-create-list.md"]
 user_stories: [31, 32, 33, 35, 36, 39]
 created: 2026-04-01
