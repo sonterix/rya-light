@@ -21,8 +21,8 @@ import { useAudienceStore } from '@/stores/audience-store';
 
 const NAV_ITEMS = [
   { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { label: 'Respondents', href: '/respondents', icon: Users },
   { label: 'Creative', href: '/creative', icon: Paintbrush },
+  { label: 'Respondents', href: '/respondents', icon: Users },
 ] as const;
 
 interface Props {
@@ -45,9 +45,9 @@ export function AppSidebar({ userEmail }: Props) {
 
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader className="border-b border-sidebar-border px-4 py-3">
+      <SidebarHeader className="border-b border-sidebar-border px-4 py-2">
         <Link href="/dashboard" className="flex items-center gap-2">
-          <div className="flex size-7 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground text-xs font-bold">
+          <div className="flex size-7 shrink-0 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground text-xs font-bold">
             R
           </div>
           <span className="text-sm font-semibold text-sidebar-foreground group-data-[collapsible=icon]:hidden">
