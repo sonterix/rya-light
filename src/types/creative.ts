@@ -28,7 +28,14 @@ export interface MessagingContent {
   value_propositions?: string[];
 }
 
+export interface OpportunityItem {
+  gapGenre: string | null;
+  audienceTrait: string | null;
+  crossoverConcept: string | null;
+  reasoning: string | null;
+  confidence: 'high' | 'medium' | 'low';
+}
+
 export interface OpportunityContent {
-  headline: string;
-  summary?: string;
+  opportunities: OpportunityItem[];
 }

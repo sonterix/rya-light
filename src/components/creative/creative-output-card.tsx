@@ -38,7 +38,8 @@ function getContentPreview(output: CreativeOutput): string {
 
   if (output.type === 'opportunity') {
     const opportunity = content as OpportunityContent;
-    return opportunity.headline;
+    const first = opportunity.opportunities?.[0];
+    return first?.gapGenre ?? 'Content Opportunities';
   }
 
   return 'No preview available';

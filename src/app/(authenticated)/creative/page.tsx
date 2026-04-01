@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { CampaignConceptsCard } from '@/components/creative/campaign-concepts-card';
 import { CreativeOutputList } from '@/components/creative/creative-output-list';
 import { NoAudiencePrompt } from '@/components/creative/no-audience-prompt';
+import { OpportunityCard } from '@/components/creative/opportunity-card';
 import { PersonaCard } from '@/components/creative/persona-card';
 import { WorkflowTypeSelector } from '@/components/creative/workflow-type-selector';
 import { Button } from '@/components/ui/button';
@@ -12,6 +13,7 @@ import { useAudiences } from '@/hooks/use-audiences';
 import type { WorkflowType } from '@/hooks/use-creative';
 import { useCreativeOutputs, useOpenAIStatus } from '@/hooks/use-creative';
 import { useGenerateCampaign } from '@/hooks/use-generate-campaign';
+import { useGenerateOpportunity } from '@/hooks/use-generate-opportunity';
 import { useGeneratePersona } from '@/hooks/use-generate-persona';
 import { useAudienceStore } from '@/stores/audience-store';
 
@@ -25,11 +27,23 @@ export default function CreativePage() {
 
   const { generate: generatePersona, isGenerating: isGeneratingPersona, partialPersona, error: personaError } = useGeneratePersona();
   const { generate: generateCampaign, isGenerating: isGeneratingCampaign, partialCampaign, error: campaignError } = useGenerateCampaign();
+  const { generate: generateOpportunity, isGenerating: isGeneratingOpportunity, partialOpportunity, error: opportunityError } = useGenerateOpportunity();
 
   const selectedAudience = audiences?.find((a) => a.id === selectedAudienceId);
 
-  const isGenerating = selectedType === 'persona' ? isGeneratingPersona : isGeneratingCampaign;
-  const generateError = selectedType === 'persona' ? personaError : campaignError;
+  const generatingByType: Record<string, boolean> = {
+    persona: isGeneratingPersona,
+    campaign: isGeneratingCampaign,
+    opportunity: isGeneratingOpportunity,
+  };
+  const isGenerating = generatingByType[selectedType] ?? false;
+
+  const errorByType: Record<string, string | null> = {
+    persona: personaError,
+    campaign: campaignError,
+    opportunity: opportunityError,
+  };
+  const generateError = errorByType[selectedType] ?? null;
 
   function handleGenerate() {
     if (!selectedAudienceId) return;
@@ -37,6 +51,8 @@ export default function CreativePage() {
       generatePersona(selectedAudienceId);
     } else if (selectedType === 'campaign') {
       generateCampaign(selectedAudienceId);
+    } else if (selectedType === 'opportunity') {
+      generateOpportunity(selectedAudienceId);
     }
   }
 
@@ -81,6 +97,13 @@ export default function CreativePage() {
         <div className="flex flex-col gap-2">
           <h2 className="text-lg font-medium">Generating Campaign Concepts</h2>
           <CampaignConceptsCard campaign={partialCampaign} isGenerating={isGeneratingCampaign} />
+        </div>
+      )}
+
+      {selectedType === 'opportunity' && (isGeneratingOpportunity || partialOpportunity) && (
+        <div className="flex flex-col gap-2">
+          <h2 className="text-lg font-medium">Finding Content Opportunities</h2>
+          <OpportunityCard opportunity={partialOpportunity} isGenerating={isGeneratingOpportunity} />
         </div>
       )}
 

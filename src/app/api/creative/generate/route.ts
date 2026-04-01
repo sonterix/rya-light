@@ -15,15 +15,16 @@ import {
 } from '@/db/schema';
 import { applyFilters } from '@/lib/filter-matching';
 import { campaignSchema } from '@/lib/schemas/campaign-schema';
+import { opportunitySchema } from '@/lib/schemas/opportunity-schema';
 import { personaSchema } from '@/lib/schemas/persona-schema';
 import { getAuthUser } from '@/lib/supabase/auth';
-import type { CampaignContent, PersonaContent } from '@/types/creative';
+import type { CampaignContent, OpportunityContent, PersonaContent } from '@/types/creative';
 
 export const maxDuration = 60;
 
 const requestBodySchema = z.object({
   audience_id: z.string().uuid(),
-  type: z.union([z.literal('persona'), z.literal('campaign')]),
+  type: z.union([z.literal('persona'), z.literal('campaign'), z.literal('opportunity')]),
 });
 
 function buildDemographicsSummary(respondentData: Respondent[]): string {
@@ -132,6 +133,65 @@ export async function POST(req: NextRequest): Promise<Response> {
   ].join('\n');
 
   const userId = auth.user.id;
+
+  if (type === 'opportunity') {
+    // Include all genres for gap analysis, highlighting low/neutral interest (avg <= 3)
+    const lowAndNeutralGenres = genreSummaryRows.filter(
+      (g) => parseFloat(g.avgInterest) <= 3,
+    );
+    const highInterestGenres = genreSummaryRows.filter(
+      (g) => parseFloat(g.avgInterest) > 3,
+    );
+
+    const opportunityContext = [
+      `Audience name: ${audience.name}`,
+      `Demographics: ${demographicsSummary}`,
+      `High-interest genres (avg interest > 3):`,
+      ...highInterestGenres.slice(0, 10).map(
+        (g) =>
+          `- ${g.genreName}: avg interest ${parseFloat(g.avgInterest).toFixed(2)}, ` +
+          `${Math.round(parseFloat(g.pctHighlyInterested) * 100)}% highly interested`,
+      ),
+      `Low/neutral-interest genres (avg interest <= 3, these are the gap opportunities):`,
+      ...lowAndNeutralGenres.map(
+        (g) =>
+          `- ${g.genreName}: avg interest ${parseFloat(g.avgInterest).toFixed(2)}, ` +
+          `${Math.round(parseFloat(g.pctHighlyInterested) * 100)}% highly interested`,
+      ),
+    ].join('\n');
+
+    const opportunityResult = streamText({
+      model: openai('gpt-4o-mini'),
+      output: Output.object({ schema: opportunitySchema }),
+      system: [
+        'You are an audience insights strategist specializing in finding non-obvious content opportunities.',
+        'Your task is to cross-reference an audience\'s demographic traits with genres they currently show low or neutral interest in.',
+        'Identify where unexpected connections exist between who the audience is and what they\'re not yet engaging with.',
+        'Each opportunity should clearly explain the gap genre, the specific audience trait that creates the opportunity, a creative crossover concept, and your reasoning.',
+        'Focus on surprising but plausible bridges — not obvious recommendations.',
+      ].join(' '),
+      prompt: opportunityContext,
+      onFinish: async ({ text }) => {
+        try {
+          const parsedOutput = opportunitySchema.safeParse(JSON.parse(text));
+          if (!parsedOutput.success) return;
+
+          const content: OpportunityContent = parsedOutput.data;
+
+          await db.insert(creativeOutputs).values({
+            userId,
+            audienceId: audience_id,
+            type: 'opportunity',
+            content,
+          });
+        } catch {
+          // Save failure does not affect streaming response
+        }
+      },
+    });
+
+    return opportunityResult.toTextStreamResponse();
+  }
 
   if (type === 'persona') {
     const result = streamText({
