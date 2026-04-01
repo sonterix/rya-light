@@ -21,12 +21,19 @@ export function AudienceCard({ audience, respondentCount, isActive, onSelect, on
   }
 
   return (
-    <Button
-      variant="ghost"
+    <div
+      role="button"
+      tabIndex={0}
       aria-pressed={isActive}
       aria-label={audience.name}
       onClick={() => onSelect(audience.id)}
-      className="h-auto w-full p-0 text-left"
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onSelect(audience.id);
+        }
+      }}
+      className="w-full text-left"
     >
       <Card
         className={`w-full cursor-pointer transition-colors ${isActive ? 'ring-2 ring-primary ring-offset-1' : ''}`}
@@ -50,6 +57,6 @@ export function AudienceCard({ audience, respondentCount, isActive, onSelect, on
           </div>
         </CardContent>
       </Card>
-    </Button>
+    </div>
   );
 }
