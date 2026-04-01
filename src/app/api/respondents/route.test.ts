@@ -2,10 +2,6 @@ import { NextRequest } from 'next/server';
 
 const mockGetAuthUser = vi.fn();
 const mockSelect = vi.fn();
-const mockFrom = vi.fn();
-const mockOrderBy = vi.fn();
-const mockLimit = vi.fn();
-const mockOffset = vi.fn();
 
 vi.mock('@/lib/supabase/auth', () => ({
   getAuthUser: mockGetAuthUser,
