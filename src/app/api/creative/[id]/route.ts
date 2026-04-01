@@ -1,4 +1,4 @@
-import { and, eq } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
@@ -97,7 +97,7 @@ export async function PATCH(
   const [updated] = await db
     .update(creativeOutputs)
     .set({ content: parsed.data.content, updatedAt: new Date() })
-    .where(and(eq(creativeOutputs.id, id), eq(creativeOutputs.userId, auth.user.id)))
+    .where(eq(creativeOutputs.id, id))
     .returning();
 
   return NextResponse.json({ data: updated });
@@ -129,7 +129,7 @@ export async function DELETE(
 
   await db
     .delete(creativeOutputs)
-    .where(and(eq(creativeOutputs.id, id), eq(creativeOutputs.userId, auth.user.id)));
+    .where(eq(creativeOutputs.id, id));
 
   return NextResponse.json({ data: { success: true } });
 }

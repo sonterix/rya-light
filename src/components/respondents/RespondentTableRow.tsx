@@ -27,15 +27,15 @@ export function RespondentTableRow({ respondent, isExpanded, onToggle }: Props) 
         onClick={onToggle}
         aria-expanded={isExpanded}
       >
-        <td className="px-4 py-3 text-sm">{respondent.respondentId}</td>
-        <td className="px-4 py-3 text-sm">{respondent.audienceCategory}</td>
-        <td className="px-4 py-3 text-sm">{respondent.age}</td>
-        <td className="px-4 py-3 text-sm">{respondent.gender}</td>
-        <td className="px-4 py-3 text-sm">
+        <td className="px-3 py-2">{respondent.respondentId}</td>
+        <td className="px-3 py-2">{respondent.audienceCategory}</td>
+        <td className="px-3 py-2">{respondent.age}</td>
+        <td className="px-3 py-2">{respondent.gender}</td>
+        <td className="px-3 py-2">
           {respondent.region}, {respondent.state}
         </td>
-        <td className="px-4 py-3 text-sm">{formatCurrency(respondent.householdIncomeUsd)}</td>
-        <td className="px-4 py-3 text-sm text-muted-foreground">
+        <td className="px-3 py-2">{formatCurrency(respondent.householdIncomeUsd)}</td>
+        <td className="px-3 py-2 text-muted-foreground">
           {isExpanded ? <ChevronDown className="size-4" /> : <ChevronRight className="size-4" />}
         </td>
       </tr>

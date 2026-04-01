@@ -76,7 +76,7 @@ describe('DashboardPage', () => {
 
   it('renders the page heading', () => {
     render(<DashboardPage />);
-    expect(screen.getByRole('heading', { name: /audiences/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /dashboard/i })).toBeInTheDocument();
   });
 
   it('renders the Create Audience button', () => {

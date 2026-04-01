@@ -27,14 +27,14 @@ export function RespondentTable({ respondents }: Props) {
   }
 
   return (
-    <div className="rounded-md border border-border">
-      <table className="w-full">
+    <div className="overflow-hidden rounded-lg border border-border">
+      <table className="w-full text-sm">
         <thead>
-          <tr className="border-b border-border">
+          <tr className="border-b bg-muted/50">
             {COLUMNS.map((col, i) => (
               <th
                 key={i}
-                className="px-4 py-3 text-left text-sm font-medium text-muted-foreground"
+                className="px-3 py-2 text-left font-medium text-muted-foreground"
               >
                 {col}
               </th>

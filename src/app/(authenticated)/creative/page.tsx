@@ -1,5 +1,6 @@
 'use client';
 
+import { Sparkles } from 'lucide-react';
 import { useState } from 'react';
 
 import { CreativeOutputList } from '@/components/creative/CreativeOutputList';
@@ -125,7 +126,9 @@ export default function CreativePage() {
             disabled={!openAIConfigured || isGenerating}
             aria-disabled={!openAIConfigured || isGenerating}
             onClick={handleGenerate}
+            className="gap-1.5"
           >
+            <Sparkles className="size-4" />
             {isGenerating ? 'Generating...' : 'Generate'}
           </Button>
         </div>

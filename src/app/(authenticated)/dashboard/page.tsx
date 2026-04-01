@@ -28,25 +28,17 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
-          {selectedAudience && (
-            <p className="mt-1 text-sm text-muted-foreground">
-              Viewing insights for <span className="font-medium text-foreground">{selectedAudience.name}</span>
-            </p>
-          )}
-        </div>
+        <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
         <Button onClick={() => setIsCreateOpen(true)} className="gap-1.5">
           <Plus className="size-4" />
           Create Audience
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 gap-8 xl:grid-cols-[1fr_2fr]">
-        <div className="flex flex-col gap-4">
-          <h2 className="text-sm font-medium uppercase tracking-wider text-muted-foreground">Audiences</h2>
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(280px,320px)_1fr]">
+        <div className="flex flex-col gap-3">
           <AudienceGrid onEdit={setEditingAudienceId} />
         </div>
 
