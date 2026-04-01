@@ -1,7 +1,7 @@
 ---
 id: 004
 title: Sign in and sign up page
-status: Blocked
+status: Ready
 priority: 2
 attempts: 0
 blocked_by: ["003-supabase-auth-clients-middleware.md"]

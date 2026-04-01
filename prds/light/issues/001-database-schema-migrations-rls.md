@@ -1,9 +1,9 @@
 ---
 id: 001
 title: Database schema, migrations, and RLS
-status: Ready
+status: Done
 priority: 1
-attempts: 0
+attempts: 1
 blocked_by: []
 user_stories: [56, 57]
 created: 2026-04-01

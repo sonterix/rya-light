@@ -1,7 +1,7 @@
 ---
 id: 005
 title: App shell with sidebar and providers
-status: Blocked
+status: Ready
 priority: 2
 attempts: 0
 blocked_by: ["003-supabase-auth-clients-middleware.md"]

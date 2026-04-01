@@ -3,20 +3,20 @@ feature: Light
 prd: .claude/prds/light/prd.md
 generated: 2026-04-01
 total: 16
-ready: 2
-blocked: 14
-done: 0
+ready: 3
+blocked: 11
+done: 2
 ---
 
 # Light — Issues
 
 | Priority | #   | File                                              | Title                                              | Status  | Attempts | Blocked By                                                                                        |
 | -------- | --- | ------------------------------------------------- | -------------------------------------------------- | ------- | -------- | ------------------------------------------------------------------------------------------------- |
-| 1        | 001 | `001-database-schema-migrations-rls.md`           | Database schema, migrations, and RLS               | Ready   | 0        | None                                                                                              |
-| 1        | 003 | `003-supabase-auth-clients-middleware.md`          | Supabase auth clients and middleware               | Ready   | 0        | None                                                                                              |
-| 2        | 002 | `002-seed-data-setup-script.md`                   | Seed data and setup script                         | Blocked | 0        | `001-database-schema-migrations-rls.md`                                                           |
-| 2        | 004 | `004-sign-in-sign-up-page.md`                     | Sign in and sign up page                           | Blocked | 0        | `003-supabase-auth-clients-middleware.md`                                                         |
-| 2        | 005 | `005-app-shell-sidebar-providers.md`              | App shell with sidebar and providers               | Blocked | 0        | `003-supabase-auth-clients-middleware.md`                                                         |
+| 1        | 001 | `001-database-schema-migrations-rls.md`           | Database schema, migrations, and RLS               | Done    | 1        | None                                                                                              |
+| 1        | 003 | `003-supabase-auth-clients-middleware.md`          | Supabase auth clients and middleware               | Done    | 1        | None                                                                                              |
+| 2        | 002 | `002-seed-data-setup-script.md`                   | Seed data and setup script                         | Ready   | 0        | `001-database-schema-migrations-rls.md`                                                           |
+| 2        | 004 | `004-sign-in-sign-up-page.md`                     | Sign in and sign up page                           | Ready   | 0        | `003-supabase-auth-clients-middleware.md`                                                         |
+| 2        | 005 | `005-app-shell-sidebar-providers.md`              | App shell with sidebar and providers               | Ready   | 0        | `003-supabase-auth-clients-middleware.md`                                                         |
 | 3        | 006 | `006-respondent-explorer-page.md`                 | Respondent explorer page                           | Blocked | 0        | `001-database-schema-migrations-rls.md`, `005-app-shell-sidebar-providers.md`                     |
 | 3        | 007 | `007-audience-builder-create-list.md`             | Audience builder - create and list                 | Blocked | 0        | `001-database-schema-migrations-rls.md`, `005-app-shell-sidebar-providers.md`                     |
 | 4        | 008 | `008-audience-manual-overrides.md`                | Audience manual overrides                          | Blocked | 0        | `007-audience-builder-create-list.md`                                                             |

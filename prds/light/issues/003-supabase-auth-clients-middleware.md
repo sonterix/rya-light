@@ -1,9 +1,9 @@
 ---
 id: 003
 title: Supabase auth clients and middleware
-status: Ready
+status: Done
 priority: 1
-attempts: 0
+attempts: 1
 blocked_by: []
 user_stories: [3]
 created: 2026-04-01

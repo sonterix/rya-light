@@ -1,0 +1,15 @@
+[2026-04-01] Issue(s) 001, 003: Database schema, migrations, and RLS / Supabase auth clients and middleware
+- Defined all 6 Drizzle tables: respondents, genres, respondent_genre_interests (seed-data), audiences, audience_genre_summaries, creative_outputs (user-data)
+- Generated schema migration (0000_jittery_malice.sql) and hand-wrote RLS migration (0001_rls_policies.sql)
+- RLS: seed tables SELECT-only for authenticated, user-data tables CRUD scoped to auth.uid(), genre summaries SELECT via audience ownership subquery
+- Exported 12 type aliases (InferSelectModel + InferInsertModel per table) from src/db/schema/index.ts
+- Created Supabase browser client (src/lib/supabase/client.ts) and async server client (src/lib/supabase/server.ts) using @supabase/ssr
+- Created shared env helper (src/lib/supabase/env.ts) that validates NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY
+- Created Next.js middleware (src/middleware.ts) with session refresh, auth redirect logic, and static asset exclusion
+- Audiences FK has onDelete cascade to audience_genre_summaries and creative_outputs
+- Server client uses try/catch in setAll for Server Component contexts where cookie writing is not possible
+- Middleware setAll handler forwards cache-control headers from Supabase to the response
+- 57 total tests across 5 test files
+
+Shared Utilities (new this iteration)
+- getSupabaseEnv(): validates and returns Supabase URL + anon key from env vars, lives at src/lib/supabase/env.ts

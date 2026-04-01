@@ -1,7 +1,7 @@
 ---
 id: 002
 title: Seed data and setup script
-status: Blocked
+status: Ready
 priority: 2
 attempts: 0
 blocked_by: ["001-database-schema-migrations-rls.md"]
