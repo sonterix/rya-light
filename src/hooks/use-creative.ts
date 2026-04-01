@@ -25,6 +25,39 @@ async function fetchCreativeOutputs(
   return successBody.data;
 }
 
+async function fetchCreativeOutput(id: string): Promise<CreativeOutput> {
+  const res = await fetch(`/api/creative/${id}`);
+  const body: unknown = await res.json();
+
+  if (!res.ok) {
+    const errorBody = body as { error?: string };
+    throw new Error(errorBody.error ?? 'Failed to fetch creative output');
+  }
+
+  const successBody = body as { data: CreativeOutput };
+  return successBody.data;
+}
+
+async function patchCreativeOutput(
+  id: string,
+  content: Record<string, unknown>,
+): Promise<CreativeOutput> {
+  const res = await fetch(`/api/creative/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ content }),
+  });
+  const body: unknown = await res.json();
+
+  if (!res.ok) {
+    const errorBody = body as { error?: string };
+    throw new Error(errorBody.error ?? 'Failed to update creative output');
+  }
+
+  const successBody = body as { data: CreativeOutput };
+  return successBody.data;
+}
+
 async function deleteCreativeOutput(id: string): Promise<void> {
   const res = await fetch(`/api/creative/${id}`, { method: 'DELETE' });
   const body: unknown = await res.json();
@@ -43,6 +76,26 @@ export function useCreativeOutputs(
     queryKey: ['creative', audienceId, type],
     queryFn: () => fetchCreativeOutputs(audienceId, type),
     enabled: audienceId !== null,
+  });
+}
+
+export function useCreativeOutput(id: string | null) {
+  return useQuery({
+    queryKey: ['creative', 'single', id],
+    queryFn: () => fetchCreativeOutput(id as string),
+    enabled: id !== null,
+  });
+}
+
+export function usePatchCreativeOutput() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, content }: { id: string; content: Record<string, unknown> }) =>
+      patchCreativeOutput(id, content),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['creative'] });
+    },
   });
 }
 

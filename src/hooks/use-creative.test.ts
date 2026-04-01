@@ -6,7 +6,7 @@ import React from 'react';
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
 
-import { useCreativeOutputs, useDeleteCreativeOutput, useOpenAIStatus } from './use-creative';
+import { useCreativeOutput, useCreativeOutputs, useDeleteCreativeOutput, useOpenAIStatus, usePatchCreativeOutput } from './use-creative';
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -127,6 +127,81 @@ describe('useDeleteCreativeOutput', () => {
     });
 
     result.current.mutate('out-1');
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+  });
+});
+
+describe('useCreativeOutput', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('fetches single creative output by id', async () => {
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ data: TEST_OUTPUT }),
+    });
+
+    const { result } = renderHook(
+      () => useCreativeOutput('out-1'),
+      { wrapper: createWrapper() },
+    );
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(result.current.data?.id).toBe('out-1');
+    expect(mockFetch).toHaveBeenCalledWith('/api/creative/out-1');
+  });
+
+  it('does not fetch when id is null', async () => {
+    const { result } = renderHook(
+      () => useCreativeOutput(null),
+      { wrapper: createWrapper() },
+    );
+
+    expect(mockFetch).not.toHaveBeenCalled();
+    expect(result.current.data).toBeUndefined();
+  });
+});
+
+describe('usePatchCreativeOutput', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('calls PATCH endpoint with id and content', async () => {
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ data: { ...TEST_OUTPUT, content: { name: 'Updated' } } }),
+    });
+
+    const { result } = renderHook(() => usePatchCreativeOutput(), {
+      wrapper: createWrapper(),
+    });
+
+    result.current.mutate({ id: 'out-1', content: { name: 'Updated' } });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(mockFetch).toHaveBeenCalledWith('/api/creative/out-1', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content: { name: 'Updated' } }),
+    });
+  });
+
+  it('handles patch error', async () => {
+    mockFetch.mockResolvedValue({
+      ok: false,
+      json: () => Promise.resolve({ error: 'Not found' }),
+    });
+
+    const { result } = renderHook(() => usePatchCreativeOutput(), {
+      wrapper: createWrapper(),
+    });
+
+    result.current.mutate({ id: 'out-1', content: { name: 'Updated' } });
 
     await waitFor(() => expect(result.current.isError).toBe(true));
   });
