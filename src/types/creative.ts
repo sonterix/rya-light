@@ -11,10 +11,16 @@ export interface PersonaContent {
   howToReachThem: string;
 }
 
+export interface CampaignConcept {
+  name: string | null;
+  tagline: string | null;
+  description: string | null;
+  targetGenres: string[];
+  suggestedFormat: string | null;
+}
+
 export interface CampaignContent {
-  campaign_name: string;
-  objective?: string;
-  core_message?: string;
+  concepts: CampaignConcept[];
 }
 
 export interface MessagingContent {
