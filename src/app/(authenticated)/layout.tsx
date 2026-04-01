@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import type { ReactNode } from 'react';
 
 import { AppSidebar } from '@/components/shared/app-sidebar';
+import { AudienceAutoSelectProvider } from '@/components/shared/audience-auto-select-provider';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { createClient } from '@/lib/supabase/server';
 
@@ -26,7 +27,7 @@ export default async function AuthenticatedLayout({ children }: Props) {
         <header className="flex h-12 items-center border-b border-border px-4">
           <SidebarTrigger />
         </header>
-        <div className="flex flex-1 flex-col p-6">{children}</div>
+        <div className="flex flex-1 flex-col p-6"><AudienceAutoSelectProvider>{children}</AudienceAutoSelectProvider></div>
       </SidebarInset>
     </SidebarProvider>
   );
