@@ -1,3 +1,4 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
@@ -29,10 +30,13 @@ import { SidebarProvider } from '@/components/ui/sidebar';
 import { AppSidebar } from './app-sidebar';
 
 function renderSidebar(userEmail = 'user@example.com') {
+  const queryClient = new QueryClient();
   return render(
-    <SidebarProvider>
-      <AppSidebar userEmail={userEmail} />
-    </SidebarProvider>
+    <QueryClientProvider client={queryClient}>
+      <SidebarProvider>
+        <AppSidebar userEmail={userEmail} />
+      </SidebarProvider>
+    </QueryClientProvider>
   );
 }
 

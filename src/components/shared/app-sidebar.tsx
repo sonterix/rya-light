@@ -1,5 +1,6 @@
 'use client';
 
+import { useQueryClient } from '@tanstack/react-query';
 import { LayoutDashboard, LogOut, Paintbrush, Users } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -16,6 +17,7 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { createClient } from '@/lib/supabase/client';
+import { useAudienceStore } from '@/stores/audience-store';
 
 const NAV_ITEMS = [
   { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -30,10 +32,14 @@ interface Props {
 export function AppSidebar({ userEmail }: Props) {
   const pathname = usePathname();
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const clearSelectedAudienceId = useAudienceStore((state) => state.clearSelectedAudienceId);
 
   async function handleSignOut() {
     const supabase = createClient();
     await supabase.auth.signOut();
+    queryClient.clear();
+    clearSelectedAudienceId();
     router.push('/auth');
   }
 
