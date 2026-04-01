@@ -1,7 +1,7 @@
 ---
 id: 009
 title: Audience update and delete
-status: Blocked
+status: Ready
 priority: 4
 attempts: 0
 blocked_by: ["007-audience-builder-create-list.md"]

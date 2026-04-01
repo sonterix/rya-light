@@ -1,7 +1,7 @@
 ---
 id: 010
 title: Genre insights computation and visualization
-status: Blocked
+status: Ready
 priority: 4
 attempts: 0
 blocked_by: ["007-audience-builder-create-list.md"]

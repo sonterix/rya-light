@@ -1,9 +1,9 @@
 ---
 id: 007
 title: Audience builder - create and list
-status: Ready
+status: Done
 priority: 3
-attempts: 0
+attempts: 1
 blocked_by: ["001-database-schema-migrations-rls.md", "005-app-shell-sidebar-providers.md"]
 user_stories: [12, 13, 14, 15, 22, 23, 24]
 created: 2026-04-01

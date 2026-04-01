@@ -1,7 +1,7 @@
 ---
 id: 011
 title: Creative page layout and output management
-status: Blocked
+status: Ready
 priority: 4
 attempts: 0
 blocked_by: ["005-app-shell-sidebar-providers.md", "007-audience-builder-create-list.md"]

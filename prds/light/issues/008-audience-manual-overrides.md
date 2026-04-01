@@ -1,7 +1,7 @@
 ---
 id: 008
 title: Audience manual overrides
-status: Blocked
+status: Ready
 priority: 4
 attempts: 0
 blocked_by: ["007-audience-builder-create-list.md"]

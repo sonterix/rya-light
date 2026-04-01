@@ -36,3 +36,26 @@ Shared Utilities (new this iteration)
 - QueryProvider: React Query client provider, lives at src/components/providers/query-provider.tsx
 - useAudienceStore: Zustand store for selected audience ID, lives at src/stores/audience-store.ts
 - AppSidebar: shared sidebar component with nav and sign out, lives at src/components/shared/app-sidebar.tsx
+
+[2026-04-01] Issue(s) 006, 007: Respondent explorer page / Audience builder - create and list
+- Respondent explorer: GET /api/respondents (paginated, 10/page) and GET /api/respondents/[id] (full detail + genre interests with names)
+- 6-column data table with expandable detail rows (demographic, geographic, household, socioeconomic, survey metadata groups + genre interests)
+- URL-based pagination via search params, skeleton loading states, empty state
+- Audience builder: GET /api/audiences, POST /api/audiences, GET /api/audiences/[id] (with matching respondents)
+- Filter matching logic: categorical (array of values) + numeric range (min/max) + AND combination + manual includes/excludes
+- Dashboard page with audience card grid, card selection via Zustand store, visual highlight on active card
+- Audience creation sheet with 4 always-visible filters + 7 advanced behind toggle, live respondent preview
+- GET /api/respondents/preview route provides all respondent data for client-side filter preview
+- React Query hooks: useRespondents, useRespondentDetail, useAudiences, useAudienceWithRespondents, useCreateAudience, useRespondentsForPreview
+- Shared types at src/types/respondent.ts (RespondentSummary, RespondentDetail, GenreInterest, etc.)
+- 213 total tests across 26 test files, all passing
+
+Shared Utilities (new this iteration)
+- getAuthUser(): returns authenticated user or null, lives at src/lib/supabase/auth.ts
+- applyFilters(): filters respondents by categorical/numeric criteria + manual includes/excludes, lives at src/lib/filter-matching.ts
+- Respondent types: RespondentSummary, RespondentDetail, GenreInterest, response types at src/types/respondent.ts
+- useRespondents(page): React Query hook for paginated respondent list, lives at src/hooks/use-respondents.ts
+- useRespondentDetail(id): React Query hook for single respondent detail, lives at src/hooks/use-respondents.ts
+- useAudiences(): React Query hook for user's audiences, lives at src/hooks/use-audiences.ts
+- useCreateAudience(): mutation hook for creating audiences, lives at src/hooks/use-audiences.ts
+- useRespondentsForPreview(): React Query hook for all respondents (filter preview), lives at src/hooks/use-audiences.ts

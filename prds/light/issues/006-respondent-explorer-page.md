@@ -1,9 +1,9 @@
 ---
 id: 006
 title: Respondent explorer page
-status: Ready
+status: Done
 priority: 3
-attempts: 0
+attempts: 1
 blocked_by: ["001-database-schema-migrations-rls.md", "005-app-shell-sidebar-providers.md"]
 user_stories: [7, 8, 9, 10, 11]
 created: 2026-04-01
