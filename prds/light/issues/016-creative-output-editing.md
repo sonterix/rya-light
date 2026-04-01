@@ -1,7 +1,7 @@
 ---
 id: 016
 title: Creative output editing
-status: Blocked
+status: Ready
 priority: 6
 attempts: 0
 blocked_by: ["012-persona-workflow-streaming-foundation.md"]

@@ -1,7 +1,7 @@
 ---
 id: 014
 title: Messaging Angles workflow
-status: Blocked
+status: Ready
 priority: 6
 attempts: 0
 blocked_by: ["012-persona-workflow-streaming-foundation.md"]

@@ -70,3 +70,17 @@ Shared Utilities (from recovery)
 - useUpdateAudience(): mutation hook for PATCH /api/audiences/[id], lives at src/hooks/use-audiences.ts
 - useDeleteAudience(): mutation hook for DELETE /api/audiences/[id], lives at src/hooks/use-audiences.ts
 - AudienceEditSheet: edit sheet component with auto-save, lives at src/components/audience/audience-edit-sheet.tsx
+
+[2026-04-01] Issue(s) 008, 012: Audience manual overrides / Audience Persona workflow with streaming foundation
+- Issue 008: ManualOverridesPanel component with include/exclude UI, "Manually added" badges, clickable excluded count with expandable panel, re-include functionality. Integrated into AudienceEditSheet with auto-save of manual_includes/manual_excludes via PATCH API.
+- Issue 012: POST /api/creative/generate streaming endpoint using Vercel AI SDK streamText() with Output.object(). Persona Zod schema (name, demographicSummary, topInterests, lifestyleDescription, howToReachThem). Auto-saves to creative_outputs on stream completion. useGeneratePersona hook as reusable streaming consumer. PersonaCard component with structured layout, badges for interests, distinct "How to Reach Them" section.
+- @ai-sdk/react not installed; custom useGeneratePersona hook provides equivalent streaming functionality and is designed for reuse by campaign/messaging/opportunity workflows
+- Unblocked issues 013, 014, 015, 016
+- 309 total tests across 36 test files, all passing
+
+Shared Utilities (new this iteration)
+- ManualOverridesPanel: include/exclude UI for audience respondents, lives at src/components/audience/manual-overrides-panel.tsx
+- personaSchema: Zod schema for persona AI output, lives at src/lib/schemas/persona-schema.ts
+- useGeneratePersona(): reusable streaming consumer hook for persona generation, lives at src/hooks/use-generate-persona.ts
+- PersonaCard: visual card for rendered persona output, lives at src/components/creative/persona-card.tsx
+- POST /api/creative/generate: streaming AI endpoint (currently handles persona type), lives at src/app/api/creative/generate/route.ts

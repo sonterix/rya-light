@@ -1,9 +1,9 @@
 ---
 id: 008
 title: Audience manual overrides
-status: Ready
+status: Done
 priority: 4
-attempts: 0
+attempts: 1
 blocked_by: ["007-audience-builder-create-list.md"]
 user_stories: [16, 17, 18, 19, 20]
 created: 2026-04-01

@@ -3,10 +3,10 @@ feature: Light
 prd: .claude/prds/light/prd.md
 generated: 2026-04-01
 total: 16
-ready: 3
+ready: 5
 in_progress: 0
-blocked: 4
-done: 9
+blocked: 0
+done: 11
 ---
 
 # Light — Issues
@@ -20,12 +20,12 @@ done: 9
 | 2        | 005 | `005-app-shell-sidebar-providers.md`              | App shell with sidebar and providers               | Done    | 1        | `003-supabase-auth-clients-middleware.md`                                                         |
 | 3        | 006 | `006-respondent-explorer-page.md`                 | Respondent explorer page                           | Done    | 1        | `001-database-schema-migrations-rls.md`, `005-app-shell-sidebar-providers.md`                     |
 | 3        | 007 | `007-audience-builder-create-list.md`             | Audience builder - create and list                 | Done    | 1        | `001-database-schema-migrations-rls.md`, `005-app-shell-sidebar-providers.md`                     |
-| 4        | 008 | `008-audience-manual-overrides.md`                | Audience manual overrides                          | Ready   | 0        | `007-audience-builder-create-list.md`                                                             |
+| 4        | 008 | `008-audience-manual-overrides.md`                | Audience manual overrides                          | Done    | 1        | `007-audience-builder-create-list.md`                                                             |
 | 4        | 009 | `009-audience-update-delete.md`                   | Audience update and delete                         | Done    | 1        | `007-audience-builder-create-list.md`                                                             |
 | 4        | 010 | `010-genre-insights-computation-visualization.md` | Genre insights computation and visualization       | Ready   | 0        | `007-audience-builder-create-list.md`                                                             |
 | 4        | 011 | `011-creative-page-layout-output-management.md`   | Creative page layout and output management         | Done    | 1        | `005-app-shell-sidebar-providers.md`, `007-audience-builder-create-list.md`                       |
-| 5        | 012 | `012-persona-workflow-streaming-foundation.md`    | Audience Persona workflow with streaming foundation | Ready   | 0        | `011-creative-page-layout-output-management.md`                                                   |
-| 6        | 013 | `013-campaign-concepts-workflow.md`               | Campaign Concepts workflow                         | Blocked | 0        | `012-persona-workflow-streaming-foundation.md`                                                    |
-| 6        | 014 | `014-messaging-angles-workflow.md`                | Messaging Angles workflow                          | Blocked | 0        | `012-persona-workflow-streaming-foundation.md`                                                    |
-| 6        | 015 | `015-content-opportunity-finder-workflow.md`      | Content Opportunity Finder workflow                | Blocked | 0        | `012-persona-workflow-streaming-foundation.md`                                                    |
-| 6        | 016 | `016-creative-output-editing.md`                  | Creative output editing                            | Blocked | 0        | `012-persona-workflow-streaming-foundation.md`                                                    |
+| 5        | 012 | `012-persona-workflow-streaming-foundation.md`    | Audience Persona workflow with streaming foundation | Done    | 1        | `011-creative-page-layout-output-management.md`                                                   |
+| 6        | 013 | `013-campaign-concepts-workflow.md`               | Campaign Concepts workflow                         | Ready   | 0        | `012-persona-workflow-streaming-foundation.md`                                                    |
+| 6        | 014 | `014-messaging-angles-workflow.md`                | Messaging Angles workflow                          | Ready   | 0        | `012-persona-workflow-streaming-foundation.md`                                                    |
+| 6        | 015 | `015-content-opportunity-finder-workflow.md`      | Content Opportunity Finder workflow                | Ready   | 0        | `012-persona-workflow-streaming-foundation.md`                                                    |
+| 6        | 016 | `016-creative-output-editing.md`                  | Creative output editing                            | Ready   | 0        | `012-persona-workflow-streaming-foundation.md`                                                    |
