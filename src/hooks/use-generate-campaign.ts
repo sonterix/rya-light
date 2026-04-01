@@ -8,7 +8,7 @@ import type { CampaignSchema } from '@/lib/schemas/campaign-schema';
 import { campaignSchema } from '@/lib/schemas/campaign-schema';
 
 export interface UseGenerateCampaignResult {
-  generate: (audienceId: string) => void;
+  generate: (audienceId: string, outputId?: string) => void;
   isGenerating: boolean;
   partialCampaign: Partial<CampaignSchema> | null;
   error: string | null;
@@ -21,7 +21,7 @@ export function useGenerateCampaign(): UseGenerateCampaignResult {
   const [error, setError] = useState<string | null>(null);
 
   const generate = useCallback(
-    (audienceId: string) => {
+    (audienceId: string, outputId?: string) => {
       setError(null);
       setPartialCampaign(null);
       setIsGenerating(true);
@@ -31,7 +31,7 @@ export function useGenerateCampaign(): UseGenerateCampaignResult {
           const res = await fetch('/api/creative/generate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ audience_id: audienceId, type: 'campaign' }),
+            body: JSON.stringify({ audience_id: audienceId, type: 'campaign', ...(outputId && { output_id: outputId }) }),
           });
 
           if (!res.ok) {

@@ -8,7 +8,7 @@ import type { OpportunitySchema } from '@/lib/schemas/opportunity-schema';
 import { opportunitySchema } from '@/lib/schemas/opportunity-schema';
 
 export interface UseGenerateOpportunityResult {
-  generate: (audienceId: string) => void;
+  generate: (audienceId: string, outputId?: string) => void;
   isGenerating: boolean;
   partialOpportunity: Partial<OpportunitySchema> | null;
   error: string | null;
@@ -21,7 +21,7 @@ export function useGenerateOpportunity(): UseGenerateOpportunityResult {
   const [error, setError] = useState<string | null>(null);
 
   const generate = useCallback(
-    (audienceId: string) => {
+    (audienceId: string, outputId?: string) => {
       setError(null);
       setPartialOpportunity(null);
       setIsGenerating(true);
@@ -31,7 +31,7 @@ export function useGenerateOpportunity(): UseGenerateOpportunityResult {
           const res = await fetch('/api/creative/generate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ audience_id: audienceId, type: 'opportunity' }),
+            body: JSON.stringify({ audience_id: audienceId, type: 'opportunity', ...(outputId && { output_id: outputId }) }),
           });
 
           if (!res.ok) {

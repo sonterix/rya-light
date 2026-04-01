@@ -8,7 +8,7 @@ import type { PersonaSchema } from '@/lib/schemas/persona-schema';
 import { personaSchema } from '@/lib/schemas/persona-schema';
 
 export interface UseGeneratePersonaResult {
-  generate: (audienceId: string) => void;
+  generate: (audienceId: string, outputId?: string) => void;
   isGenerating: boolean;
   partialPersona: Partial<PersonaSchema> | null;
   error: string | null;
@@ -21,7 +21,7 @@ export function useGeneratePersona(): UseGeneratePersonaResult {
   const [error, setError] = useState<string | null>(null);
 
   const generate = useCallback(
-    (audienceId: string) => {
+    (audienceId: string, outputId?: string) => {
       setError(null);
       setPartialPersona(null);
       setIsGenerating(true);
@@ -31,7 +31,7 @@ export function useGeneratePersona(): UseGeneratePersonaResult {
           const res = await fetch('/api/creative/generate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ audience_id: audienceId, type: 'persona' }),
+            body: JSON.stringify({ audience_id: audienceId, type: 'persona', ...(outputId && { output_id: outputId }) }),
           });
 
           if (!res.ok) {

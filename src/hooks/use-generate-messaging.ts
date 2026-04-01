@@ -8,7 +8,7 @@ import type { MessagingSchema } from '@/lib/schemas/messaging-schema';
 import { messagingSchema } from '@/lib/schemas/messaging-schema';
 
 export interface UseGenerateMessagingResult {
-  generate: (audienceId: string) => void;
+  generate: (audienceId: string, outputId?: string) => void;
   isGenerating: boolean;
   partialMessaging: Partial<MessagingSchema> | null;
   error: string | null;
@@ -21,7 +21,7 @@ export function useGenerateMessaging(): UseGenerateMessagingResult {
   const [error, setError] = useState<string | null>(null);
 
   const generate = useCallback(
-    (audienceId: string) => {
+    (audienceId: string, outputId?: string) => {
       setError(null);
       setPartialMessaging(null);
       setIsGenerating(true);
@@ -31,7 +31,7 @@ export function useGenerateMessaging(): UseGenerateMessagingResult {
           const res = await fetch('/api/creative/generate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ audience_id: audienceId, type: 'messaging' }),
+            body: JSON.stringify({ audience_id: audienceId, type: 'messaging', ...(outputId && { output_id: outputId }) }),
           });
 
           if (!res.ok) {

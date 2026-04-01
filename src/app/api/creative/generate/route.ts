@@ -218,7 +218,7 @@ export async function POST(req: NextRequest): Promise<Response> {
 
           const content: OpportunityContent = parsedOutput.data;
 
-          if (isRefinementMode && output_id) {
+          if (output_id) {
             await db.update(creativeOutputs).set({ content, updatedAt: new Date() }).where(and(eq(creativeOutputs.id, output_id), eq(creativeOutputs.userId, userId)));
           } else {
             await db.insert(creativeOutputs).values({ userId, audienceId: audience_id, type: 'opportunity', content });
@@ -259,7 +259,7 @@ export async function POST(req: NextRequest): Promise<Response> {
 
           const content: PersonaContent = parsedOutput.data;
 
-          if (isRefinementMode && output_id) {
+          if (output_id) {
             await db.update(creativeOutputs).set({ content, updatedAt: new Date() }).where(and(eq(creativeOutputs.id, output_id), eq(creativeOutputs.userId, userId)));
           } else {
             await db.insert(creativeOutputs).values({ userId, audienceId: audience_id, type: 'persona', content });
@@ -300,7 +300,7 @@ export async function POST(req: NextRequest): Promise<Response> {
 
           const content: MessagingContent = parsedOutput.data;
 
-          if (isRefinementMode && output_id) {
+          if (output_id) {
             await db.update(creativeOutputs).set({ content, updatedAt: new Date() }).where(and(eq(creativeOutputs.id, output_id), eq(creativeOutputs.userId, userId)));
           } else {
             await db.insert(creativeOutputs).values({ userId, audienceId: audience_id, type: 'messaging', content });
@@ -341,7 +341,7 @@ export async function POST(req: NextRequest): Promise<Response> {
 
         const content: CampaignContent = parsedOutput.data;
 
-        if (isRefinementMode && output_id) {
+        if (output_id) {
           await db.update(creativeOutputs).set({ content, updatedAt: new Date() }).where(and(eq(creativeOutputs.id, output_id), eq(creativeOutputs.userId, userId)));
         } else {
           await db.insert(creativeOutputs).values({ userId, audienceId: audience_id, type: 'campaign', content });

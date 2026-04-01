@@ -132,7 +132,7 @@ describe('CreativeOutputEditCard', () => {
     await user.click(screen.getByRole('button', { name: /regenerate/i }));
     await user.click(screen.getByRole('button', { name: /confirm/i }));
 
-    expect(mockGeneratePersona).toHaveBeenCalledWith('aud-1');
+    expect(mockGeneratePersona).toHaveBeenCalledWith('aud-1', 'out-1');
   });
 
   it('cancels regenerate confirmation when cancel is clicked', async () => {

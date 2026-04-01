@@ -233,11 +233,11 @@ export function CreativeOutputEditCard({ output, audienceId, genres, traits }: P
 
   const handleConfirmRegenerate = useCallback(() => {
     setConfirmingRegenerate(false);
-    if (output.type === 'persona') generatePersona(audienceId);
-    else if (output.type === 'campaign') generateCampaign(audienceId);
-    else if (output.type === 'messaging') generateMessaging(audienceId);
-    else generateOpportunity(audienceId);
-  }, [output.type, audienceId, generatePersona, generateCampaign, generateMessaging, generateOpportunity]);
+    if (output.type === 'persona') generatePersona(audienceId, output.id);
+    else if (output.type === 'campaign') generateCampaign(audienceId, output.id);
+    else if (output.type === 'messaging') generateMessaging(audienceId, output.id);
+    else generateOpportunity(audienceId, output.id);
+  }, [output.type, output.id, audienceId, generatePersona, generateCampaign, generateMessaging, generateOpportunity]);
 
   const handleSaveContent = useCallback((updatedContent: Record<string, unknown>) => {
     patchOutput(
