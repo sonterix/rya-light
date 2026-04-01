@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -63,6 +63,7 @@ interface Props {
   type: WorkflowType;
   content: Record<string, unknown>;
   onRefined: (content: Record<string, unknown>) => void;
+  onRefiningChange?: (isRefining: boolean) => void;
   genres?: string[];
   traits?: string[];
 }
@@ -73,10 +74,16 @@ export function RefinementPanel({
   type,
   content,
   onRefined,
+  onRefiningChange,
   genres = [],
   traits = [],
 }: Props) {
   const { refine, isRefining, error } = useRefineCreative(outputId, type);
+
+  useEffect(() => {
+    onRefiningChange?.(isRefining);
+  }, [isRefining, onRefiningChange]);
+
   const [freeformPrompt, setFreeformPrompt] = useState('');
   const [selectedGenre, setSelectedGenre] = useState(genres[0] ?? '');
   const [selectedTrait, setSelectedTrait] = useState(traits[0] ?? '');

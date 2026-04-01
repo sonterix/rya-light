@@ -264,6 +264,7 @@ interface Props {
 export function CreativeOutputEditCard({ output, audienceId, genres, traits }: Props) {
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [confirmingRegenerate, setConfirmingRegenerate] = useState(false);
+  const [isRefining, setIsRefining] = useState(false);
 
   const { mutate: deleteOutput, isPending: isDeleting } = useDeleteCreativeOutput();
   const { mutate: patchOutput } = usePatchCreativeOutput();
@@ -331,11 +332,11 @@ export function CreativeOutputEditCard({ output, audienceId, genres, traits }: P
 
   return (
     <Card className="relative">
-      {isRegenerating && (
+      {(isRegenerating || isRefining) && (
         <div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-background/80">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <div className="size-4 animate-spin rounded-full border-2 border-muted-foreground border-t-transparent" />
-            Regenerating...
+            {isRegenerating ? 'Regenerating...' : 'Refining...'}
           </div>
         </div>
       )}
@@ -356,6 +357,7 @@ export function CreativeOutputEditCard({ output, audienceId, genres, traits }: P
           type={output.type as WorkflowType}
           content={content}
           onRefined={handleRefined}
+          onRefiningChange={setIsRefining}
           genres={genres}
           traits={traits}
         />
