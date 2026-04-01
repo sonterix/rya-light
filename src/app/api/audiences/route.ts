@@ -4,7 +4,9 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
 import { db } from '@/db';
-import { audiences } from '@/db/schema';
+import { audiences, respondents } from '@/db/schema';
+import { computeAndSaveAudienceInsights } from '@/lib/compute-audience-insights';
+import { applyFilters } from '@/lib/filter-matching';
 import { getAuthUser } from '@/lib/supabase/auth';
 
 const filterValueSchema = z.union([
@@ -62,6 +64,16 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       manualExcludes: manualExcludes ?? [],
     })
     .returning();
+
+  const allRespondents = await db.select().from(respondents);
+  const matchingRespondents = applyFilters({
+    filters: created.filters,
+    manualIncludes: created.manualIncludes,
+    manualExcludes: created.manualExcludes,
+    respondents: allRespondents,
+  });
+  const respondentIds = matchingRespondents.map((r) => r.respondentId);
+  await computeAndSaveAudienceInsights(created.id, respondentIds);
 
   return NextResponse.json({ data: created }, { status: 201 });
 }

@@ -6,12 +6,14 @@ import { useState } from 'react';
 import { AudienceCreateSheet } from '@/components/audience/audience-create-sheet';
 import { AudienceEditSheet } from '@/components/audience/audience-edit-sheet';
 import { AudienceGrid } from '@/components/audience/audience-grid';
+import { GenreInsightsChart } from '@/components/audience/genre-insights-chart';
 import { Button } from '@/components/ui/button';
 import type { Audience } from '@/db/schema';
 import { useAudienceStore } from '@/stores/audience-store';
 
 export default function DashboardPage() {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const selectedAudienceId = useAudienceStore((state) => state.selectedAudienceId);
   const setSelectedAudienceId = useAudienceStore((state) => state.setSelectedAudienceId);
 
   function handleAudienceCreated(audience: Audience) {
@@ -29,6 +31,8 @@ export default function DashboardPage() {
       </div>
 
       <AudienceGrid />
+
+      <GenreInsightsChart audienceId={selectedAudienceId} />
 
       <AudienceCreateSheet
         open={isCreateOpen}

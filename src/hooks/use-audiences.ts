@@ -4,6 +4,14 @@ import type { Audience, Respondent } from '@/db/schema';
 import type { AudienceFilters } from '@/lib/filter-matching';
 import { useAudienceStore } from '@/stores/audience-store';
 
+export interface GenreInsight {
+  genreSlug: string;
+  genreName: string;
+  avgInterest: string;
+  pctHighlyInterested: string;
+  respondentCount: number;
+}
+
 async function fetchAllRespondentsForPreview(): Promise<Respondent[]> {
   const res = await fetch('/api/respondents/preview');
   const body: unknown = await res.json();
@@ -42,6 +50,19 @@ interface UpdateAudienceInput {
   filters?: AudienceFilters | null;
   manualIncludes?: number[] | null;
   manualExcludes?: number[] | null;
+}
+
+async function fetchAudienceInsights(id: string): Promise<GenreInsight[]> {
+  const res = await fetch(`/api/audiences/${id}/insights`);
+  const body: unknown = await res.json();
+
+  if (!res.ok) {
+    const errorBody = body as { error?: string };
+    throw new Error(errorBody.error ?? 'Failed to fetch audience insights');
+  }
+
+  const successBody = body as { data: GenreInsight[] };
+  return successBody.data;
 }
 
 async function fetchAudiences(): Promise<Audience[]> {
@@ -114,6 +135,17 @@ async function deleteAudience(id: string): Promise<void> {
     const errorBody = body as { error?: string };
     throw new Error(errorBody.error ?? 'Failed to delete audience');
   }
+}
+
+export function useAudienceInsights(id: string | null) {
+  return useQuery({
+    queryKey: ['audiences', id, 'insights'],
+    queryFn: () => {
+      if (!id) throw new Error('Audience ID is required');
+      return fetchAudienceInsights(id);
+    },
+    enabled: id !== null,
+  });
 }
 
 export function useAudiences() {

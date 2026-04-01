@@ -5,6 +5,7 @@ import { z } from 'zod';
 
 import { db } from '@/db';
 import { audiences, respondents } from '@/db/schema';
+import { computeAndSaveAudienceInsights } from '@/lib/compute-audience-insights';
 import { applyFilters } from '@/lib/filter-matching';
 import { getAuthUser } from '@/lib/supabase/auth';
 
@@ -110,6 +111,16 @@ export async function PATCH(
     .set({ ...updates, updatedAt: new Date() })
     .where(eq(audiences.id, id))
     .returning();
+
+  const allRespondents = await db.select().from(respondents);
+  const matchingRespondents = applyFilters({
+    filters: updated.filters,
+    manualIncludes: updated.manualIncludes,
+    manualExcludes: updated.manualExcludes,
+    respondents: allRespondents,
+  });
+  const respondentIds = matchingRespondents.map((r) => r.respondentId);
+  await computeAndSaveAudienceInsights(id, respondentIds);
 
   return NextResponse.json({ data: updated });
 }

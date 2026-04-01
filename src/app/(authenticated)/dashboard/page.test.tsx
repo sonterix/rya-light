@@ -1,11 +1,13 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import React from 'react';
 
 const mockUseAudiences = vi.fn();
 const mockUseCreateAudience = vi.fn();
 const mockUseAudienceWithRespondents = vi.fn();
 const mockUseRespondentsForPreview = vi.fn();
 const mockUseAudienceStore = vi.fn();
+const mockUseAudienceInsights = vi.fn();
 
 vi.mock('@/hooks/use-audiences', () => ({
   useAudiences: () => mockUseAudiences(),
@@ -14,6 +16,18 @@ vi.mock('@/hooks/use-audiences', () => ({
   useRespondentsForPreview: () => mockUseRespondentsForPreview(),
   useDeleteAudience: () => ({ mutate: vi.fn() }),
   useUpdateAudience: () => ({ mutate: vi.fn() }),
+  useAudienceInsights: (id: string | null) => mockUseAudienceInsights(id),
+}));
+
+vi.mock('recharts', () => ({
+  ResponsiveContainer: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  BarChart: ({ children }: { children: React.ReactNode }) => <div data-testid="bar-chart">{children}</div>,
+  Bar: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  XAxis: () => null,
+  YAxis: () => null,
+  Tooltip: () => null,
+  Cell: () => null,
+  LabelList: () => null,
 }));
 
 vi.mock('@/stores/audience-store', () => ({
@@ -47,6 +61,7 @@ function setupDefaults() {
   mockUseCreateAudience.mockReturnValue({ mutate: vi.fn(), isPending: false });
   mockUseAudienceWithRespondents.mockReturnValue({ data: undefined, isLoading: false });
   mockUseRespondentsForPreview.mockReturnValue({ data: [], isLoading: false });
+  mockUseAudienceInsights.mockReturnValue({ data: [], isLoading: false });
   mockUseAudienceStore.mockImplementation(
     (selector: (state: { selectedAudienceId: string | null; setSelectedAudienceId: (id: string) => void; clearSelectedAudienceId: () => void }) => unknown) =>
       selector({ selectedAudienceId: null, setSelectedAudienceId: vi.fn(), clearSelectedAudienceId: vi.fn() }),
@@ -93,5 +108,28 @@ describe('DashboardPage', () => {
     await user.click(screen.getByRole('button', { name: /create audience/i }));
 
     expect(screen.getByLabelText(/audience name/i)).toBeInTheDocument();
+  });
+
+  it('shows prompt to select or create audience when none selected', () => {
+    render(<DashboardPage />);
+
+    expect(screen.getByText(/select or create an audience/i)).toBeInTheDocument();
+  });
+
+  it('shows genre insights chart when audience is selected', () => {
+    mockUseAudienceStore.mockImplementation(
+      (selector: (state: { selectedAudienceId: string | null; setSelectedAudienceId: (id: string) => void; clearSelectedAudienceId: () => void }) => unknown) =>
+        selector({ selectedAudienceId: 'aud-1', setSelectedAudienceId: vi.fn(), clearSelectedAudienceId: vi.fn() }),
+    );
+    mockUseAudienceInsights.mockReturnValue({
+      data: [
+        { genreSlug: 'RQ.2.34', genreName: 'Cooking / Baking', avgInterest: '1.3', pctHighlyInterested: '1.0', respondentCount: 5 },
+      ],
+      isLoading: false,
+    });
+
+    render(<DashboardPage />);
+
+    expect(screen.getByText(/genre insights/i)).toBeInTheDocument();
   });
 });

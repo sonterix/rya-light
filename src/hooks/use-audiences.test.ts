@@ -14,7 +14,7 @@ vi.mock('@/stores/audience-store', () => ({
     selector({ selectedAudienceId: mockSelectedAudienceId, clearSelectedAudienceId: mockClearSelectedAudienceId }),
 }));
 
-import { useAudiences, useCreateAudience, useAudienceWithRespondents, useUpdateAudience, useDeleteAudience } from './use-audiences';
+import { useAudiences, useCreateAudience, useAudienceWithRespondents, useUpdateAudience, useDeleteAudience, useAudienceInsights } from './use-audiences';
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -253,6 +253,55 @@ describe('useDeleteAudience', () => {
     const { result } = renderHook(() => useDeleteAudience(), { wrapper: createWrapper() });
 
     result.current.mutate('aud-1');
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+  });
+});
+
+const TEST_GENRE_SUMMARIES = [
+  {
+    genreSlug: 'RQ.2.34',
+    genreName: 'Cooking / Baking',
+    avgInterest: '1.3',
+    pctHighlyInterested: '1.0',
+    respondentCount: 3,
+  },
+];
+
+describe('useAudienceInsights', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('fetches genre summaries from the insights API', async () => {
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ data: TEST_GENRE_SUMMARIES }),
+    });
+
+    const { result } = renderHook(() => useAudienceInsights('aud-1'), { wrapper: createWrapper() });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(result.current.data).toHaveLength(1);
+    expect(result.current.data?.[0].genreSlug).toBe('RQ.2.34');
+    expect(mockFetch).toHaveBeenCalledWith('/api/audiences/aud-1/insights');
+  });
+
+  it('does not fetch when id is null', () => {
+    const { result } = renderHook(() => useAudienceInsights(null), { wrapper: createWrapper() });
+
+    expect(mockFetch).not.toHaveBeenCalled();
+    expect(result.current.data).toBeUndefined();
+  });
+
+  it('handles API error', async () => {
+    mockFetch.mockResolvedValue({
+      ok: false,
+      json: () => Promise.resolve({ error: 'Unauthorized' }),
+    });
+
+    const { result } = renderHook(() => useAudienceInsights('aud-1'), { wrapper: createWrapper() });
 
     await waitFor(() => expect(result.current.isError).toBe(true));
   });

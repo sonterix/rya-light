@@ -13,10 +13,19 @@ vi.mock('@/db', () => ({
 
 vi.mock('@/db/schema', () => ({
   audiences: { userId: 'userId', updatedAt: 'updatedAt' },
+  respondents: {},
 }));
 
+vi.mock('@/lib/compute-audience-insights', () => ({
+  computeAndSaveAudienceInsights: vi.fn(),
+}));
+
+vi.mock('@/lib/filter-matching', () => ({
+  applyFilters: vi.fn().mockReturnValue([]),
+}));
 
 import { db } from '@/db';
+import { computeAndSaveAudienceInsights } from '@/lib/compute-audience-insights';
 import { getAuthUser } from '@/lib/supabase/auth';
 
 import { GET, POST } from './route';
@@ -24,6 +33,7 @@ import { GET, POST } from './route';
 const mockGetAuthUser = vi.mocked(getAuthUser);
 const mockDbSelect = vi.mocked(db.select);
 const mockDbInsert = vi.mocked(db.insert);
+const mockComputeAndSaveAudienceInsights = vi.mocked(computeAndSaveAudienceInsights);
 
 const TEST_USER_ID = 'user-123';
 const TEST_AUDIENCE = {
@@ -183,5 +193,30 @@ describe('POST /api/audiences', () => {
     const res = await POST(req);
 
     expect(res.status).toBe(400);
+  });
+
+  it('triggers genre insights computation after creating audience', async () => {
+    mockAuth();
+    const created = { ...TEST_AUDIENCE, name: 'New Audience', id: 'aud-new' };
+    const mockChain = {
+      values: vi.fn().mockReturnThis(),
+      returning: vi.fn().mockResolvedValue([created]),
+    };
+    mockDbInsert.mockReturnValue(mockChain as never);
+
+    const respondentsChain = {
+      from: vi.fn().mockResolvedValue([]),
+    };
+    mockDbSelect.mockReturnValue(respondentsChain as never);
+
+    mockComputeAndSaveAudienceInsights.mockResolvedValue(undefined);
+
+    const req = new NextRequest('http://localhost/api/audiences', {
+      method: 'POST',
+      body: JSON.stringify({ name: 'New Audience' }),
+    });
+    await POST(req);
+
+    expect(mockComputeAndSaveAudienceInsights).toHaveBeenCalledWith('aud-new', []);
   });
 });

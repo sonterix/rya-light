@@ -27,7 +27,12 @@ vi.mock('@/lib/filter-matching', () => ({
   applyFilters: vi.fn(),
 }));
 
+vi.mock('@/lib/compute-audience-insights', () => ({
+  computeAndSaveAudienceInsights: vi.fn(),
+}));
+
 import { db } from '@/db';
+import { computeAndSaveAudienceInsights } from '@/lib/compute-audience-insights';
 import { applyFilters } from '@/lib/filter-matching';
 import { getAuthUser } from '@/lib/supabase/auth';
 
@@ -38,6 +43,7 @@ const mockDbSelect = vi.mocked(db.select);
 const mockDbUpdate = vi.mocked(db.update);
 const mockDbDelete = vi.mocked(db.delete);
 const mockApplyFilters = vi.mocked(applyFilters);
+const mockComputeAndSaveAudienceInsights = vi.mocked(computeAndSaveAudienceInsights);
 
 const TEST_USER_ID = 'user-123';
 const TEST_AUDIENCE_ID = 'aud-1';
@@ -273,6 +279,14 @@ describe('PATCH /api/audiences/[id]', () => {
     };
     mockDbUpdate.mockReturnValueOnce(updateChain as never);
 
+    const respondentsChain = {
+      from: vi.fn().mockResolvedValue([]),
+    };
+    mockDbSelect.mockReturnValueOnce(respondentsChain as never);
+
+    mockApplyFilters.mockReturnValue([]);
+    mockComputeAndSaveAudienceInsights.mockResolvedValue(undefined);
+
     const res = await PATCH(makePatchRequest(TEST_AUDIENCE_ID, { name: 'Updated Name' }), {
       params: Promise.resolve({ id: TEST_AUDIENCE_ID }),
     });
@@ -280,6 +294,40 @@ describe('PATCH /api/audiences/[id]', () => {
     expect(res.status).toBe(200);
     const body = await res.json();
     expect(body.data.name).toBe('Updated Name');
+  });
+
+  it('triggers genre insights computation after updating audience', async () => {
+    mockAuth();
+    const audienceChain = {
+      from: vi.fn().mockReturnThis(),
+      where: vi.fn().mockResolvedValue([TEST_AUDIENCE]),
+    };
+    mockDbSelect.mockReturnValueOnce(audienceChain as never);
+
+    const updatedAudience = { ...TEST_AUDIENCE, name: 'Updated Name' };
+    const updateChain = {
+      set: vi.fn().mockReturnThis(),
+      where: vi.fn().mockReturnThis(),
+      returning: vi.fn().mockResolvedValue([updatedAudience]),
+    };
+    mockDbUpdate.mockReturnValueOnce(updateChain as never);
+
+    const respondentsChain = {
+      from: vi.fn().mockResolvedValue([TEST_RESPONDENT]),
+    };
+    mockDbSelect.mockReturnValueOnce(respondentsChain as never);
+
+    mockApplyFilters.mockReturnValue([TEST_RESPONDENT]);
+    mockComputeAndSaveAudienceInsights.mockResolvedValue(undefined);
+
+    await PATCH(makePatchRequest(TEST_AUDIENCE_ID, { name: 'Updated Name' }), {
+      params: Promise.resolve({ id: TEST_AUDIENCE_ID }),
+    });
+
+    expect(mockComputeAndSaveAudienceInsights).toHaveBeenCalledWith(
+      TEST_AUDIENCE_ID,
+      [TEST_RESPONDENT.respondentId],
+    );
   });
 });
 
