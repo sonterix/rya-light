@@ -66,7 +66,7 @@ const eslintConfig = defineConfig([
   // Prettier must be last to override formatting rules
   prettierConfig,
 
-  globalIgnores(['.next/**', 'out/**', 'build/**', 'next-env.d.ts']),
+  globalIgnores(['.next/**', 'out/**', 'build/**', 'next-env.d.ts', '.claude/**']),
 ]);
 
 export default eslintConfig;

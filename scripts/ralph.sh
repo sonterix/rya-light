@@ -34,6 +34,7 @@ MAX_ITERATIONS=100
 MODEL=""
 SUBAGENT_MODEL="sonnet"
 PERMISSION_MODE="bypassPermissions"
+ITERATION_TIMEOUT=1800  # 30 minutes default
 
 usage() {
   cat <<EOF
@@ -47,12 +48,14 @@ Options:
   -m, --model MODEL         Claude model for orchestrator (default: system default)
   -s, --subagent-model MODEL  Model for subagents (default: $SUBAGENT_MODEL)
   -p, --permissions MODE    Permission mode (default: $PERMISSION_MODE)
+  -t, --timeout SECONDS     Per-iteration timeout in seconds (default: $ITERATION_TIMEOUT)
   -h, --help                Show this help message
 
 Examples:
   $(basename "$0") light
   $(basename "$0") light -n 20
   $(basename "$0") light -n 10 -s opus
+  $(basename "$0") light -t 2400
 EOF
   exit 0
 }
@@ -63,6 +66,7 @@ while [[ $# -gt 0 ]]; do
     -m|--model)          MODEL="$2";            shift 2 ;;
     -s|--subagent-model) SUBAGENT_MODEL="$2";   shift 2 ;;
     -p|--permissions)    PERMISSION_MODE="$2";  shift 2 ;;
+    -t|--timeout)        ITERATION_TIMEOUT="$2"; shift 2 ;;
     -h|--help)           usage ;;
     -*)                  echo "Unknown option: $1"; echo ""; usage ;;
     *)                   FEATURE_NAME="$1";   shift ;;
@@ -145,11 +149,58 @@ CONSECUTIVE_FAILURES=0
 MAX_CONSECUTIVE_FAILURES=3
 BASE_DELAY=5
 
+timeout_min=$(( ITERATION_TIMEOUT / 60 ))
 printf "\n${BOLD}Ralph Loop${RESET} ${DIM}${FEATURE_NAME}${RESET}\n"
-printf "${DIM}Iterations: ${MAX_ITERATIONS} | Permissions: ${PERMISSION_MODE}"
+printf "${DIM}Iterations: ${MAX_ITERATIONS} | Permissions: ${PERMISSION_MODE} | Timeout: ${timeout_min}m"
 [[ -n "$MODEL" ]] && printf " | Model: ${MODEL}"
 printf " | Subagents: ${SUBAGENT_MODEL}"
 printf "${RESET}\n\n"
+
+# Parse rate limit reset time from output. Returns seconds to wait, or empty if not found.
+parse_rate_limit_wait() {
+  local file="$1"
+  local reset_time
+  reset_time=$(grep -oiE 'resets?\s+([0-9]{1,2})(am|pm|:[0-9]{2})' "$file" 2>/dev/null | head -1 || true)
+
+  if [[ -z "$reset_time" ]]; then
+    echo ""
+    return
+  fi
+
+  # Extract hour and am/pm
+  local hour ampm
+  hour=$(echo "$reset_time" | grep -oE '[0-9]{1,2}' | head -1)
+  ampm=$(echo "$reset_time" | grep -oiE '(am|pm)' | head -1 | tr '[:upper:]' '[:lower:]')
+
+  if [[ -z "$hour" || -z "$ampm" ]]; then
+    echo ""
+    return
+  fi
+
+  # Convert to 24h
+  if [[ "$ampm" == "pm" && "$hour" -ne 12 ]]; then
+    hour=$((hour + 12))
+  elif [[ "$ampm" == "am" && "$hour" -eq 12 ]]; then
+    hour=0
+  fi
+
+  local now_epoch reset_epoch
+  now_epoch=$(date +%s)
+  reset_epoch=$(date -j -f "%H" "$hour" +%s 2>/dev/null || echo "")
+
+  if [[ -z "$reset_epoch" ]]; then
+    echo ""
+    return
+  fi
+
+  # If reset time is in the past, it's tomorrow
+  if (( reset_epoch <= now_epoch )); then
+    reset_epoch=$((reset_epoch + 86400))
+  fi
+
+  local wait_secs=$((reset_epoch - now_epoch + 60))  # +60s buffer
+  echo "$wait_secs"
+}
 
 for ((i = 1; i <= MAX_ITERATIONS; i++)); do
   iter_start=$SECONDS
@@ -161,7 +212,7 @@ for ((i = 1; i <= MAX_ITERATIONS; i++)); do
 
   set +o pipefail
 
-  "${CLAUDE_CMD[@]}" \
+  timeout "$ITERATION_TIMEOUT" "${CLAUDE_CMD[@]}" \
     "Run /execute-ralph-loop ${FEATURE_NAME} --subagent-model ${SUBAGENT_MODEL}" \
   | tee "$CURRENT_TMPFILE" \
   | jq --unbuffered -Rrj "$STREAM_FILTER" \
@@ -172,13 +223,34 @@ for ((i = 1; i <= MAX_ITERATIONS; i++)); do
 
   claude_exit=${pipe_statuses[0]}
 
+  # timeout(1) returns 124 on timeout
+  if [[ $claude_exit -eq 124 ]]; then
+    printf "${YELLOW}Iteration timed out after ${timeout_min}m${RESET} ${DIM}subagent worktrees preserved for recovery${RESET}\n"
+    rm -f "$CURRENT_TMPFILE"
+    CURRENT_TMPFILE=""
+    CONSECUTIVE_FAILURES=0  # timeout is not a failure, recovery handles it
+    continue
+  fi
+
   if [[ $claude_exit -ne 0 ]]; then
     if grep -qi "hit your limit\|rate.limit" "$CURRENT_TMPFILE" "$logfile" 2>/dev/null; then
-      printf "${YELLOW}Rate limited${RESET} ${DIM}pausing 5m before retry...${RESET}\n"
+      local_wait=$(parse_rate_limit_wait "$CURRENT_TMPFILE")
+      if [[ -z "$local_wait" ]]; then
+        local_wait=$(parse_rate_limit_wait "$logfile")
+      fi
+
+      if [[ -n "$local_wait" && "$local_wait" -gt 0 ]]; then
+        local_wait_min=$(( local_wait / 60 ))
+        printf "${YELLOW}Rate limited${RESET} ${DIM}waiting ${local_wait_min}m until reset...${RESET}\n"
+        sleep "$local_wait"
+      else
+        printf "${YELLOW}Rate limited${RESET} ${DIM}pausing 5m before retry...${RESET}\n"
+        sleep 300
+      fi
+
       rm -f "$CURRENT_TMPFILE"
       CURRENT_TMPFILE=""
       i=$((i - 1))
-      sleep 300
       continue
     fi
 
