@@ -15,15 +15,16 @@ import {
 } from '@/db/schema';
 import { applyFilters } from '@/lib/filter-matching';
 import { campaignSchema } from '@/lib/schemas/campaign-schema';
+import { messagingSchema } from '@/lib/schemas/messaging-schema';
 import { personaSchema } from '@/lib/schemas/persona-schema';
 import { getAuthUser } from '@/lib/supabase/auth';
-import type { CampaignContent, PersonaContent } from '@/types/creative';
+import type { CampaignContent, MessagingContent, PersonaContent } from '@/types/creative';
 
 export const maxDuration = 60;
 
 const requestBodySchema = z.object({
   audience_id: z.string().uuid(),
-  type: z.union([z.literal('persona'), z.literal('campaign')]),
+  type: z.union([z.literal('persona'), z.literal('campaign'), z.literal('messaging')]),
 });
 
 function buildDemographicsSummary(respondentData: Respondent[]): string {
@@ -163,6 +164,38 @@ export async function POST(req: NextRequest): Promise<Response> {
     });
 
     return result.toTextStreamResponse();
+  }
+
+  if (type === 'messaging') {
+    const messagingResult = streamText({
+      model: openai('gpt-4o-mini'),
+      output: Output.object({ schema: messagingSchema }),
+      system: [
+        'You are an audience messaging strategist. Your task is to generate 3-5 distinct messaging angles for communicating with this audience.',
+        'Each angle must be grounded in a specific audience trait or genre interest - not generic marketing advice.',
+        'Make each angle feel differentiated, with a unique emotional hook and a concrete sample headline.',
+      ].join(' '),
+      prompt: audienceContext,
+      onFinish: async ({ text }) => {
+        try {
+          const parsedOutput = messagingSchema.safeParse(JSON.parse(text));
+          if (!parsedOutput.success) return;
+
+          const content: MessagingContent = parsedOutput.data;
+
+          await db.insert(creativeOutputs).values({
+            userId,
+            audienceId: audience_id,
+            type: 'messaging',
+            content,
+          });
+        } catch {
+          // Save failure does not affect streaming response
+        }
+      },
+    });
+
+    return messagingResult.toTextStreamResponse();
   }
 
   // type === 'campaign'
