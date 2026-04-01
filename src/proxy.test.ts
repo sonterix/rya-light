@@ -41,7 +41,7 @@ function createMockRequest(pathname: string): NextRequest {
   } as unknown as NextRequest;
 }
 
-describe('middleware', () => {
+describe('proxy', () => {
   beforeEach(() => {
     vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL', MOCK_URL);
     vi.stubEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY', MOCK_KEY);
@@ -54,9 +54,9 @@ describe('middleware', () => {
 
   it('creates a supabase client with cookie handlers', async () => {
     mockGetUser.mockResolvedValue({ data: { user: { id: '1' } } });
-    const { middleware } = await import('@/middleware');
+    const { proxy } = await import('@/proxy');
 
-    await middleware(createMockRequest('/dashboard'));
+    await proxy(createMockRequest('/dashboard'));
 
     expect(mockCreateServerClient).toHaveBeenCalledWith(MOCK_URL, MOCK_KEY, {
       cookies: {
@@ -68,18 +68,18 @@ describe('middleware', () => {
 
   it('calls getUser to refresh the session', async () => {
     mockGetUser.mockResolvedValue({ data: { user: { id: '1' } } });
-    const { middleware } = await import('@/middleware');
+    const { proxy } = await import('@/proxy');
 
-    await middleware(createMockRequest('/dashboard'));
+    await proxy(createMockRequest('/dashboard'));
 
     expect(mockGetUser).toHaveBeenCalled();
   });
 
   it('redirects unauthenticated users to /auth', async () => {
     mockGetUser.mockResolvedValue({ data: { user: null } });
-    const { middleware } = await import('@/middleware');
+    const { proxy } = await import('@/proxy');
 
-    const response = await middleware(createMockRequest('/dashboard'));
+    const response = await proxy(createMockRequest('/dashboard'));
 
     expect(response).toBeInstanceOf(NextResponse);
     expect(response.headers.get('location')).toBe('http://localhost:3000/auth');
@@ -87,27 +87,27 @@ describe('middleware', () => {
 
   it('does not redirect unauthenticated users already on /auth', async () => {
     mockGetUser.mockResolvedValue({ data: { user: null } });
-    const { middleware } = await import('@/middleware');
+    const { proxy } = await import('@/proxy');
 
-    const response = await middleware(createMockRequest('/auth'));
+    const response = await proxy(createMockRequest('/auth'));
 
     expect(response.headers.get('location')).toBeNull();
   });
 
   it('does not redirect unauthenticated users on /auth sub-paths', async () => {
     mockGetUser.mockResolvedValue({ data: { user: null } });
-    const { middleware } = await import('@/middleware');
+    const { proxy } = await import('@/proxy');
 
-    const response = await middleware(createMockRequest('/auth/callback'));
+    const response = await proxy(createMockRequest('/auth/callback'));
 
     expect(response.headers.get('location')).toBeNull();
   });
 
   it('redirects authenticated users on /auth to /dashboard', async () => {
     mockGetUser.mockResolvedValue({ data: { user: { id: '1' } } });
-    const { middleware } = await import('@/middleware');
+    const { proxy } = await import('@/proxy');
 
-    const response = await middleware(createMockRequest('/auth'));
+    const response = await proxy(createMockRequest('/auth'));
 
     expect(response).toBeInstanceOf(NextResponse);
     expect(response.headers.get('location')).toBe('http://localhost:3000/dashboard');
@@ -115,15 +115,15 @@ describe('middleware', () => {
 
   it('allows authenticated users to access protected pages', async () => {
     mockGetUser.mockResolvedValue({ data: { user: { id: '1' } } });
-    const { middleware } = await import('@/middleware');
+    const { proxy } = await import('@/proxy');
 
-    const response = await middleware(createMockRequest('/dashboard'));
+    const response = await proxy(createMockRequest('/dashboard'));
 
     expect(response.headers.get('location')).toBeNull();
   });
 
   it('exports a config with matcher that excludes static assets', async () => {
-    const { config } = await import('@/middleware');
+    const { config } = await import('@/proxy');
 
     expect(config).toBeDefined();
     expect(config.matcher).toBeDefined();
