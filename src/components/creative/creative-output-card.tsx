@@ -27,7 +27,8 @@ function getContentPreview(output: CreativeOutput): string {
 
   if (output.type === 'campaign') {
     const campaign = content as CampaignContent;
-    return campaign.campaign_name;
+    const first = campaign.concepts[0];
+    return first?.name ?? 'Campaign Concepts';
   }
 
   if (output.type === 'messaging') {
