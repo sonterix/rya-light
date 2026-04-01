@@ -154,18 +154,24 @@ export function RefinementPanel({
       )}
 
       <div className="flex flex-wrap gap-1.5">
-        {presets.map((preset) => (
-          <Button
-            key={preset.label}
-            variant="outline"
-            size="sm"
-            disabled={isRefining}
-            onClick={() => handlePresetClick(preset)}
-            className="text-xs"
-          >
-            {getPresetDisplayLabel(preset, selectedGenre, selectedTrait)}
-          </Button>
-        ))}
+        {presets
+          .filter((preset) => {
+            if (preset.requiresGenre && genres.length === 0) return false;
+            if (preset.requiresTrait && traits.length === 0) return false;
+            return true;
+          })
+          .map((preset) => (
+            <Button
+              key={preset.label}
+              variant="outline"
+              size="sm"
+              disabled={isRefining}
+              onClick={() => handlePresetClick(preset)}
+              className="text-xs"
+            >
+              {getPresetDisplayLabel(preset, selectedGenre, selectedTrait)}
+            </Button>
+          ))}
       </div>
 
       <Input
