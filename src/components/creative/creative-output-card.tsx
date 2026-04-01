@@ -33,7 +33,8 @@ function getContentPreview(output: CreativeOutput): string {
 
   if (output.type === 'messaging') {
     const messaging = content as MessagingContent;
-    return messaging.primary_message;
+    const first = messaging.angles[0];
+    return first?.name ?? 'Messaging Angles';
   }
 
   if (output.type === 'opportunity') {
