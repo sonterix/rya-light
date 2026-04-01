@@ -1,5 +1,4 @@
-import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { render, screen, within } from '@testing-library/react';
 import type { ReactNode } from 'react';
 
 const mockUseAudienceInsights = vi.fn();
@@ -58,45 +57,36 @@ describe('GenreInsightsChart', () => {
     expect(screen.getByTestId('bar-chart')).toBeInTheDocument();
   });
 
-  it('shows top 5 genres initially', () => {
+  it('shows all genres in the data table', () => {
     mockUseAudienceInsights.mockReturnValue({ data: GENRES, isLoading: false });
 
     render(<GenreInsightsChart audienceId="aud-1" />);
 
-    expect(screen.getByText('Cooking / Baking')).toBeInTheDocument();
-    expect(screen.getByText('Fantasy Sports')).toBeInTheDocument();
-    expect(screen.getByText('Reality TV')).toBeInTheDocument();
-    expect(screen.getByText('Yoga & Mindfulness')).toBeInTheDocument();
-    expect(screen.getByText('Meditation')).toBeInTheDocument();
-    expect(screen.queryByText('Running')).not.toBeInTheDocument();
+    const table = screen.getByRole('table');
+    const rows = within(table).getAllByRole('row');
+    // 1 header row + 7 data rows
+    expect(rows).toHaveLength(8);
   });
 
-  it('shows Show more button when more than 5 genres exist', () => {
+  it('sorts genres by pct highly interested descending', () => {
     mockUseAudienceInsights.mockReturnValue({ data: GENRES, isLoading: false });
 
     render(<GenreInsightsChart audienceId="aud-1" />);
 
-    expect(screen.getByRole('button', { name: /show more/i })).toBeInTheDocument();
+    const table = screen.getByRole('table');
+    const dataRows = within(table).getAllByRole('row').slice(1);
+    const genreNames = dataRows.map((row) => within(row).getAllByRole('cell')[0].textContent);
+
+    expect(genreNames[0]).toBe('Cooking / Baking');
+    expect(genreNames[genreNames.length - 1]).toBe('Gaming');
   });
 
-  it('does not show Show more button when 5 or fewer genres', () => {
-    mockUseAudienceInsights.mockReturnValue({ data: GENRES.slice(0, 5), isLoading: false });
+  it('does not show a Show more button', () => {
+    mockUseAudienceInsights.mockReturnValue({ data: GENRES, isLoading: false });
 
     render(<GenreInsightsChart audienceId="aud-1" />);
 
     expect(screen.queryByRole('button', { name: /show more/i })).not.toBeInTheDocument();
-  });
-
-  it('reveals all genres after clicking Show more', async () => {
-    const user = userEvent.setup();
-    mockUseAudienceInsights.mockReturnValue({ data: GENRES, isLoading: false });
-
-    render(<GenreInsightsChart audienceId="aud-1" />);
-
-    await user.click(screen.getByRole('button', { name: /show more/i }));
-
-    expect(screen.getByText('Running')).toBeInTheDocument();
-    expect(screen.getByText('Gaming')).toBeInTheDocument();
   });
 
   it('shows message when no insights data exists', () => {
@@ -107,19 +97,29 @@ describe('GenreInsightsChart', () => {
     expect(screen.getByText(/no genre insights/i)).toBeInTheDocument();
   });
 
-  it('displays avg interest score for each genre', () => {
+  it('displays avg interest score in the table', () => {
     mockUseAudienceInsights.mockReturnValue({ data: GENRES.slice(0, 1), isLoading: false });
 
     render(<GenreInsightsChart audienceId="aud-1" />);
 
-    expect(screen.getByText(/1\.3/)).toBeInTheDocument();
+    expect(screen.getByText('1.3')).toBeInTheDocument();
   });
 
-  it('displays pct highly interested for each genre', () => {
+  it('displays pct highly interested in the table', () => {
     mockUseAudienceInsights.mockReturnValue({ data: GENRES.slice(0, 1), isLoading: false });
 
     render(<GenreInsightsChart audienceId="aud-1" />);
 
-    expect(screen.getByText(/100%/)).toBeInTheDocument();
+    expect(screen.getByText('100%')).toBeInTheDocument();
+  });
+
+  it('shows table column headers', () => {
+    mockUseAudienceInsights.mockReturnValue({ data: GENRES.slice(0, 1), isLoading: false });
+
+    render(<GenreInsightsChart audienceId="aud-1" />);
+
+    expect(screen.getByText('Genre')).toBeInTheDocument();
+    expect(screen.getByText('% Highly Interested')).toBeInTheDocument();
+    expect(screen.getByText('Avg Interest Score')).toBeInTheDocument();
   });
 });
