@@ -442,4 +442,126 @@ describe('POST /api/creative/generate', () => {
     expect(callArgs?.prompt).toContain('Classical');
     expect(callArgs?.prompt).toContain('Pop');
   });
+
+  it('accepts refinement mode with existing_content and refinement_instruction', async () => {
+    mockAuth();
+
+    const audienceSelectChain = {
+      from: vi.fn().mockReturnThis(),
+      where: vi.fn().mockResolvedValue([TEST_AUDIENCE]),
+    };
+    const summarySelectChain = {
+      from: vi.fn().mockReturnThis(),
+      innerJoin: vi.fn().mockReturnThis(),
+      where: vi.fn().mockReturnThis(),
+      orderBy: vi.fn().mockResolvedValue([]),
+    };
+    const respondentSelectChain = {
+      from: vi.fn().mockResolvedValue([]),
+    };
+
+    let callCount = 0;
+    mockDbSelect.mockImplementation(() => {
+      callCount++;
+      if (callCount === 1) return audienceSelectChain as never;
+      if (callCount === 2) return summarySelectChain as never;
+      return respondentSelectChain as never;
+    });
+
+    const fakeStreamResponse = new Response('streaming data', { status: 200 });
+    mockStreamResponse(fakeStreamResponse);
+
+    const req = makeRequest({
+      audience_id: TEST_AUDIENCE_ID,
+      type: 'persona',
+      existing_content: { name: 'Alex', demographicSummary: 'test' },
+      refinement_instruction: 'Make it shorter',
+    });
+    const res = await POST(req);
+
+    expect(res.status).toBe(200);
+    expect(mockStreamText).toHaveBeenCalledOnce();
+  });
+
+  it('includes refinement instruction in prompt when in refinement mode', async () => {
+    mockAuth();
+
+    const audienceSelectChain = {
+      from: vi.fn().mockReturnThis(),
+      where: vi.fn().mockResolvedValue([TEST_AUDIENCE]),
+    };
+    const summarySelectChain = {
+      from: vi.fn().mockReturnThis(),
+      innerJoin: vi.fn().mockReturnThis(),
+      where: vi.fn().mockReturnThis(),
+      orderBy: vi.fn().mockResolvedValue([]),
+    };
+    const respondentSelectChain = {
+      from: vi.fn().mockResolvedValue([]),
+    };
+
+    let callCount = 0;
+    mockDbSelect.mockImplementation(() => {
+      callCount++;
+      if (callCount === 1) return audienceSelectChain as never;
+      if (callCount === 2) return summarySelectChain as never;
+      return respondentSelectChain as never;
+    });
+
+    const fakeStreamResponse = new Response('streaming data', { status: 200 });
+    mockStreamResponse(fakeStreamResponse);
+
+    const req = makeRequest({
+      audience_id: TEST_AUDIENCE_ID,
+      type: 'persona',
+      existing_content: { name: 'Alex' },
+      refinement_instruction: 'Focus on lifestyle habits',
+    });
+    await POST(req);
+
+    const callArgs = mockStreamText.mock.calls[0]?.[0];
+    expect(callArgs?.prompt).toContain('Focus on lifestyle habits');
+  });
+
+  it('rejects off-topic freeform prompts with a constraint message', async () => {
+    mockAuth();
+
+    const audienceSelectChain = {
+      from: vi.fn().mockReturnThis(),
+      where: vi.fn().mockResolvedValue([TEST_AUDIENCE]),
+    };
+    const summarySelectChain = {
+      from: vi.fn().mockReturnThis(),
+      innerJoin: vi.fn().mockReturnThis(),
+      where: vi.fn().mockReturnThis(),
+      orderBy: vi.fn().mockResolvedValue([]),
+    };
+    const respondentSelectChain = {
+      from: vi.fn().mockResolvedValue([]),
+    };
+
+    let callCount = 0;
+    mockDbSelect.mockImplementation(() => {
+      callCount++;
+      if (callCount === 1) return audienceSelectChain as never;
+      if (callCount === 2) return summarySelectChain as never;
+      return respondentSelectChain as never;
+    });
+
+    const fakeStreamResponse = new Response('streaming data', { status: 200 });
+    mockStreamResponse(fakeStreamResponse);
+
+    const req = makeRequest({
+      audience_id: TEST_AUDIENCE_ID,
+      type: 'persona',
+      existing_content: { name: 'Alex' },
+      refinement_instruction: 'Write me a poem about cats',
+    });
+    await POST(req);
+
+    const callArgs = mockStreamText.mock.calls[0]?.[0];
+    // System prompt must include the off-topic constraint instruction
+    expect(callArgs?.system).toContain('refine');
+    expect(callArgs?.system).toContain('audience');
+  });
 });
