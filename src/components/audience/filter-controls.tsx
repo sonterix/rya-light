@@ -67,23 +67,25 @@ function MultiSelect({ label, options, selected, onChange }: MultiSelectProps) {
   }
 
   return (
-    <div className="flex flex-col gap-1.5">
-      <Label>{label}</Label>
-      <div className="flex flex-wrap gap-1.5">
-        {options.map((option) => (
-          <button
-            key={option}
-            type="button"
-            onClick={() => toggleOption(option)}
-            className={`rounded-md border px-2 py-1 text-xs transition-colors ${
-              selected.includes(option)
-                ? 'border-primary bg-primary text-primary-foreground'
-                : 'border-border bg-transparent text-foreground hover:bg-muted'
-            }`}
-          >
-            {option}
-          </button>
-        ))}
+    <div className="rounded-lg border border-border bg-surface-container-lowest p-3">
+      <div className="flex flex-col gap-2">
+        <Label>{label}</Label>
+        <div className="flex flex-wrap gap-1.5">
+          {options.map((option) => (
+            <button
+              key={option}
+              type="button"
+              onClick={() => toggleOption(option)}
+              className={`rounded-md border px-2 py-1 text-xs transition-colors ${
+                selected.includes(option)
+                  ? 'border-primary bg-primary text-primary-foreground'
+                  : 'border-border bg-surface-container-low text-foreground hover:bg-muted'
+              }`}
+            >
+              {option}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -106,33 +108,35 @@ function RangeInput({ label, minValue, maxValue, onMinChange, onMaxChange }: Ran
   }
 
   return (
-    <div className="flex flex-col gap-1.5">
-      <Label>{label}</Label>
-      <div className="flex items-center gap-2">
-        <div className="flex flex-1 flex-col gap-1">
-          <Label htmlFor={`${label}-min`} className="text-xs text-muted-foreground">
-            {label} min
-          </Label>
-          <Input
-            id={`${label}-min`}
-            type="number"
-            placeholder="Min"
-            value={minValue ?? ''}
-            onChange={(e) => onMinChange(parseValue(e.target.value))}
-          />
-        </div>
-        <span className="mt-5 text-muted-foreground">–</span>
-        <div className="flex flex-1 flex-col gap-1">
-          <Label htmlFor={`${label}-max`} className="text-xs text-muted-foreground">
-            {label} max
-          </Label>
-          <Input
-            id={`${label}-max`}
-            type="number"
-            placeholder="Max"
-            value={maxValue ?? ''}
-            onChange={(e) => onMaxChange(parseValue(e.target.value))}
-          />
+    <div className="rounded-lg border border-border bg-surface-container-lowest p-3">
+      <div className="flex flex-col gap-2">
+        <Label>{label}</Label>
+        <div className="flex items-center gap-2">
+          <div className="flex flex-1 flex-col gap-1">
+            <Label htmlFor={`${label}-min`} className="text-xs text-muted-foreground">
+              {label} min
+            </Label>
+            <Input
+              id={`${label}-min`}
+              type="number"
+              placeholder="Min"
+              value={minValue ?? ''}
+              onChange={(e) => onMinChange(parseValue(e.target.value))}
+            />
+          </div>
+          <span className="mt-5 text-muted-foreground">–</span>
+          <div className="flex flex-1 flex-col gap-1">
+            <Label htmlFor={`${label}-max`} className="text-xs text-muted-foreground">
+              {label} max
+            </Label>
+            <Input
+              id={`${label}-max`}
+              type="number"
+              placeholder="Max"
+              value={maxValue ?? ''}
+              onChange={(e) => onMaxChange(parseValue(e.target.value))}
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -185,7 +189,7 @@ export function FilterControls({ filters, onChange }: Props) {
   const homeOwnershipValues = Array.isArray(filters.homeOwnership) ? filters.homeOwnership : [];
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-5">
       <MultiSelect
         label="Audience Category"
         options={AUDIENCE_CATEGORIES}
@@ -226,7 +230,7 @@ export function FilterControls({ filters, onChange }: Props) {
       </Button>
 
       {showAdvanced && (
-        <div className="flex flex-col gap-4 border-t pt-4">
+        <div className="flex flex-col gap-5 border-t pt-4">
           <MultiSelect
             label="State"
             options={STATES}
