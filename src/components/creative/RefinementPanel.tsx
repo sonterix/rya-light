@@ -118,7 +118,8 @@ export function RefinementPanel({
   const hasTraitPreset = presets.some((p) => p.requiresTrait);
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-3 border-t border-border pt-4">
+      <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Refine output</p>
       {hasGenrePreset && genres.length > 0 && (
         <div className="flex items-center gap-2">
           <label htmlFor="genre-select" className="text-muted-foreground text-xs font-medium">
@@ -161,7 +162,7 @@ export function RefinementPanel({
         </div>
       )}
 
-      <div className="flex flex-wrap gap-1.5">
+      <div className="flex flex-wrap gap-1.5 rounded-lg bg-muted/50 p-2.5">
         {presets
           .filter((preset) => {
             if (preset.requiresGenre && genres.length === 0) return false;
@@ -171,11 +172,10 @@ export function RefinementPanel({
           .map((preset) => (
             <Button
               key={preset.label}
-              variant="outline"
               size="sm"
               disabled={isRefining}
               onClick={() => handlePresetClick(preset)}
-              className="text-xs"
+              className="bg-sidebar text-sidebar-foreground hover:bg-sidebar/80 text-xs"
             >
               {getPresetDisplayLabel(preset, selectedGenre, selectedTrait)}
             </Button>
