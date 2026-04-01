@@ -84,3 +84,20 @@ Shared Utilities (new this iteration)
 - useGeneratePersona(): reusable streaming consumer hook for persona generation, lives at src/hooks/use-generate-persona.ts
 - PersonaCard: visual card for rendered persona output, lives at src/components/creative/persona-card.tsx
 - POST /api/creative/generate: streaming AI endpoint (currently handles persona type), lives at src/app/api/creative/generate/route.ts
+
+[2026-04-01] Issue(s) 010, 013: Genre insights computation and visualization / Campaign Concepts workflow
+- Issue 010: computeAndSaveAudienceInsights() server function fetches genre interests, calls computeGenreSummaries(), writes to audience_genre_summaries table. Hooked into POST /api/audiences (on create) and PATCH /api/audiences/[id] (on update). GET /api/audiences/[id]/insights returns sorted summaries with genre names. GenreInsightsChart Recharts horizontal bar chart on dashboard with top 5 genres, "Show more" button, skeleton loading, no-audience prompt. Service role Supabase client created at src/lib/supabase/service.ts.
+- Issue 013: Extended POST /api/creative/generate to handle type "campaign". Campaign Zod schema with concepts array (name, tagline, description, targetGenres, suggestedFormat). useGenerateCampaign hook following same streaming pattern as persona. CampaignConceptsCard component with concept cards, genre tag pills, suggested format labels. Creative page wired to dispatch to correct hook based on workflow type.
+- Note: computeGenreSummaries uses level >= 4 for "highly interested" threshold (existing behavior preserved)
+- 363 total tests across 42 test files, all passing
+
+Shared Utilities (new this iteration)
+- computeAndSaveAudienceInsights(): computes and persists genre summaries for an audience, lives at src/lib/compute-audience-insights.ts
+- createServiceClient(): Supabase service role client, lives at src/lib/supabase/service.ts
+- useAudienceInsights(id): React Query hook for genre summaries, lives at src/hooks/use-audiences.ts
+- GenreInsightsChart: Recharts horizontal bar chart for genre insights, lives at src/components/audience/genre-insights-chart.tsx
+- GET /api/audiences/[id]/insights: genre summaries endpoint, lives at src/app/api/audiences/[id]/insights/route.ts
+- campaignSchema: Zod schema for campaign concepts output, lives at src/lib/schemas/campaign-schema.ts
+- useGenerateCampaign(): streaming consumer hook for campaign generation, lives at src/hooks/use-generate-campaign.ts
+- CampaignConceptsCard: visual card for campaign concepts output, lives at src/components/creative/campaign-concepts-card.tsx
+- POST /api/creative/generate now handles both "persona" and "campaign" types
