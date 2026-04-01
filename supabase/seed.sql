@@ -246,13 +246,16 @@ INSERT INTO creative_outputs (id, user_id, audience_id, type, content) VALUES
   'persona',
   '{
     "name": "Jordan & Alex",
-    "age_range": "35-45",
-    "tagline": "Intentional Parents Building a Balanced Life",
-    "overview": "Jordan and Alex are suburban parents in their late 30s to mid 40s who prioritize wellness, family connection, and mindful consumption. They work full-time but carve out time for activities that nourish body and mind. Fantasy sports and reality TV offer them low-effort entertainment after demanding days, while Coding content reflects their curiosity about technology for their children''s futures.",
-    "motivations": ["Raising healthy, well-rounded kids", "Staying active and mentally sharp", "Finding community with like-minded families", "Making intentional purchases that align with their values"],
-    "media_habits": ["Streams reality TV in the evenings as a couple", "Follows fantasy sports leagues with friends online", "Watches how-to and coding content on weekends", "Listens to wellness podcasts during commutes"],
-    "pain_points": ["Time scarcity — balancing career, parenting, and self-care", "Information overload when researching healthy products", "Feeling like wellness culture is expensive or exclusive"],
-    "top_genres": ["Fantasy Sports", "Reality programming / Reality TV", "Coding / Robotics", "Documentary"]
+    "demographicSummary": "Suburban parents aged 35-45, predominantly female, living in the South, West, and Midwest. Household income ranges from $86K to $105K. Most are married with 3-4 person households and hold college or post-graduate degrees.",
+    "topInterests": [
+      {"genreName": "Meditation", "interestLevel": 1},
+      {"genreName": "Yoga / Pilates", "interestLevel": 1},
+      {"genreName": "Cooking / Baking / Grilling", "interestLevel": 1},
+      {"genreName": "Travel & tourism content", "interestLevel": 2},
+      {"genreName": "How-To Content", "interestLevel": 2}
+    ],
+    "lifestyleDescription": "Jordan and Alex are intentional suburban parents who prioritize wellness, family connection, and mindful consumption. They carve out time for yoga, meditation, and cooking healthy meals. Weekend activities revolve around outdoor exploration and hands-on learning with their kids.",
+    "howToReachThem": "Target wellness and cooking content platforms, parenting podcasts, and travel-related streaming. Co-viewing CTV slots in the evening and wellness app sponsorships are high-attention placements for this audience."
   }'
 ),
 (
@@ -261,25 +264,29 @@ INSERT INTO creative_outputs (id, user_id, audience_id, type, content) VALUES
   'a0000000-0000-4000-8000-000000000002',
   'campaign',
   '{
-    "campaign_name": "Live Well, Play Hard",
-    "objective": "Drive brand awareness and trial among wellness-oriented suburban parents aged 35-45",
-    "core_message": "You deserve a life that feels as good as it looks — for you and your family.",
-    "channels": ["Connected TV", "Streaming audio", "Social media (Instagram, Facebook)", "Fantasy sports platform placements"],
-    "creative_angles": [
+    "concepts": [
       {
-        "angle": "The Game Plan",
-        "description": "Borrow the strategy metaphor from fantasy sports — positioning healthy choices as smart plays for your family''s future."
+        "name": "Live Well, Play Hard",
+        "tagline": "A life that feels as good as it looks.",
+        "description": "Position healthy choices as smart plays for your family''s future, borrowing the strategy metaphor from sports and wellness culture.",
+        "targetGenres": ["Meditation", "Yoga / Pilates", "Cooking / Baking / Grilling"],
+        "suggestedFormat": "Connected TV series"
       },
       {
-        "angle": "Behind the Scenes",
-        "description": "Documentary-style content showing real families making wellness work in everyday life, not picture-perfect moments."
+        "name": "Behind the Scenes",
+        "tagline": "Real families. Real wellness. No filter.",
+        "description": "Documentary-style content showing real families making wellness work in everyday life, not picture-perfect moments.",
+        "targetGenres": ["Documentary", "Travel & tourism content"],
+        "suggestedFormat": "Short-form social video"
       },
       {
-        "angle": "Weekend Win",
-        "description": "Celebrate the small victories — a family bike ride, a home-cooked meal, a Saturday screen-free morning."
+        "name": "Weekend Win",
+        "tagline": "Celebrate the small victories.",
+        "description": "A family bike ride, a home-cooked meal, a Saturday screen-free morning. Celebrate the micro-moments that define a wellness-oriented household.",
+        "targetGenres": ["Cooking / Baking / Grilling", "How-To Content"],
+        "suggestedFormat": "Instagram Reels / Stories"
       }
-    ],
-    "kpis": ["Brand recall lift", "Trial/purchase intent", "Engagement rate on social placements", "CTV completion rate"]
+    ]
   }'
 ),
 (
@@ -288,24 +295,29 @@ INSERT INTO creative_outputs (id, user_id, audience_id, type, content) VALUES
   'a0000000-0000-4000-8000-000000000002',
   'messaging',
   '{
-    "primary_message": "Built for families who take wellness seriously — without taking themselves too seriously.",
-    "value_propositions": [
-      "Simple enough for busy parents, effective enough for real results",
-      "Trusted by families who balance ambition with intention",
-      "Wellness that fits your life, not the other way around"
-    ],
-    "tone_guidance": "Warm, grounded, and real. Avoid aspirational perfection. Speak to the juggle, not the highlight reel. Use inclusive language that acknowledges diverse family structures.",
-    "proof_points": [
-      "Used by parents across suburban communities in the South, West, and Midwest",
-      "Endorsed by coaches and wellness educators",
-      "Simple ingredient lists / transparent sourcing"
-    ],
-    "calls_to_action": [
-      "Try it this weekend",
-      "Start your family''s wellness journey",
-      "See how other families do it"
-    ],
-    "avoid": ["Guilt-based messaging", "Unrealistic body or lifestyle imagery", "Overly clinical language"]
+    "angles": [
+      {
+        "name": "The Mindful Parent",
+        "tone": "Warm, grounded",
+        "sampleHeadline": "Wellness that fits your life, not the other way around.",
+        "emotionalHook": "Speaks to the juggle of balancing career, parenting, and self-care without guilt.",
+        "keyTrait": "Meditation interest + parent status"
+      },
+      {
+        "name": "The Nourisher",
+        "tone": "Inviting, practical",
+        "sampleHeadline": "Simple enough for busy parents, effective enough for real results.",
+        "emotionalHook": "Connects cooking passion with providing for the family.",
+        "keyTrait": "Cooking / Baking interest + suburban lifestyle"
+      },
+      {
+        "name": "The Explorer",
+        "tone": "Aspirational, inclusive",
+        "sampleHeadline": "Start your family''s next adventure this weekend.",
+        "emotionalHook": "Taps into the desire for meaningful experiences over material possessions.",
+        "keyTrait": "Travel interest + household income $85K+"
+      }
+    ]
   }'
 ),
 (
@@ -314,28 +326,28 @@ INSERT INTO creative_outputs (id, user_id, audience_id, type, content) VALUES
   'a0000000-0000-4000-8000-000000000002',
   'opportunity',
   '{
-    "headline": "A High-Intent Audience Hiding in Plain Sight",
-    "summary": "Wellness-Oriented Parents represent a premium, underserved audience segment that sits at the intersection of high purchase intent, above-average household income, and strong media engagement. Their affinity for fantasy sports, reality TV, and how-to content creates diverse and cost-effective media entry points.",
-    "market_size_context": "Suburban parents aged 35-45 with household incomes above $85K represent a significant share of CPG, health & wellness, and family services spending.",
-    "competitive_gap": "Most wellness brands skew messaging toward younger, childless adults or older empty-nesters. This audience is underserved by campaigns that speak to their dual identity as active parents and wellness seekers.",
-    "media_opportunities": [
+    "opportunities": [
       {
-        "channel": "Fantasy Sports Platforms",
-        "rationale": "100% of this segment rated Fantasy Sports 4 or 5. Pre-game and league management moments offer high-attention placements."
+        "gapGenre": "Fantasy Sports",
+        "audienceTrait": "Wellness-focused parents aged 35-45 with moderate-to-high household income",
+        "crossoverConcept": "Fantasy wellness leagues where families compete on healthy habit streaks, blending the competitive engagement of fantasy sports with wellness goals.",
+        "reasoning": "This audience rates Fantasy Sports as low interest (4.7 avg) but has high competitive drive from their sports-adjacent lifestyle. Gamifying wellness could bridge the gap.",
+        "confidence": "medium"
       },
       {
-        "channel": "Reality TV / Streaming",
-        "rationale": "All three respondents rated Reality TV at 4. Evening co-viewing with partners creates shared brand moments."
+        "gapGenre": "Reality programming / Reality TV",
+        "audienceTrait": "Suburban parents who value authenticity and real-life storytelling",
+        "crossoverConcept": "A reality series following wellness-oriented families through seasonal challenges, combining the voyeuristic appeal of reality TV with aspirational healthy living content.",
+        "reasoning": "Low interest (4.0 avg) in traditional reality TV, but high interest in documentary and cooking content suggests appetite for authentic, unscripted formats.",
+        "confidence": "high"
       },
       {
-        "channel": "How-To and Coding Content",
-        "rationale": "Moderate interest suggests openness to educational content that helps them support their children''s development."
+        "gapGenre": "Coding / Robotics",
+        "audienceTrait": "Parents invested in children''s education and future skills",
+        "crossoverConcept": "Family coding workshops marketed through wellness channels, positioning STEM education as part of a holistic approach to raising well-rounded children.",
+        "reasoning": "Moderate disinterest (3.7 avg) in coding, but parent status and education level suggest openness to educational content framed as family enrichment.",
+        "confidence": "medium"
       }
-    ],
-    "recommended_next_steps": [
-      "Activate a test campaign on fantasy sports platforms targeting suburban parent segments",
-      "Develop co-viewing creative optimized for CTV reality programming slots",
-      "Explore educational content partnerships aligned with coding and how-to interest"
     ]
   }'
 );
