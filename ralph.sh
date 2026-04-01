@@ -32,6 +32,7 @@ check_dependencies
 FEATURE_NAME=""
 MAX_ITERATIONS=100
 MODEL=""
+SUBAGENT_MODEL="sonnet"
 PERMISSION_MODE="bypassPermissions"
 
 usage() {
@@ -43,23 +44,25 @@ Arguments:
 
 Options:
   -n, --max-iterations NUM  Maximum loop iterations (default: $MAX_ITERATIONS)
-  -m, --model MODEL         Claude model override (default: system default)
+  -m, --model MODEL         Claude model for orchestrator (default: system default)
+  -s, --subagent-model MODEL  Model for subagents (default: $SUBAGENT_MODEL)
   -p, --permissions MODE    Permission mode (default: $PERMISSION_MODE)
   -h, --help                Show this help message
 
 Examples:
   $(basename "$0") light
   $(basename "$0") light -n 20
-  $(basename "$0") light -n 10 -m claude-sonnet-4-6
+  $(basename "$0") light -n 10 -s opus
 EOF
   exit 0
 }
 
 while [[ $# -gt 0 ]]; do
   case $1 in
-    -n|--max-iterations) MAX_ITERATIONS="$2"; shift 2 ;;
-    -m|--model)          MODEL="$2";          shift 2 ;;
-    -p|--permissions)    PERMISSION_MODE="$2"; shift 2 ;;
+    -n|--max-iterations) MAX_ITERATIONS="$2";    shift 2 ;;
+    -m|--model)          MODEL="$2";            shift 2 ;;
+    -s|--subagent-model) SUBAGENT_MODEL="$2";   shift 2 ;;
+    -p|--permissions)    PERMISSION_MODE="$2";  shift 2 ;;
     -h|--help)           usage ;;
     -*)                  echo "Unknown option: $1"; echo ""; usage ;;
     *)                   FEATURE_NAME="$1";   shift ;;
@@ -93,9 +96,10 @@ validate_git_state() {
     exit 1
   fi
 
-  if ! git diff --quiet || ! git diff --cached --quiet; then
+  if ! git diff --quiet -- ':!prds/' || ! git diff --cached --quiet -- ':!prds/'; then
     printf "${RED}Uncommitted changes detected. Commit or stash first.${RESET}\n"
-    git status --short
+    git diff --name-only -- ':!prds/'
+    git diff --cached --name-only -- ':!prds/'
     exit 1
   fi
 
@@ -144,6 +148,7 @@ BASE_DELAY=5
 printf "\n${BOLD}Ralph Loop${RESET} ${DIM}${FEATURE_NAME}${RESET}\n"
 printf "${DIM}Iterations: ${MAX_ITERATIONS} | Permissions: ${PERMISSION_MODE}"
 [[ -n "$MODEL" ]] && printf " | Model: ${MODEL}"
+printf " | Subagents: ${SUBAGENT_MODEL}"
 printf "${RESET}\n\n"
 
 for ((i = 1; i <= MAX_ITERATIONS; i++)); do
@@ -157,7 +162,7 @@ for ((i = 1; i <= MAX_ITERATIONS; i++)); do
   set +o pipefail
 
   "${CLAUDE_CMD[@]}" \
-    "Run /execute-ralph-loop ${FEATURE_NAME}" \
+    "Run /execute-ralph-loop ${FEATURE_NAME} --subagent-model ${SUBAGENT_MODEL}" \
   | tee "$CURRENT_TMPFILE" \
   | jq --unbuffered -Rrj "$STREAM_FILTER" \
   | tee "$logfile"
@@ -168,6 +173,15 @@ for ((i = 1; i <= MAX_ITERATIONS; i++)); do
   claude_exit=${pipe_statuses[0]}
 
   if [[ $claude_exit -ne 0 ]]; then
+    if grep -qi "hit your limit\|rate.limit" "$CURRENT_TMPFILE" "$logfile" 2>/dev/null; then
+      printf "${YELLOW}Rate limited${RESET} ${DIM}pausing 5m before retry...${RESET}\n"
+      rm -f "$CURRENT_TMPFILE"
+      CURRENT_TMPFILE=""
+      i=$((i - 1))
+      sleep 300
+      continue
+    fi
+
     CONSECUTIVE_FAILURES=$((CONSECUTIVE_FAILURES + 1))
 
     if (( CONSECUTIVE_FAILURES >= MAX_CONSECUTIVE_FAILURES )); then
