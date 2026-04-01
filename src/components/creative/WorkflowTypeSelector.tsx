@@ -54,14 +54,16 @@ export function WorkflowTypeSelector({ selectedType, onSelectType }: Props) {
           type="button"
         >
           <Card
-            className={`h-full cursor-pointer transition-colors hover:bg-accent ${
-              selectedType === type ? 'border-primary bg-accent' : ''
+            className={`h-full cursor-pointer transition-colors ${
+              selectedType === type
+                ? 'bg-sidebar text-sidebar-foreground'
+                : 'hover:border-foreground/30'
             }`}
           >
             <CardHeader className="gap-2">
-              <Icon className="h-5 w-5 text-muted-foreground" />
-              <CardTitle className="text-sm">{label}</CardTitle>
-              <CardDescription className="text-xs">{description}</CardDescription>
+              <Icon className={`h-5 w-5 ${selectedType === type ? 'text-sidebar-foreground/70' : 'text-muted-foreground'}`} />
+              <CardTitle className={`text-sm ${selectedType === type ? 'text-sidebar-foreground' : ''}`}>{label}</CardTitle>
+              <CardDescription className={`text-xs ${selectedType === type ? 'text-sidebar-foreground/70' : ''}`}>{description}</CardDescription>
             </CardHeader>
           </Card>
         </button>
