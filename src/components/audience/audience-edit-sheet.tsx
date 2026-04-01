@@ -14,7 +14,6 @@ import {
 import { useAudienceWithRespondents, useRespondentsForPreview, useUpdateAudience } from '@/hooks/use-audiences';
 import type { AudienceFilters } from '@/lib/filter-matching';
 import { applyFilters } from '@/lib/filter-matching';
-import { useAudienceStore } from '@/stores/audience-store';
 
 import { FilterControls } from './filter-controls';
 import { ManualOverridesPanel } from './manual-overrides-panel';
@@ -171,20 +170,22 @@ function AudienceEditForm({ audienceId }: EditFormProps) {
   );
 }
 
-export function AudienceEditSheet() {
-  const selectedAudienceId = useAudienceStore((state) => state.selectedAudienceId);
-  const clearSelectedAudienceId = useAudienceStore((state) => state.clearSelectedAudienceId);
+interface EditSheetProps {
+  audienceId: string | null;
+  onClose: () => void;
+}
 
+export function AudienceEditSheet({ audienceId, onClose }: EditSheetProps) {
   return (
-    <Sheet open={selectedAudienceId !== null} onOpenChange={(open) => { if (!open) clearSelectedAudienceId(); }}>
+    <Sheet open={audienceId !== null} onOpenChange={(open) => { if (!open) onClose(); }}>
       <SheetContent side="right" className="w-full overflow-y-auto sm:max-w-xl">
         <SheetHeader>
           <SheetTitle>Edit Audience</SheetTitle>
         </SheetHeader>
-        {selectedAudienceId && (
+        {audienceId && (
           <AudienceEditForm
-            key={selectedAudienceId}
-            audienceId={selectedAudienceId}
+            key={audienceId}
+            audienceId={audienceId}
           />
         )}
       </SheetContent>

@@ -9,7 +9,11 @@ import { useAudienceStore } from '@/stores/audience-store';
 import { AudienceCardSkeleton } from './audience-card-skeleton';
 import { AudienceCardWithCount } from './audience-card-with-count';
 
-export function AudienceGrid() {
+interface Props {
+  onEdit: (id: string) => void;
+}
+
+export function AudienceGrid({ onEdit }: Props) {
   const { data: audiences, isLoading } = useAudiences();
   const selectedAudienceId = useAudienceStore((state) => state.selectedAudienceId);
   const setSelectedAudienceId = useAudienceStore((state) => state.setSelectedAudienceId);
@@ -72,6 +76,7 @@ export function AudienceGrid() {
           audienceId={audience.id}
           isActive={selectedAudienceId === audience.id}
           onSelect={setSelectedAudienceId}
+          onEdit={onEdit}
           onDelete={handleDelete}
         />
       ))}

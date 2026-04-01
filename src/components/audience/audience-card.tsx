@@ -1,6 +1,6 @@
 'use client';
 
-import { Trash2, Users } from 'lucide-react';
+import { Pencil, Trash2, Users } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,10 +11,16 @@ interface Props {
   respondentCount: number;
   isActive: boolean;
   onSelect: (id: string) => void;
+  onEdit: (id: string) => void;
   onDelete: (id: string) => void;
 }
 
-export function AudienceCard({ audience, respondentCount, isActive, onSelect, onDelete }: Props) {
+export function AudienceCard({ audience, respondentCount, isActive, onSelect, onEdit, onDelete }: Props) {
+  function handleEdit(e: React.MouseEvent) {
+    e.stopPropagation();
+    onEdit(audience.id);
+  }
+
   function handleDelete(e: React.MouseEvent) {
     e.stopPropagation();
     onDelete(audience.id);
@@ -40,15 +46,26 @@ export function AudienceCard({ audience, respondentCount, isActive, onSelect, on
       >
         <CardHeader className="flex flex-row items-start justify-between">
           <CardTitle>{audience.name}</CardTitle>
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label="Delete audience"
-            onClick={handleDelete}
-            className="size-7 shrink-0 text-muted-foreground hover:text-destructive"
-          >
-            <Trash2 className="size-3.5" />
-          </Button>
+          <div className="flex shrink-0 gap-0.5">
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="Edit audience"
+              onClick={handleEdit}
+              className="size-7 text-muted-foreground hover:text-foreground"
+            >
+              <Pencil className="size-3.5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="Delete audience"
+              onClick={handleDelete}
+              className="size-7 text-muted-foreground hover:text-destructive"
+            >
+              <Trash2 className="size-3.5" />
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           <div className="flex items-center gap-1.5 text-muted-foreground">

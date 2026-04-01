@@ -4,17 +4,11 @@ import userEvent from '@testing-library/user-event';
 const mockUseAudienceWithRespondents = vi.fn();
 const mockUseRespondentsForPreview = vi.fn();
 const mockUpdateMutate = vi.fn();
-const mockUseAudienceStore = vi.fn();
 
 vi.mock('@/hooks/use-audiences', () => ({
   useAudienceWithRespondents: (id: string | null) => mockUseAudienceWithRespondents(id),
   useRespondentsForPreview: () => mockUseRespondentsForPreview(),
   useUpdateAudience: () => ({ mutate: mockUpdateMutate }),
-}));
-
-vi.mock('@/stores/audience-store', () => ({
-  useAudienceStore: (selector: (state: { selectedAudienceId: string | null; clearSelectedAudienceId: () => void }) => unknown) =>
-    mockUseAudienceStore(selector),
 }));
 
 vi.mock('sonner', () => ({
@@ -59,68 +53,55 @@ const TEST_RESPONDENT = {
   homeOwnership: 'Own',
 };
 
-function setupStore(selectedId: string | null = null) {
-  const clearSelectedAudienceId = vi.fn();
-  mockUseAudienceStore.mockImplementation(
-    (selector: (state: { selectedAudienceId: string | null; clearSelectedAudienceId: () => void }) => unknown) =>
-      selector({ selectedAudienceId: selectedId, clearSelectedAudienceId }),
-  );
-  return { clearSelectedAudienceId };
-}
-
 const NON_MATCHING_RESPONDENT = {
   ...TEST_RESPONDENT,
   respondentId: 2,
   gender: 'Male',
 };
 
+const mockOnClose = vi.fn();
+
 describe('AudienceEditSheet', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    // Default: preview returns only the female respondent
     mockUseRespondentsForPreview.mockReturnValue({ data: [TEST_RESPONDENT] });
   });
 
   it('does not render form content when no audience is selected', () => {
-    setupStore(null);
-
-    render(<AudienceEditSheet />);
+    render(<AudienceEditSheet audienceId={null} onClose={mockOnClose} />);
 
     expect(screen.queryByLabelText('Audience Name')).not.toBeInTheDocument();
   });
 
   it('renders the edit form when an audience is selected', () => {
-    setupStore('aud-1');
     mockUseAudienceWithRespondents.mockReturnValue({
       data: { audience: TEST_AUDIENCE, respondents: [TEST_RESPONDENT] },
       isLoading: false,
     });
 
-    render(<AudienceEditSheet />);
+    render(<AudienceEditSheet audienceId="aud-1" onClose={mockOnClose} />);
 
     expect(screen.getByLabelText('Audience Name')).toBeInTheDocument();
   });
 
   it('populates name input with the existing audience name', () => {
-    setupStore('aud-1');
     mockUseAudienceWithRespondents.mockReturnValue({
       data: { audience: TEST_AUDIENCE, respondents: [TEST_RESPONDENT] },
       isLoading: false,
     });
 
-    render(<AudienceEditSheet />);
+    render(<AudienceEditSheet audienceId="aud-1" onClose={mockOnClose} />);
 
     expect(screen.getByLabelText('Audience Name')).toHaveValue('My Audience');
   });
 
   it('shows matching respondent count', () => {
-    setupStore('aud-1');
     mockUseAudienceWithRespondents.mockReturnValue({
       data: { audience: TEST_AUDIENCE, respondents: [TEST_RESPONDENT] },
       isLoading: false,
     });
 
-    render(<AudienceEditSheet />);
+    render(<AudienceEditSheet audienceId="aud-1" onClose={mockOnClose} />);
 
     expect(screen.getByText('1')).toBeInTheDocument();
     expect(screen.getAllByText(/matching respondents/i).length).toBeGreaterThan(0);
@@ -128,13 +109,12 @@ describe('AudienceEditSheet', () => {
 
   it('triggers auto-save after debounce when name changes', async () => {
     vi.useFakeTimers({ shouldAdvanceTime: true });
-    setupStore('aud-1');
     mockUseAudienceWithRespondents.mockReturnValue({
       data: { audience: TEST_AUDIENCE, respondents: [TEST_RESPONDENT] },
       isLoading: false,
     });
 
-    render(<AudienceEditSheet />);
+    render(<AudienceEditSheet audienceId="aud-1" onClose={mockOnClose} />);
 
     const input = screen.getByLabelText('Audience Name');
     expect(input).toHaveValue('My Audience');
@@ -165,7 +145,6 @@ describe('AudienceEditSheet', () => {
   });
 
   it('shows zero-match warning when no respondents match', () => {
-    setupStore('aud-1');
     mockUseAudienceWithRespondents.mockReturnValue({
       data: {
         audience: { ...TEST_AUDIENCE, filters: { gender: ['Non-binary'] } },
@@ -174,32 +153,30 @@ describe('AudienceEditSheet', () => {
       isLoading: false,
     });
 
-    render(<AudienceEditSheet />);
+    render(<AudienceEditSheet audienceId="aud-1" onClose={mockOnClose} />);
 
     expect(screen.getByText(/no respondents match/i)).toBeInTheDocument();
   });
 
   it('renders the manual overrides panel', () => {
-    setupStore('aud-1');
     mockUseAudienceWithRespondents.mockReturnValue({
       data: { audience: TEST_AUDIENCE, respondents: [TEST_RESPONDENT] },
       isLoading: false,
     });
 
-    render(<AudienceEditSheet />);
+    render(<AudienceEditSheet audienceId="aud-1" onClose={mockOnClose} />);
 
     expect(screen.getByRole('button', { name: /add respondent/i })).toBeInTheDocument();
   });
 
   it('auto-saves with updated manualExcludes when a respondent is excluded', async () => {
     vi.useFakeTimers({ shouldAdvanceTime: true });
-    setupStore('aud-1');
     mockUseAudienceWithRespondents.mockReturnValue({
       data: { audience: TEST_AUDIENCE, respondents: [TEST_RESPONDENT] },
       isLoading: false,
     });
 
-    render(<AudienceEditSheet />);
+    render(<AudienceEditSheet audienceId="aud-1" onClose={mockOnClose} />);
 
     const excludeButton = screen.getByRole('button', { name: /exclude/i });
     await userEvent.click(excludeButton);
@@ -218,9 +195,7 @@ describe('AudienceEditSheet', () => {
 
   it('auto-saves with updated manualIncludes when a respondent is manually included', async () => {
     vi.useFakeTimers({ shouldAdvanceTime: true });
-    setupStore('aud-1');
 
-    // Preview returns both respondents (all respondents)
     mockUseRespondentsForPreview.mockReturnValue({
       data: [TEST_RESPONDENT, NON_MATCHING_RESPONDENT],
     });
@@ -233,7 +208,7 @@ describe('AudienceEditSheet', () => {
       isLoading: false,
     });
 
-    render(<AudienceEditSheet />);
+    render(<AudienceEditSheet audienceId="aud-1" onClose={mockOnClose} />);
 
     await userEvent.click(screen.getByRole('button', { name: /add respondent/i }));
 

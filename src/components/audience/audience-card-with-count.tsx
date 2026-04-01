@@ -9,10 +9,11 @@ interface Props {
   audienceId: string;
   isActive: boolean;
   onSelect: (id: string) => void;
+  onEdit: (id: string) => void;
   onDelete: (id: string) => void;
 }
 
-export function AudienceCardWithCount({ audienceId, isActive, onSelect, onDelete }: Props) {
+export function AudienceCardWithCount({ audienceId, isActive, onSelect, onEdit, onDelete }: Props) {
   const { data, isLoading } = useAudienceWithRespondents(audienceId);
   const audience = data?.audience;
   const respondentCount = data?.respondents.length ?? 0;
@@ -31,6 +32,7 @@ export function AudienceCardWithCount({ audienceId, isActive, onSelect, onDelete
       respondentCount={respondentCount}
       isActive={isActive}
       onSelect={onSelect}
+      onEdit={onEdit}
       onDelete={onDelete}
     />
   );

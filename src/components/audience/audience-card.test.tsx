@@ -22,6 +22,7 @@ describe('AudienceCard', () => {
         respondentCount={42}
         isActive={false}
         onSelect={vi.fn()}
+        onEdit={vi.fn()}
         onDelete={vi.fn()}
       />
     );
@@ -36,6 +37,7 @@ describe('AudienceCard', () => {
         respondentCount={42}
         isActive={false}
         onSelect={vi.fn()}
+        onEdit={vi.fn()}
         onDelete={vi.fn()}
       />
     );
@@ -53,6 +55,7 @@ describe('AudienceCard', () => {
         respondentCount={10}
         isActive={false}
         onSelect={onSelect}
+        onEdit={vi.fn()}
         onDelete={vi.fn()}
       />
     );
@@ -69,6 +72,7 @@ describe('AudienceCard', () => {
         respondentCount={10}
         isActive={true}
         onSelect={vi.fn()}
+        onEdit={vi.fn()}
         onDelete={vi.fn()}
       />
     );
@@ -83,6 +87,7 @@ describe('AudienceCard', () => {
         respondentCount={10}
         isActive={false}
         onSelect={vi.fn()}
+        onEdit={vi.fn()}
         onDelete={vi.fn()}
       />
     );
@@ -97,6 +102,7 @@ describe('AudienceCard', () => {
         respondentCount={10}
         isActive={false}
         onSelect={vi.fn()}
+        onEdit={vi.fn()}
         onDelete={vi.fn()}
       />
     );
@@ -114,6 +120,7 @@ describe('AudienceCard', () => {
         respondentCount={10}
         isActive={false}
         onSelect={vi.fn()}
+        onEdit={vi.fn()}
         onDelete={onDelete}
       />
     );
@@ -133,6 +140,7 @@ describe('AudienceCard', () => {
         respondentCount={10}
         isActive={false}
         onSelect={onSelect}
+        onEdit={vi.fn()}
         onDelete={vi.fn()}
       />
     );

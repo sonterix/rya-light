@@ -12,9 +12,11 @@ import type { Audience } from '@/db/schema';
 import { useAudienceStore } from '@/stores/audience-store';
 
 export default function DashboardPage() {
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
   const selectedAudienceId = useAudienceStore((state) => state.selectedAudienceId);
   const setSelectedAudienceId = useAudienceStore((state) => state.setSelectedAudienceId);
+
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [editingAudienceId, setEditingAudienceId] = useState<string | null>(null);
 
   function handleAudienceCreated(audience: Audience) {
     setSelectedAudienceId(audience.id);
@@ -30,7 +32,7 @@ export default function DashboardPage() {
         </Button>
       </div>
 
-      <AudienceGrid />
+      <AudienceGrid onEdit={setEditingAudienceId} />
 
       <GenreInsightsChart audienceId={selectedAudienceId} />
 
@@ -40,7 +42,10 @@ export default function DashboardPage() {
         onCreated={handleAudienceCreated}
       />
 
-      <AudienceEditSheet />
+      <AudienceEditSheet
+        audienceId={editingAudienceId}
+        onClose={() => setEditingAudienceId(null)}
+      />
     </div>
   );
 }

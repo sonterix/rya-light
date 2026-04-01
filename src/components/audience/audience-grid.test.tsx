@@ -68,7 +68,7 @@ describe('AudienceGrid', () => {
     mockUseAudiences.mockReturnValue({ data: undefined, isLoading: true });
     setupStore();
 
-    render(<AudienceGrid />);
+    render(<AudienceGrid onEdit={vi.fn()} />);
 
     expect(screen.getAllByRole('status')).toBeDefined();
   });
@@ -87,7 +87,7 @@ describe('AudienceGrid', () => {
     }));
     setupStore();
 
-    render(<AudienceGrid />);
+    render(<AudienceGrid onEdit={vi.fn()} />);
 
     expect(screen.getByText('First Audience')).toBeInTheDocument();
     expect(screen.getByText('Second Audience')).toBeInTheDocument();
@@ -97,7 +97,7 @@ describe('AudienceGrid', () => {
     mockUseAudiences.mockReturnValue({ data: [], isLoading: false });
     setupStore();
 
-    render(<AudienceGrid />);
+    render(<AudienceGrid onEdit={vi.fn()} />);
 
     expect(screen.getByText(/no audiences yet/i)).toBeInTheDocument();
   });
@@ -114,7 +114,7 @@ describe('AudienceGrid', () => {
     }));
     const { setSelectedAudienceId } = setupStore();
 
-    render(<AudienceGrid />);
+    render(<AudienceGrid onEdit={vi.fn()} />);
 
     await user.click(screen.getByRole('button', { name: 'First Audience' }));
 
@@ -134,7 +134,7 @@ describe('AudienceGrid', () => {
     }));
     setupStore();
 
-    render(<AudienceGrid />);
+    render(<AudienceGrid onEdit={vi.fn()} />);
 
     await user.click(screen.getByRole('button', { name: 'Delete audience' }));
 
@@ -154,7 +154,7 @@ describe('AudienceGrid', () => {
     }));
     setupStore();
 
-    render(<AudienceGrid />);
+    render(<AudienceGrid onEdit={vi.fn()} />);
 
     await user.click(screen.getByRole('button', { name: 'Delete audience' }));
 
@@ -175,7 +175,7 @@ describe('AudienceGrid', () => {
     }));
     setupStore('aud-1');
 
-    render(<AudienceGrid />);
+    render(<AudienceGrid onEdit={vi.fn()} />);
 
     const firstButton = screen.getByRole('button', { name: 'First Audience' });
     const secondButton = screen.getByRole('button', { name: 'Second Audience' });
