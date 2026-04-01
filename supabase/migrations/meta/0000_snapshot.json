@@ -1,0 +1,837 @@
+{
+  "id": "78d8d93c-02fe-4b37-976e-824fdb5550c3",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.audience_genre_summaries": {
+      "name": "audience_genre_summaries",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "audience_id": {
+          "name": "audience_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "genre_slug": {
+          "name": "genre_slug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "avg_interest": {
+          "name": "avg_interest",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "pct_highly_interested": {
+          "name": "pct_highly_interested",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "respondent_count": {
+          "name": "respondent_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "computed_at": {
+          "name": "computed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "ags_audience_avg_interest_idx": {
+          "name": "ags_audience_avg_interest_idx",
+          "columns": [
+            {
+              "expression": "audience_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "avg_interest",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "ags_audience_id_idx": {
+          "name": "ags_audience_id_idx",
+          "columns": [
+            {
+              "expression": "audience_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "audience_genre_summaries_audience_id_audiences_id_fk": {
+          "name": "audience_genre_summaries_audience_id_audiences_id_fk",
+          "tableFrom": "audience_genre_summaries",
+          "tableTo": "audiences",
+          "columnsFrom": [
+            "audience_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "audience_genre_summaries_genre_slug_genres_genre_slug_fk": {
+          "name": "audience_genre_summaries_genre_slug_genres_genre_slug_fk",
+          "tableFrom": "audience_genre_summaries",
+          "tableTo": "genres",
+          "columnsFrom": [
+            "genre_slug"
+          ],
+          "columnsTo": [
+            "genre_slug"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.audiences": {
+      "name": "audiences",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "filters": {
+          "name": "filters",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "manual_includes": {
+          "name": "manual_includes",
+          "type": "integer[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "manual_excludes": {
+          "name": "manual_excludes",
+          "type": "integer[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "audiences_user_id_idx": {
+          "name": "audiences_user_id_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "audiences_user_id_updated_at_idx": {
+          "name": "audiences_user_id_updated_at_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "updated_at",
+              "isExpression": false,
+              "asc": false,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.creative_outputs": {
+      "name": "creative_outputs",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "audience_id": {
+          "name": "audience_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "content": {
+          "name": "content",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "creative_outputs_user_id_idx": {
+          "name": "creative_outputs_user_id_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "creative_outputs_audience_type_idx": {
+          "name": "creative_outputs_audience_type_idx",
+          "columns": [
+            {
+              "expression": "audience_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "type",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "creative_outputs_user_type_updated_idx": {
+          "name": "creative_outputs_user_type_updated_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "type",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "updated_at",
+              "isExpression": false,
+              "asc": false,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "creative_outputs_audience_id_audiences_id_fk": {
+          "name": "creative_outputs_audience_id_audiences_id_fk",
+          "tableFrom": "creative_outputs",
+          "tableTo": "audiences",
+          "columnsFrom": [
+            "audience_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.genres": {
+      "name": "genres",
+      "schema": "",
+      "columns": {
+        "genre_slug": {
+          "name": "genre_slug",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "genre_name": {
+          "name": "genre_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "genre_categories": {
+          "name": "genre_categories",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.respondent_genre_interests": {
+      "name": "respondent_genre_interests",
+      "schema": "",
+      "columns": {
+        "respondent_id": {
+          "name": "respondent_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "genre_slug": {
+          "name": "genre_slug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "interest_level": {
+          "name": "interest_level",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "rgi_genre_interest_idx": {
+          "name": "rgi_genre_interest_idx",
+          "columns": [
+            {
+              "expression": "genre_slug",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "interest_level",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "rgi_respondent_id_idx": {
+          "name": "rgi_respondent_id_idx",
+          "columns": [
+            {
+              "expression": "respondent_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "rgi_genre_slug_idx": {
+          "name": "rgi_genre_slug_idx",
+          "columns": [
+            {
+              "expression": "genre_slug",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "respondent_genre_interests_respondent_id_respondents_respondent_id_fk": {
+          "name": "respondent_genre_interests_respondent_id_respondents_respondent_id_fk",
+          "tableFrom": "respondent_genre_interests",
+          "tableTo": "respondents",
+          "columnsFrom": [
+            "respondent_id"
+          ],
+          "columnsTo": [
+            "respondent_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "respondent_genre_interests_genre_slug_genres_genre_slug_fk": {
+          "name": "respondent_genre_interests_genre_slug_genres_genre_slug_fk",
+          "tableFrom": "respondent_genre_interests",
+          "tableTo": "genres",
+          "columnsFrom": [
+            "genre_slug"
+          ],
+          "columnsTo": [
+            "genre_slug"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "respondent_genre_interests_respondent_id_genre_slug_pk": {
+          "name": "respondent_genre_interests_respondent_id_genre_slug_pk",
+          "columns": [
+            "respondent_id",
+            "genre_slug"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.respondents": {
+      "name": "respondents",
+      "schema": "",
+      "columns": {
+        "respondent_id": {
+          "name": "respondent_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "wave": {
+          "name": "wave",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "wave_id": {
+          "name": "wave_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "weight": {
+          "name": "weight",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "audience_category": {
+          "name": "audience_category",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "age": {
+          "name": "age",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "gender": {
+          "name": "gender",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ethnicity": {
+          "name": "ethnicity",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "region": {
+          "name": "region",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "community_type": {
+          "name": "community_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "marital_status": {
+          "name": "marital_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "household_size": {
+          "name": "household_size",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "education": {
+          "name": "education",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "employment_status": {
+          "name": "employment_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "household_income_usd": {
+          "name": "household_income_usd",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "investable_assets_usd": {
+          "name": "investable_assets_usd",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "zip_code": {
+          "name": "zip_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "state": {
+          "name": "state",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "dma": {
+          "name": "dma",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "parent_status": {
+          "name": "parent_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "political_affiliation": {
+          "name": "political_affiliation",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "home_ownership": {
+          "name": "home_ownership",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "respondents_audience_category_idx": {
+          "name": "respondents_audience_category_idx",
+          "columns": [
+            {
+              "expression": "audience_category",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "respondents_age_idx": {
+          "name": "respondents_age_idx",
+          "columns": [
+            {
+              "expression": "age",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "respondents_gender_idx": {
+          "name": "respondents_gender_idx",
+          "columns": [
+            {
+              "expression": "gender",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "respondents_region_idx": {
+          "name": "respondents_region_idx",
+          "columns": [
+            {
+              "expression": "region",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "respondents_state_idx": {
+          "name": "respondents_state_idx",
+          "columns": [
+            {
+              "expression": "state",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "respondents_community_type_idx": {
+          "name": "respondents_community_type_idx",
+          "columns": [
+            {
+              "expression": "community_type",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "respondents_household_income_usd_idx": {
+          "name": "respondents_household_income_usd_idx",
+          "columns": [
+            {
+              "expression": "household_income_usd",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "respondents_parent_status_idx": {
+          "name": "respondents_parent_status_idx",
+          "columns": [
+            {
+              "expression": "parent_status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "respondents_education_idx": {
+          "name": "respondents_education_idx",
+          "columns": [
+            {
+              "expression": "education",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "respondents_employment_status_idx": {
+          "name": "respondents_employment_status_idx",
+          "columns": [
+            {
+              "expression": "employment_status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "respondents_home_ownership_idx": {
+          "name": "respondents_home_ownership_idx",
+          "columns": [
+            {
+              "expression": "home_ownership",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
