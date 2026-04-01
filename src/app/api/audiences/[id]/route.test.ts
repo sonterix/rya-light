@@ -7,6 +7,8 @@ vi.mock('@/lib/supabase/auth', () => ({
 vi.mock('@/db', () => ({
   db: {
     select: vi.fn(),
+    update: vi.fn(),
+    delete: vi.fn(),
     query: {
       audiences: {
         findFirst: vi.fn(),
@@ -29,10 +31,12 @@ import { db } from '@/db';
 import { applyFilters } from '@/lib/filter-matching';
 import { getAuthUser } from '@/lib/supabase/auth';
 
-import { GET } from './route';
+import { DELETE, GET, PATCH } from './route';
 
 const mockGetAuthUser = vi.mocked(getAuthUser);
 const mockDbSelect = vi.mocked(db.select);
+const mockDbUpdate = vi.mocked(db.update);
+const mockDbDelete = vi.mocked(db.delete);
 const mockApplyFilters = vi.mocked(applyFilters);
 
 const TEST_USER_ID = 'user-123';
@@ -174,5 +178,188 @@ describe('GET /api/audiences/[id]', () => {
       manualExcludes: TEST_AUDIENCE.manualExcludes,
       respondents: [TEST_RESPONDENT],
     });
+  });
+});
+
+function makePatchRequest(id: string, body: unknown) {
+  return new NextRequest(`http://localhost/api/audiences/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+}
+
+describe('PATCH /api/audiences/[id]', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('returns 401 when not authenticated', async () => {
+    mockGetAuthUser.mockResolvedValue(null);
+
+    const res = await PATCH(makePatchRequest(TEST_AUDIENCE_ID, { name: 'New Name' }), {
+      params: Promise.resolve({ id: TEST_AUDIENCE_ID }),
+    });
+
+    expect(res.status).toBe(401);
+    const body = await res.json();
+    expect(body).toEqual({ error: 'Unauthorized' });
+  });
+
+  it('returns 404 when audience does not exist', async () => {
+    mockAuth();
+    const audienceChain = {
+      from: vi.fn().mockReturnThis(),
+      where: vi.fn().mockResolvedValue([]),
+    };
+    mockDbSelect.mockReturnValueOnce(audienceChain as never);
+
+    const res = await PATCH(makePatchRequest('nonexistent', { name: 'New Name' }), {
+      params: Promise.resolve({ id: 'nonexistent' }),
+    });
+
+    expect(res.status).toBe(404);
+    const body = await res.json();
+    expect(body).toEqual({ error: 'Audience not found' });
+  });
+
+  it('returns 403 when audience belongs to another user', async () => {
+    mockAuth('other-user');
+    const audienceChain = {
+      from: vi.fn().mockReturnThis(),
+      where: vi.fn().mockResolvedValue([{ ...TEST_AUDIENCE, userId: TEST_USER_ID }]),
+    };
+    mockDbSelect.mockReturnValueOnce(audienceChain as never);
+
+    const res = await PATCH(makePatchRequest(TEST_AUDIENCE_ID, { name: 'New Name' }), {
+      params: Promise.resolve({ id: TEST_AUDIENCE_ID }),
+    });
+
+    expect(res.status).toBe(403);
+    const body = await res.json();
+    expect(body).toEqual({ error: 'Forbidden' });
+  });
+
+  it('returns 400 when name is empty string', async () => {
+    mockAuth();
+    const audienceChain = {
+      from: vi.fn().mockReturnThis(),
+      where: vi.fn().mockResolvedValue([TEST_AUDIENCE]),
+    };
+    mockDbSelect.mockReturnValueOnce(audienceChain as never);
+
+    const res = await PATCH(makePatchRequest(TEST_AUDIENCE_ID, { name: '' }), {
+      params: Promise.resolve({ id: TEST_AUDIENCE_ID }),
+    });
+
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.error).toMatch(/name is required/i);
+  });
+
+  it('updates the audience and returns the updated record', async () => {
+    mockAuth();
+    const audienceChain = {
+      from: vi.fn().mockReturnThis(),
+      where: vi.fn().mockResolvedValue([TEST_AUDIENCE]),
+    };
+    mockDbSelect.mockReturnValueOnce(audienceChain as never);
+
+    const updatedAudience = { ...TEST_AUDIENCE, name: 'Updated Name' };
+    const updateChain = {
+      set: vi.fn().mockReturnThis(),
+      where: vi.fn().mockReturnThis(),
+      returning: vi.fn().mockResolvedValue([updatedAudience]),
+    };
+    mockDbUpdate.mockReturnValueOnce(updateChain as never);
+
+    const res = await PATCH(makePatchRequest(TEST_AUDIENCE_ID, { name: 'Updated Name' }), {
+      params: Promise.resolve({ id: TEST_AUDIENCE_ID }),
+    });
+
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.data.name).toBe('Updated Name');
+  });
+});
+
+function makeDeleteRequest(id: string) {
+  return new NextRequest(`http://localhost/api/audiences/${id}`, {
+    method: 'DELETE',
+  });
+}
+
+describe('DELETE /api/audiences/[id]', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('returns 401 when not authenticated', async () => {
+    mockGetAuthUser.mockResolvedValue(null);
+
+    const res = await DELETE(makeDeleteRequest(TEST_AUDIENCE_ID), {
+      params: Promise.resolve({ id: TEST_AUDIENCE_ID }),
+    });
+
+    expect(res.status).toBe(401);
+    const body = await res.json();
+    expect(body).toEqual({ error: 'Unauthorized' });
+  });
+
+  it('returns 404 when audience does not exist', async () => {
+    mockAuth();
+    const audienceChain = {
+      from: vi.fn().mockReturnThis(),
+      where: vi.fn().mockResolvedValue([]),
+    };
+    mockDbSelect.mockReturnValueOnce(audienceChain as never);
+
+    const res = await DELETE(makeDeleteRequest('nonexistent'), {
+      params: Promise.resolve({ id: 'nonexistent' }),
+    });
+
+    expect(res.status).toBe(404);
+    const body = await res.json();
+    expect(body).toEqual({ error: 'Audience not found' });
+  });
+
+  it('returns 403 when audience belongs to another user', async () => {
+    mockAuth('other-user');
+    const audienceChain = {
+      from: vi.fn().mockReturnThis(),
+      where: vi.fn().mockResolvedValue([{ ...TEST_AUDIENCE, userId: TEST_USER_ID }]),
+    };
+    mockDbSelect.mockReturnValueOnce(audienceChain as never);
+
+    const res = await DELETE(makeDeleteRequest(TEST_AUDIENCE_ID), {
+      params: Promise.resolve({ id: TEST_AUDIENCE_ID }),
+    });
+
+    expect(res.status).toBe(403);
+    const body = await res.json();
+    expect(body).toEqual({ error: 'Forbidden' });
+  });
+
+  it('deletes the audience and returns success', async () => {
+    mockAuth();
+    const audienceChain = {
+      from: vi.fn().mockReturnThis(),
+      where: vi.fn().mockResolvedValue([TEST_AUDIENCE]),
+    };
+    mockDbSelect.mockReturnValueOnce(audienceChain as never);
+
+    const deleteChain = {
+      where: vi.fn().mockResolvedValue(undefined),
+    };
+    mockDbDelete.mockReturnValueOnce(deleteChain as never);
+
+    const res = await DELETE(makeDeleteRequest(TEST_AUDIENCE_ID), {
+      params: Promise.resolve({ id: TEST_AUDIENCE_ID }),
+    });
+
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body).toEqual({ data: { success: true } });
+    expect(mockDbDelete).toHaveBeenCalled();
   });
 });

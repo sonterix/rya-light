@@ -12,11 +12,17 @@ vi.mock('@/hooks/use-audiences', () => ({
   useCreateAudience: () => mockUseCreateAudience(),
   useAudienceWithRespondents: (id: string | null) => mockUseAudienceWithRespondents(id),
   useRespondentsForPreview: () => mockUseRespondentsForPreview(),
+  useDeleteAudience: () => ({ mutate: vi.fn() }),
+  useUpdateAudience: () => ({ mutate: vi.fn() }),
 }));
 
 vi.mock('@/stores/audience-store', () => ({
-  useAudienceStore: (selector: (state: { selectedAudienceId: string | null; setSelectedAudienceId: (id: string) => void }) => unknown) =>
+  useAudienceStore: (selector: (state: { selectedAudienceId: string | null; setSelectedAudienceId: (id: string) => void; clearSelectedAudienceId: () => void }) => unknown) =>
     mockUseAudienceStore(selector),
+}));
+
+vi.mock('sonner', () => ({
+  toast: { success: vi.fn(), error: vi.fn() },
 }));
 
 vi.mock('@/lib/filter-matching', () => ({
@@ -42,8 +48,8 @@ function setupDefaults() {
   mockUseAudienceWithRespondents.mockReturnValue({ data: undefined, isLoading: false });
   mockUseRespondentsForPreview.mockReturnValue({ data: [], isLoading: false });
   mockUseAudienceStore.mockImplementation(
-    (selector: (state: { selectedAudienceId: string | null; setSelectedAudienceId: (id: string) => void }) => unknown) =>
-      selector({ selectedAudienceId: null, setSelectedAudienceId: vi.fn() }),
+    (selector: (state: { selectedAudienceId: string | null; setSelectedAudienceId: (id: string) => void; clearSelectedAudienceId: () => void }) => unknown) =>
+      selector({ selectedAudienceId: null, setSelectedAudienceId: vi.fn(), clearSelectedAudienceId: vi.fn() }),
   );
 }
 

@@ -6,7 +6,15 @@ import React from 'react';
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
 
-import { useAudiences, useCreateAudience, useAudienceWithRespondents } from './use-audiences';
+const mockClearSelectedAudienceId = vi.fn();
+let mockSelectedAudienceId: string | null = null;
+
+vi.mock('@/stores/audience-store', () => ({
+  useAudienceStore: (selector: (state: { selectedAudienceId: string | null; clearSelectedAudienceId: () => void }) => unknown) =>
+    selector({ selectedAudienceId: mockSelectedAudienceId, clearSelectedAudienceId: mockClearSelectedAudienceId }),
+}));
+
+import { useAudiences, useCreateAudience, useAudienceWithRespondents, useUpdateAudience, useDeleteAudience } from './use-audiences';
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -135,6 +143,116 @@ describe('useCreateAudience', () => {
     const { result } = renderHook(() => useCreateAudience(), { wrapper: createWrapper() });
 
     result.current.mutate({ name: '', filters: null, manualIncludes: [], manualExcludes: [] });
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+  });
+});
+
+describe('useUpdateAudience', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('sends PATCH request and returns updated audience', async () => {
+    const updatedAudience = { ...TEST_AUDIENCE, name: 'Updated Name' };
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ data: updatedAudience }),
+    });
+
+    const { result } = renderHook(() => useUpdateAudience(), { wrapper: createWrapper() });
+
+    result.current.mutate({ id: 'aud-1', name: 'Updated Name' });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      '/api/audiences/aud-1',
+      expect.objectContaining({ method: 'PATCH' }),
+    );
+    expect(result.current.data?.name).toBe('Updated Name');
+  });
+
+  it('handles update error', async () => {
+    mockFetch.mockResolvedValue({
+      ok: false,
+      json: () => Promise.resolve({ error: 'Forbidden' }),
+    });
+
+    const { result } = renderHook(() => useUpdateAudience(), { wrapper: createWrapper() });
+
+    result.current.mutate({ id: 'aud-1', name: 'New Name' });
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+  });
+});
+
+describe('useDeleteAudience', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockSelectedAudienceId = null;
+    mockClearSelectedAudienceId.mockReset();
+  });
+
+  it('sends DELETE request on mutate', async () => {
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ data: { success: true } }),
+    });
+
+    const { result } = renderHook(() => useDeleteAudience(), { wrapper: createWrapper() });
+
+    result.current.mutate('aud-1');
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      '/api/audiences/aud-1',
+      expect.objectContaining({ method: 'DELETE' }),
+    );
+  });
+
+  it('clears selected audience when deleting the selected one', async () => {
+    mockSelectedAudienceId = 'aud-1';
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ data: { success: true } }),
+    });
+
+    const { result } = renderHook(() => useDeleteAudience(), { wrapper: createWrapper() });
+
+    result.current.mutate('aud-1');
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(mockClearSelectedAudienceId).toHaveBeenCalled();
+  });
+
+  it('does not clear selection when deleting a non-selected audience', async () => {
+    mockSelectedAudienceId = 'aud-2';
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ data: { success: true } }),
+    });
+
+    const { result } = renderHook(() => useDeleteAudience(), { wrapper: createWrapper() });
+
+    result.current.mutate('aud-1');
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(mockClearSelectedAudienceId).not.toHaveBeenCalled();
+  });
+
+  it('handles delete error', async () => {
+    mockFetch.mockResolvedValue({
+      ok: false,
+      json: () => Promise.resolve({ error: 'Forbidden' }),
+    });
+
+    const { result } = renderHook(() => useDeleteAudience(), { wrapper: createWrapper() });
+
+    result.current.mutate('aud-1');
 
     await waitFor(() => expect(result.current.isError).toBe(true));
   });

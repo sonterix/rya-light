@@ -4,6 +4,7 @@ import { Plus } from 'lucide-react';
 import { useState } from 'react';
 
 import { AudienceCreateSheet } from '@/components/audience/audience-create-sheet';
+import { AudienceEditSheet } from '@/components/audience/audience-edit-sheet';
 import { AudienceGrid } from '@/components/audience/audience-grid';
 import { Button } from '@/components/ui/button';
 import type { Audience } from '@/db/schema';
@@ -34,6 +35,8 @@ export default function DashboardPage() {
         onOpenChange={setIsCreateOpen}
         onCreated={handleAudienceCreated}
       />
+
+      <AudienceEditSheet />
     </div>
   );
 }
