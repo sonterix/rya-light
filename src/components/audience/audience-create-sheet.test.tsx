@@ -3,11 +3,11 @@ import userEvent from '@testing-library/user-event';
 
 const mockMutate = vi.fn();
 const mockUseCreateAudience = vi.fn();
-const mockUseAudienceWithRespondents = vi.fn();
+const mockUseRespondentsForPreview = vi.fn();
 
 vi.mock('@/hooks/use-audiences', () => ({
   useCreateAudience: () => mockUseCreateAudience(),
-  useAudienceWithRespondents: () => mockUseAudienceWithRespondents(),
+  useRespondentsForPreview: () => mockUseRespondentsForPreview(),
 }));
 
 vi.mock('@/lib/filter-matching', () => ({
@@ -31,8 +31,8 @@ describe('AudienceCreateSheet', () => {
       isError: false,
       error: null,
     });
-    mockUseAudienceWithRespondents.mockReturnValue({
-      data: undefined,
+    mockUseRespondentsForPreview.mockReturnValue({
+      data: [],
       isLoading: false,
     });
   });

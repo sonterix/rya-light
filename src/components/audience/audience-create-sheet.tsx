@@ -13,7 +13,7 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet';
 import type { Audience } from '@/db/schema';
-import { useCreateAudience } from '@/hooks/use-audiences';
+import { useCreateAudience, useRespondentsForPreview } from '@/hooks/use-audiences';
 import type { AudienceFilters } from '@/lib/filter-matching';
 import { applyFilters } from '@/lib/filter-matching';
 
@@ -22,20 +22,20 @@ import { FilterControls } from './filter-controls';
 interface FormProps {
   onCreated: (audience: Audience) => void;
   onClose: () => void;
-  allRespondents: { respondentId: number }[];
 }
 
-function AudienceCreateForm({ onCreated, onClose, allRespondents }: FormProps) {
+function AudienceCreateForm({ onCreated, onClose }: FormProps) {
   const [name, setName] = useState('');
   const [filters, setFilters] = useState<AudienceFilters>({});
 
   const { mutate, isPending } = useCreateAudience();
+  const { data: allRespondents = [] } = useRespondentsForPreview();
 
   const matchingCount = applyFilters({
     filters,
     manualIncludes: null,
     manualExcludes: null,
-    respondents: allRespondents as Parameters<typeof applyFilters>[0]['respondents'],
+    respondents: allRespondents,
   }).length;
 
   function handleSubmit() {
@@ -98,15 +98,9 @@ interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onCreated: (audience: Audience) => void;
-  allRespondents?: { respondentId: number }[];
 }
 
-export function AudienceCreateSheet({
-  open,
-  onOpenChange,
-  onCreated,
-  allRespondents = [],
-}: Props) {
+export function AudienceCreateSheet({ open, onOpenChange, onCreated }: Props) {
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="right" className="w-full overflow-y-auto sm:max-w-xl">
@@ -118,7 +112,6 @@ export function AudienceCreateSheet({
             key={String(open)}
             onCreated={onCreated}
             onClose={() => onOpenChange(false)}
-            allRespondents={allRespondents}
           />
         )}
       </SheetContent>

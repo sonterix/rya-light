@@ -3,6 +3,26 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { Audience, Respondent } from '@/db/schema';
 import type { AudienceFilters } from '@/lib/filter-matching';
 
+async function fetchAllRespondentsForPreview(): Promise<Respondent[]> {
+  const res = await fetch('/api/respondents/preview');
+  const body: unknown = await res.json();
+
+  if (!res.ok) {
+    const errorBody = body as { error?: string };
+    throw new Error(errorBody.error ?? 'Failed to fetch respondents');
+  }
+
+  const successBody = body as { data: Respondent[] };
+  return successBody.data;
+}
+
+export function useRespondentsForPreview() {
+  return useQuery({
+    queryKey: ['respondents', 'preview'],
+    queryFn: fetchAllRespondentsForPreview,
+  });
+}
+
 interface AudienceWithRespondents {
   audience: Audience;
   respondents: Respondent[];

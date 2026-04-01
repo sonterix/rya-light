@@ -4,12 +4,14 @@ import userEvent from '@testing-library/user-event';
 const mockUseAudiences = vi.fn();
 const mockUseCreateAudience = vi.fn();
 const mockUseAudienceWithRespondents = vi.fn();
+const mockUseRespondentsForPreview = vi.fn();
 const mockUseAudienceStore = vi.fn();
 
 vi.mock('@/hooks/use-audiences', () => ({
   useAudiences: () => mockUseAudiences(),
   useCreateAudience: () => mockUseCreateAudience(),
   useAudienceWithRespondents: (id: string | null) => mockUseAudienceWithRespondents(id),
+  useRespondentsForPreview: () => mockUseRespondentsForPreview(),
 }));
 
 vi.mock('@/stores/audience-store', () => ({
@@ -38,6 +40,7 @@ function setupDefaults() {
   mockUseAudiences.mockReturnValue({ data: [], isLoading: false });
   mockUseCreateAudience.mockReturnValue({ mutate: vi.fn(), isPending: false });
   mockUseAudienceWithRespondents.mockReturnValue({ data: undefined, isLoading: false });
+  mockUseRespondentsForPreview.mockReturnValue({ data: [], isLoading: false });
   mockUseAudienceStore.mockImplementation(
     (selector: (state: { selectedAudienceId: string | null; setSelectedAudienceId: (id: string) => void }) => unknown) =>
       selector({ selectedAudienceId: null, setSelectedAudienceId: vi.fn() }),
