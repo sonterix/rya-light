@@ -1,5 +1,6 @@
 -- Demo user
 INSERT INTO auth.users (
+  instance_id,
   id,
   email,
   encrypted_password,
@@ -9,8 +10,18 @@ INSERT INTO auth.users (
   raw_app_meta_data,
   raw_user_meta_data,
   aud,
-  role
+  role,
+  confirmation_token,
+  recovery_token,
+  email_change_token_new,
+  email_change,
+  email_change_token_current,
+  reauthentication_token,
+  phone,
+  phone_change,
+  phone_change_token
 ) VALUES (
+  '00000000-0000-0000-0000-000000000000',
   '00000000-0000-0000-0000-000000000001',
   'john@example.com',
   crypt('password123', gen_salt('bf')),
@@ -20,7 +31,16 @@ INSERT INTO auth.users (
   '{"provider":"email","providers":["email"]}',
   '{}',
   'authenticated',
-  'authenticated'
+  'authenticated',
+  '',
+  '',
+  '',
+  '',
+  '',
+  '',
+  '',
+  '',
+  ''
 );
 
 INSERT INTO auth.identities (
