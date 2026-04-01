@@ -17,6 +17,13 @@ export function AudienceCardWithCount({ audienceId, isActive, onSelect, onEdit, 
   const { data, isLoading } = useAudienceWithRespondents(audienceId);
   const audience = data?.audience;
   const respondentCount = data?.respondents.length ?? 0;
+  const filterCount =
+    audience?.filters !== null &&
+    audience?.filters !== undefined &&
+    typeof audience.filters === 'object' &&
+    !Array.isArray(audience.filters)
+      ? Object.keys(audience.filters).length
+      : 0;
 
   if (isLoading || !audience) {
     return (
@@ -30,6 +37,7 @@ export function AudienceCardWithCount({ audienceId, isActive, onSelect, onEdit, 
     <AudienceCard
       audience={audience}
       respondentCount={respondentCount}
+      filterCount={filterCount}
       isActive={isActive}
       onSelect={onSelect}
       onEdit={onEdit}

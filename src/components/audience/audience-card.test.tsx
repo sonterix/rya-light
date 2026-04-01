@@ -20,6 +20,7 @@ describe('AudienceCard', () => {
       <AudienceCard
         audience={TEST_AUDIENCE}
         respondentCount={42}
+        filterCount={2}
         isActive={false}
         onSelect={vi.fn()}
         onEdit={vi.fn()}
@@ -35,6 +36,7 @@ describe('AudienceCard', () => {
       <AudienceCard
         audience={TEST_AUDIENCE}
         respondentCount={42}
+        filterCount={2}
         isActive={false}
         onSelect={vi.fn()}
         onEdit={vi.fn()}
@@ -53,6 +55,7 @@ describe('AudienceCard', () => {
       <AudienceCard
         audience={TEST_AUDIENCE}
         respondentCount={10}
+        filterCount={2}
         isActive={false}
         onSelect={onSelect}
         onEdit={vi.fn()}
@@ -70,6 +73,7 @@ describe('AudienceCard', () => {
       <AudienceCard
         audience={TEST_AUDIENCE}
         respondentCount={10}
+        filterCount={2}
         isActive={true}
         onSelect={vi.fn()}
         onEdit={vi.fn()}
@@ -85,6 +89,7 @@ describe('AudienceCard', () => {
       <AudienceCard
         audience={TEST_AUDIENCE}
         respondentCount={10}
+        filterCount={2}
         isActive={false}
         onSelect={vi.fn()}
         onEdit={vi.fn()}
@@ -100,6 +105,7 @@ describe('AudienceCard', () => {
       <AudienceCard
         audience={TEST_AUDIENCE}
         respondentCount={10}
+        filterCount={2}
         isActive={false}
         onSelect={vi.fn()}
         onEdit={vi.fn()}
@@ -118,6 +124,7 @@ describe('AudienceCard', () => {
       <AudienceCard
         audience={TEST_AUDIENCE}
         respondentCount={10}
+        filterCount={2}
         isActive={false}
         onSelect={vi.fn()}
         onEdit={vi.fn()}
@@ -138,6 +145,7 @@ describe('AudienceCard', () => {
       <AudienceCard
         audience={TEST_AUDIENCE}
         respondentCount={10}
+        filterCount={2}
         isActive={false}
         onSelect={onSelect}
         onEdit={vi.fn()}

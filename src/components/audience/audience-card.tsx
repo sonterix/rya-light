@@ -1,6 +1,6 @@
 'use client';
 
-import { Pencil, Trash2, Users } from 'lucide-react';
+import { Filter, Pencil, Trash2, Users } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,13 +9,14 @@ import type { Audience } from '@/db/schema';
 interface Props {
   audience: Audience;
   respondentCount: number;
+  filterCount: number;
   isActive: boolean;
   onSelect: (id: string) => void;
   onEdit: (id: string) => void;
   onDelete: (id: string) => void;
 }
 
-export function AudienceCard({ audience, respondentCount, isActive, onSelect, onEdit, onDelete }: Props) {
+export function AudienceCard({ audience, respondentCount, filterCount, isActive, onSelect, onEdit, onDelete }: Props) {
   function handleEdit(e: React.MouseEvent) {
     e.stopPropagation();
     onEdit(audience.id);
@@ -68,9 +69,22 @@ export function AudienceCard({ audience, respondentCount, isActive, onSelect, on
           </div>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center gap-1.5 text-muted-foreground">
-            <Users className="size-3.5" />
-            <span className="text-xs">{respondentCount} respondents</span>
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-3 text-xs text-muted-foreground">
+              <span className="flex items-center gap-1">
+                <Users className="size-3.5" />
+                {respondentCount} respondents
+              </span>
+              {filterCount > 0 && (
+                <span className="flex items-center gap-1">
+                  <Filter className="size-3.5" />
+                  {filterCount} filters
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {new Date(audience.createdAt).toLocaleDateString()}
+            </p>
           </div>
         </CardContent>
       </Card>
