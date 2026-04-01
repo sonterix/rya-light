@@ -116,3 +116,24 @@ Shared Utilities (new this iteration)
 - useGenerateOpportunity(): streaming consumer hook for opportunity generation, lives at src/hooks/use-generate-opportunity.ts
 - OpportunityCard: visual card for opportunity output, lives at src/components/creative/opportunity-card.tsx
 - POST /api/creative/generate now handles all 4 types: persona, campaign, messaging, opportunity
+
+[2026-04-01] Issue(s) 016: Creative output editing
+- PATCH /api/creative/[id] updates content JSONB with ownership verification. GET /api/creative/[id] returns single output.
+- Generate route extended with refinement mode: accepts optional existing_content + refinement_instruction. REFINEMENT_SYSTEM_SUFFIX constrains AI to audience-relevant modifications, rejects off-topic prompts. All 4 workflow types support refinement.
+- EditableField component: click-to-edit text with blur/Enter save, Escape cancel
+- RefinementPanel component: per-type preset buttons, genre/trait dropdowns for variable presets ([genre]/[trait]), freeform input
+- CreativeOutputEditCard: full editing card with inline editable fields per type, refinement panel, regenerate with confirmation, delete with confirmation
+- useRefineCreative hook: streaming refinement consumer, calls generate with existing content + instruction, accumulates partial results
+- useCreativeOutput(id) and usePatchCreativeOutput() hooks added
+- 467 total tests across 52 test files, all passing
+
+Shared Utilities (new this iteration)
+- useRefineCreative(): streaming refinement hook, lives at src/hooks/use-refine-creative.ts
+- useCreativeOutput(id): React Query hook for single creative output, lives at src/hooks/use-creative.ts
+- usePatchCreativeOutput(): mutation hook for PATCH content, lives at src/hooks/use-creative.ts
+- EditableField: inline-editable text component, lives at src/components/creative/editable-field.tsx
+- RefinementPanel: per-type refinement UI with presets and freeform, lives at src/components/creative/refinement-panel.tsx
+- CreativeOutputEditCard: full creative output editing card, lives at src/components/creative/creative-output-edit-card.tsx
+- PATCH /api/creative/[id]: update content endpoint, lives at src/app/api/creative/[id]/route.ts
+- GET /api/creative/[id]: single output endpoint, lives at src/app/api/creative/[id]/route.ts
+- POST /api/creative/generate now supports refinement mode with existing_content + refinement_instruction

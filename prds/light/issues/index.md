@@ -3,10 +3,10 @@ feature: Light
 prd: .claude/prds/light/prd.md
 generated: 2026-04-01
 total: 16
-ready: 1
+ready: 0
 in_progress: 0
 blocked: 0
-done: 15
+done: 16
 ---
 
 # Light — Issues
@@ -28,4 +28,4 @@ done: 15
 | 6        | 013 | `013-campaign-concepts-workflow.md`               | Campaign Concepts workflow                         | Done    | 1        | `012-persona-workflow-streaming-foundation.md`                                                    |
 | 6        | 014 | `014-messaging-angles-workflow.md`                | Messaging Angles workflow                          | Done    | 1        | `012-persona-workflow-streaming-foundation.md`                                                    |
 | 6        | 015 | `015-content-opportunity-finder-workflow.md`      | Content Opportunity Finder workflow                | Done    | 1        | `012-persona-workflow-streaming-foundation.md`                                                    |
-| 6        | 016 | `016-creative-output-editing.md`                  | Creative output editing                            | Ready   | 0        | `012-persona-workflow-streaming-foundation.md`                                                    |
+| 6        | 016 | `016-creative-output-editing.md`                  | Creative output editing                            | Done    | 1        | `012-persona-workflow-streaming-foundation.md`                                                    |

@@ -1,9 +1,9 @@
 ---
 id: 016
 title: Creative output editing
-status: Ready
+status: Done
 priority: 6
-attempts: 0
+attempts: 1
 blocked_by: ["012-persona-workflow-streaming-foundation.md"]
 user_stories: [48, 49, 50, 51, 52]
 created: 2026-04-01
