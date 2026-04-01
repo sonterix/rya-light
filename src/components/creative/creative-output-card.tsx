@@ -20,8 +20,8 @@ function getContentPreview(output: CreativeOutput): string {
 
   if (output.type === 'persona') {
     const persona = content as PersonaContent;
-    return persona.tagline
-      ? `${persona.name} - ${persona.tagline}`
+    return persona.demographicSummary
+      ? `${persona.name} - ${persona.demographicSummary}`
       : persona.name;
   }
 
