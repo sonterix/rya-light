@@ -3,10 +3,10 @@
 import { Plus } from 'lucide-react';
 import { useState } from 'react';
 
-import { AudienceCreateSheet } from '@/components/audience/audience-create-sheet';
-import { AudienceEditSheet } from '@/components/audience/audience-edit-sheet';
-import { AudienceGrid } from '@/components/audience/audience-grid';
-import { GenreInsightsChart } from '@/components/audience/genre-insights-chart';
+import { AudienceCreateSheet } from '@/components/audience/AudienceCreateSheet';
+import { AudienceEditSheet } from '@/components/audience/AudienceEditSheet';
+import { AudienceGrid } from '@/components/audience/AudienceGrid';
+import { GenreInsightsChart } from '@/components/audience/GenreInsightsChart';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { Audience } from '@/db/schema';

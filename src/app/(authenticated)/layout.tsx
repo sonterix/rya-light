@@ -1,8 +1,8 @@
 import { redirect } from 'next/navigation';
 import type { ReactNode } from 'react';
 
-import { AppSidebar } from '@/components/shared/app-sidebar';
-import { AudienceAutoSelectProvider } from '@/components/shared/audience-auto-select-provider';
+import { AppSidebar } from '@/components/shared/AppSidebar';
+import { AudienceAutoSelectProvider } from '@/components/shared/AudienceAutoSelectProvider';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { createClient } from '@/lib/supabase/server';
 

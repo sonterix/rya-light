@@ -14,7 +14,7 @@ vi.mock('@/lib/filter-matching', () => ({
   applyFilters: vi.fn().mockReturnValue([]),
 }));
 
-import { AudienceCreateSheet } from './audience-create-sheet';
+import { AudienceCreateSheet } from './AudienceCreateSheet';
 
 function renderSheet(open = true) {
   return render(

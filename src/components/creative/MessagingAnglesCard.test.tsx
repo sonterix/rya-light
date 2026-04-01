@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 
 import type { MessagingSchema } from '@/lib/schemas/messaging-schema';
 
-import { MessagingAnglesCard } from './messaging-angles-card';
+import { MessagingAnglesCard } from './MessagingAnglesCard';
 
 const FULL_MESSAGING: MessagingSchema = {
   angles: [

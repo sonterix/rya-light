@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 
-import { CreativeOutputList } from '@/components/creative/creative-output-list';
-import { NoAudiencePrompt } from '@/components/creative/no-audience-prompt';
-import { WorkflowTypeSelector } from '@/components/creative/workflow-type-selector';
+import { CreativeOutputList } from '@/components/creative/CreativeOutputList';
+import { NoAudiencePrompt } from '@/components/creative/NoAudiencePrompt';
+import { WorkflowTypeSelector } from '@/components/creative/WorkflowTypeSelector';
 import { Button } from '@/components/ui/button';
 import { useAudiences } from '@/hooks/use-audiences';
 import type { WorkflowType } from '@/hooks/use-creative';

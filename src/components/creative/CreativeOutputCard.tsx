@@ -8,39 +8,32 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import type { CreativeOutput } from '@/db/schema';
 import { useDeleteCreativeOutput } from '@/hooks/use-creative';
-import type {
-  CampaignContent,
-  MessagingContent,
-  OpportunityContent,
-  PersonaContent,
+import {
+  isCampaignContent,
+  isMessagingContent,
+  isOpportunityContent,
+  isPersonaContent,
 } from '@/types/creative';
 
 function getContentPreview(output: CreativeOutput): string {
-  const content = output.content;
+  const { content } = output;
 
-  if (output.type === 'persona') {
-    const persona = content as PersonaContent;
-    return persona.demographicSummary
-      ? `${persona.name} - ${persona.demographicSummary}`
-      : persona.name;
+  if (isPersonaContent(content)) {
+    return content.demographicSummary
+      ? `${content.name} - ${content.demographicSummary}`
+      : content.name;
   }
 
-  if (output.type === 'campaign') {
-    const campaign = content as CampaignContent;
-    const first = campaign.concepts[0];
-    return first?.name ?? 'Campaign Concepts';
+  if (isCampaignContent(content)) {
+    return content.concepts[0]?.name ?? 'Campaign Concepts';
   }
 
-  if (output.type === 'messaging') {
-    const messaging = content as MessagingContent;
-    const first = messaging.angles[0];
-    return first?.name ?? 'Messaging Angles';
+  if (isMessagingContent(content)) {
+    return content.angles[0]?.name ?? 'Messaging Angles';
   }
 
-  if (output.type === 'opportunity') {
-    const opportunity = content as OpportunityContent;
-    const first = opportunity.opportunities?.[0];
-    return first?.gapGenre ?? 'Content Opportunities';
+  if (isOpportunityContent(content)) {
+    return content.opportunities?.[0]?.gapGenre ?? 'Content Opportunities';
   }
 
   return 'No preview available';

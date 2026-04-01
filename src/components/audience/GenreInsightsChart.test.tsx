@@ -18,7 +18,7 @@ vi.mock('recharts', () => ({
   LabelList: () => null,
 }));
 
-import { GenreInsightsChart } from './genre-insights-chart';
+import { GenreInsightsChart } from './GenreInsightsChart';
 
 const GENRES = [
   { genreSlug: 'RQ.2.34', genreName: 'Cooking / Baking', avgInterest: '1.3', pctHighlyInterested: '1.0', respondentCount: 10 },

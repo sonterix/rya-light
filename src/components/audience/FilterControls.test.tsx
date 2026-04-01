@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 import type { AudienceFilters } from '@/lib/filter-matching';
 
-import { FilterControls } from './filter-controls';
+import { FilterControls } from './FilterControls';
 
 function ControlledFilterControls({ initial = {} }: { initial?: AudienceFilters }) {
   const [filters, setFilters] = useState<AudienceFilters>(initial);

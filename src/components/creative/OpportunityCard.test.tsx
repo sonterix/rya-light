@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 
 import type { OpportunitySchema } from '@/lib/schemas/opportunity-schema';
 
-import { OpportunityCard } from './opportunity-card';
+import { OpportunityCard } from './OpportunityCard';
 
 const FULL_OPPORTUNITY: OpportunitySchema = {
   opportunities: [

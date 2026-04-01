@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { AudienceCard } from './audience-card';
+import { AudienceCard } from './AudienceCard';
 
 const TEST_AUDIENCE = {
   id: 'aud-1',

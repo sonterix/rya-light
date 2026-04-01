@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 
 import type { PersonaSchema } from '@/lib/schemas/persona-schema';
 
-import { PersonaCard } from './persona-card';
+import { PersonaCard } from './PersonaCard';
 
 const FULL_PERSONA: PersonaSchema = {
   name: 'Alex Chen',

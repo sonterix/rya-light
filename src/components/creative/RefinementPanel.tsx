@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import type { WorkflowType } from '@/hooks/use-creative';
 import { useRefineCreative } from '@/hooks/use-refine-creative';
+import type { CreativeContent } from '@/types/creative';
 
 interface Preset {
   label: string;
@@ -61,8 +62,8 @@ interface Props {
   outputId: string;
   audienceId: string;
   type: WorkflowType;
-  content: Record<string, unknown>;
-  onRefined: (content: Record<string, unknown>) => void;
+  content: CreativeContent;
+  onRefined: (content: CreativeContent) => void;
   onRefiningChange?: (isRefining: boolean) => void;
   genres?: string[];
   traits?: string[];

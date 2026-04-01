@@ -1,11 +1,13 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
+import type { CreativeContent } from '@/types/creative';
+
 const mockRefine = vi.fn();
 const defaultRefineState = {
   refine: mockRefine,
   isRefining: false,
-  partialContent: null as Record<string, unknown> | null,
+  partialContent: null as CreativeContent | null,
   error: null as string | null,
 };
 const mockUseRefineCreative = vi.fn(
@@ -17,9 +19,15 @@ vi.mock('@/hooks/use-refine-creative', () => ({
     mockUseRefineCreative(outputId, type),
 }));
 
-import { RefinementPanel } from './refinement-panel';
+import { RefinementPanel } from './RefinementPanel';
 
-const TEST_CONTENT = { name: 'Alex', demographicSummary: 'test' };
+const TEST_CONTENT: CreativeContent = {
+  name: 'Alex',
+  demographicSummary: 'test',
+  topInterests: [],
+  lifestyleDescription: 'Active lifestyle',
+  howToReachThem: 'Social media',
+};
 
 describe('RefinementPanel', () => {
   beforeEach(() => {

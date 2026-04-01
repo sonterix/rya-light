@@ -8,7 +8,7 @@ vi.mock('next/link', () => ({
   ),
 }));
 
-import { RespondentPagination } from './respondent-pagination';
+import { RespondentPagination } from './RespondentPagination';
 
 describe('RespondentPagination', () => {
   it('renders nothing when totalPages is 1', () => {

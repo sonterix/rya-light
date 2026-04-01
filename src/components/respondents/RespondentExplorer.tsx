@@ -1,8 +1,8 @@
 'use client';
 
-import { RespondentPagination } from '@/components/respondents/respondent-pagination';
-import { RespondentTable } from '@/components/respondents/respondent-table';
-import { RespondentTableSkeleton } from '@/components/respondents/respondent-table-skeleton';
+import { RespondentPagination } from '@/components/respondents/RespondentPagination';
+import { RespondentTable } from '@/components/respondents/RespondentTable';
+import { RespondentTableSkeleton } from '@/components/respondents/RespondentTableSkeleton';
 import { useRespondents } from '@/hooks/use-respondents';
 
 interface Props {

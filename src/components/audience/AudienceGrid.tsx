@@ -5,8 +5,8 @@ import { toast } from 'sonner';
 import { useAudiences, useDeleteAudience } from '@/hooks/use-audiences';
 import { useAudienceStore } from '@/stores/audience-store';
 
-import { AudienceCardSkeleton } from './audience-card-skeleton';
-import { AudienceCardWithCount } from './audience-card-with-count';
+import { AudienceCardSkeleton } from './AudienceCardSkeleton';
+import { AudienceCardWithCount } from './AudienceCardWithCount';
 
 interface Props {
   onEdit: (id: string) => void;

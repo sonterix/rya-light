@@ -7,17 +7,17 @@ vi.mock('@/hooks/use-respondents', () => ({
   useRespondentDetail: vi.fn(),
 }));
 
-vi.mock('@/components/respondents/respondent-table', () => ({
+vi.mock('@/components/respondents/RespondentTable', () => ({
   RespondentTable: ({ respondents }: { respondents: unknown[] }) => (
     <div data-testid="respondent-table">Table with {respondents.length} rows</div>
   ),
 }));
 
-vi.mock('@/components/respondents/respondent-table-skeleton', () => ({
+vi.mock('@/components/respondents/RespondentTableSkeleton', () => ({
   RespondentTableSkeleton: () => <div data-testid="table-skeleton">Loading...</div>,
 }));
 
-vi.mock('@/components/respondents/respondent-pagination', () => ({
+vi.mock('@/components/respondents/RespondentPagination', () => ({
   RespondentPagination: ({
     currentPage,
     totalPages,
@@ -31,7 +31,7 @@ vi.mock('@/components/respondents/respondent-pagination', () => ({
   ),
 }));
 
-import { RespondentExplorer } from './respondent-explorer';
+import { RespondentExplorer } from './RespondentExplorer';
 
 describe('RespondentExplorer', () => {
   beforeEach(() => {

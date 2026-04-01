@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 
 import type { CampaignSchema } from '@/lib/schemas/campaign-schema';
 
-import { CampaignConceptsCard } from './campaign-concepts-card';
+import { CampaignConceptsCard } from './CampaignConceptsCard';
 
 const FULL_CAMPAIGN: CampaignSchema = {
   concepts: [

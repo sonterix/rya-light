@@ -4,6 +4,8 @@ import userEvent from '@testing-library/user-event';
 import type { ReactNode } from 'react';
 import React from 'react';
 
+import type { CreativeOutput } from '@/db/schema';
+
 vi.mock('sonner', () => ({ toast: { success: vi.fn(), error: vi.fn() } }));
 
 const mockDeleteOutput = vi.fn();
@@ -53,9 +55,9 @@ vi.mock('@/hooks/use-generate-opportunity', () => ({
   })),
 }));
 
-import { CreativeOutputEditCard } from './creative-output-edit-card';
+import { CreativeOutputEditCard } from './CreativeOutputEditCard';
 
-const TEST_PERSONA_OUTPUT = {
+const TEST_PERSONA_OUTPUT: CreativeOutput = {
   id: 'out-1',
   userId: 'user-1',
   audienceId: 'aud-1',

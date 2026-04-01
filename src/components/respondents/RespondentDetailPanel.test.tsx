@@ -6,7 +6,7 @@ vi.mock('@/hooks/use-respondents', () => ({
   useRespondentDetail: (id: number) => mockUseRespondentDetail(id),
 }));
 
-import { RespondentDetailPanel } from './respondent-detail-panel';
+import { RespondentDetailPanel } from './RespondentDetailPanel';
 
 const mockDetailData = {
   data: {

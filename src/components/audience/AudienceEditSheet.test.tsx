@@ -15,7 +15,7 @@ vi.mock('sonner', () => ({
   toast: { error: vi.fn() },
 }));
 
-import { AudienceEditSheet } from './audience-edit-sheet';
+import { AudienceEditSheet } from './AudienceEditSheet';
 
 const TEST_AUDIENCE = {
   id: 'aud-1',

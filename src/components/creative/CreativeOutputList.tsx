@@ -1,4 +1,4 @@
-import { CreativeOutputEditCard } from '@/components/creative/creative-output-edit-card';
+import { CreativeOutputEditCard } from '@/components/creative/CreativeOutputEditCard';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { CreativeOutput } from '@/db/schema';
 

@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 
 const mockRespondentDetailPanel = vi.fn((_props: { respondentId: number }) => null);
 
-vi.mock('@/components/respondents/respondent-detail-panel', () => ({
+vi.mock('@/components/respondents/RespondentDetailPanel', () => ({
   RespondentDetailPanel: (props: { respondentId: number }) => {
     mockRespondentDetailPanel(props);
     return <div data-testid={`detail-panel-${props.respondentId}`}>Detail Panel</div>;
@@ -15,7 +15,7 @@ vi.mock('lucide-react', () => ({
   ChevronRight: () => <span data-testid="chevron-right" />,
 }));
 
-import { RespondentTable } from './respondent-table';
+import { RespondentTable } from './RespondentTable';
 
 const mockRespondents = [
   {

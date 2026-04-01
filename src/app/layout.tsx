@@ -3,7 +3,7 @@ import { Inter, Geist_Mono } from 'next/font/google';
 import type { ReactNode } from 'react';
 import { Toaster } from 'sonner';
 
-import { QueryProvider } from '@/components/providers/query-provider';
+import { QueryProvider } from '@/components/providers/QueryProvider';
 
 import './globals.css';
 

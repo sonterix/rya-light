@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { EditableField } from './editable-field';
+import { EditableField } from './EditableField';
 
 describe('EditableField', () => {
   it('renders the value as static text initially', () => {

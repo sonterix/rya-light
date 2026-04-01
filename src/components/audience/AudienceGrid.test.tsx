@@ -24,7 +24,7 @@ vi.mock('sonner', () => ({
   },
 }));
 
-import { AudienceGrid } from './audience-grid';
+import { AudienceGrid } from './AudienceGrid';
 
 const TEST_AUDIENCE_1 = {
   id: 'aud-1',

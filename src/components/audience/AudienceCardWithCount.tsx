@@ -2,8 +2,8 @@
 
 import { useAudienceWithRespondents } from '@/hooks/use-audiences';
 
-import { AudienceCard } from './audience-card';
-import { AudienceCardSkeleton } from './audience-card-skeleton';
+import { AudienceCard } from './AudienceCard';
+import { AudienceCardSkeleton } from './AudienceCardSkeleton';
 
 interface Props {
   audienceId: string;

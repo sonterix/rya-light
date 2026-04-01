@@ -1,4 +1,4 @@
-import { RespondentExplorer } from '@/components/respondents/respondent-explorer';
+import { RespondentExplorer } from '@/components/respondents/RespondentExplorer';
 
 interface Props {
   searchParams: Promise<{ page?: string }>;

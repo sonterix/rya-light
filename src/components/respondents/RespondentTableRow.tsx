@@ -2,7 +2,7 @@
 
 import { ChevronDown, ChevronRight } from 'lucide-react';
 
-import { RespondentDetailPanel } from '@/components/respondents/respondent-detail-panel';
+import { RespondentDetailPanel } from '@/components/respondents/RespondentDetailPanel';
 import type { RespondentSummary } from '@/types/respondent';
 
 interface Props {

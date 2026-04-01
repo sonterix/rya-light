@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 
 import type { Respondent } from '@/db/schema';
 
-import { ManualOverridesPanel } from './manual-overrides-panel';
+import { ManualOverridesPanel } from './ManualOverridesPanel';
 
 function makeRespondent(overrides: Partial<Respondent> = {}): Respondent {
   return {

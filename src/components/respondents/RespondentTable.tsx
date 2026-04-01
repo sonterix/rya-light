@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-import { RespondentTableRow } from '@/components/respondents/respondent-table-row';
+import { RespondentTableRow } from '@/components/respondents/RespondentTableRow';
 import type { RespondentSummary } from '@/types/respondent';
 
 interface Props {

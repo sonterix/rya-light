@@ -27,7 +27,7 @@ vi.mock('next/link', () => ({
 
 import { SidebarProvider } from '@/components/ui/sidebar';
 
-import { AppSidebar } from './app-sidebar';
+import { AppSidebar } from './AppSidebar';
 
 function renderSidebar(userEmail = 'user@example.com') {
   const queryClient = new QueryClient();
