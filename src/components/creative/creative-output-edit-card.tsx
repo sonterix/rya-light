@@ -277,7 +277,15 @@ export function CreativeOutputEditCard({ output, audienceId, genres, traits }: P
   }
 
   return (
-    <Card>
+    <Card className="relative">
+      {isRegenerating && (
+        <div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-background/80">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <div className="size-4 animate-spin rounded-full border-2 border-muted-foreground border-t-transparent" />
+            Regenerating...
+          </div>
+        </div>
+      )}
       <CardHeader className="pb-2">
         <p className="text-muted-foreground text-xs">{createdAt}</p>
       </CardHeader>
