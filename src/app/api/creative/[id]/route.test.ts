@@ -263,7 +263,8 @@ describe('PATCH /api/creative/[id]', () => {
     const updatedOutput = { ...TEST_OUTPUT, content: updatedContent };
     const mockUpdateChain = {
       set: vi.fn().mockReturnThis(),
-      where: vi.fn().mockResolvedValue([updatedOutput]),
+      where: vi.fn().mockReturnThis(),
+      returning: vi.fn().mockResolvedValue([updatedOutput]),
     };
     mockDbUpdate.mockReturnValue(mockUpdateChain as never);
 

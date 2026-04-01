@@ -97,7 +97,8 @@ export async function PATCH(
   const [updated] = await db
     .update(creativeOutputs)
     .set({ content: parsed.data.content, updatedAt: new Date() })
-    .where(and(eq(creativeOutputs.id, id), eq(creativeOutputs.userId, auth.user.id)));
+    .where(and(eq(creativeOutputs.id, id), eq(creativeOutputs.userId, auth.user.id)))
+    .returning();
 
   return NextResponse.json({ data: updated });
 }
