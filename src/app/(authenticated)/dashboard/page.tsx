@@ -30,7 +30,12 @@ export default function DashboardPage() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Select an audience to explore their genre interests and uncover what content resonates most.
+          </p>
+        </div>
         <Button onClick={() => setIsCreateOpen(true)} className="gap-1.5">
           <Plus className="size-4" />
           Create Audience

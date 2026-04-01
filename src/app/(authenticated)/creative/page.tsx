@@ -77,11 +77,9 @@ export default function CreativePage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Creative</h1>
-          {selectedAudience && (
-            <p className="text-muted-foreground mt-1 text-sm">
-              Audience: {selectedAudience.name}
-            </p>
-          )}
+          <p className="mt-1 text-sm text-muted-foreground">
+            Turn audience insights into actionable creative output.{selectedAudience ? ` Working with ${selectedAudience.name}.` : ''}
+          </p>
         </div>
       </div>
 

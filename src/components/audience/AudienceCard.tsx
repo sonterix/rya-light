@@ -3,7 +3,6 @@
 import { Filter, Pencil, Trash2, Users } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { Audience } from '@/db/schema';
 
 interface Props {
@@ -42,11 +41,15 @@ export function AudienceCard({ audience, respondentCount, filterCount, isActive,
       }}
       className="w-full text-left"
     >
-      <Card
-        className={`w-full cursor-pointer transition-colors ${isActive ? 'ring-2 ring-primary ring-offset-1' : ''}`}
+      <div
+        className={`w-full cursor-pointer rounded-lg border px-4 py-3 transition-colors ${
+          isActive
+            ? 'border-l-[3px] border-l-primary bg-primary/5'
+            : 'border-transparent bg-card hover:bg-muted/50'
+        }`}
       >
-        <CardHeader className="flex flex-row items-start justify-between">
-          <CardTitle>{audience.name}</CardTitle>
+        <div className="flex items-start justify-between">
+          <p className="text-sm font-semibold">{audience.name}</p>
           <div className="flex shrink-0 gap-0.5">
             <Button
               variant="ghost"
@@ -67,27 +70,20 @@ export function AudienceCard({ audience, respondentCount, filterCount, isActive,
               <Trash2 className="size-3.5" />
             </Button>
           </div>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-3 text-xs text-muted-foreground">
-              <span className="flex items-center gap-1">
-                <Users className="size-3.5" />
-                {respondentCount} respondents
-              </span>
-              {filterCount > 0 && (
-                <span className="flex items-center gap-1">
-                  <Filter className="size-3.5" />
-                  {filterCount} filters
-                </span>
-              )}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {new Date(audience.createdAt).toLocaleDateString()}
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+        </div>
+        <div className="mt-1.5 flex items-center gap-3 text-xs text-muted-foreground">
+          <span className="flex items-center gap-1">
+            <Users className="size-3.5" />
+            {respondentCount} respondents
+          </span>
+          {filterCount > 0 && (
+            <span className="flex items-center gap-1">
+              <Filter className="size-3.5" />
+              {filterCount} filters
+            </span>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

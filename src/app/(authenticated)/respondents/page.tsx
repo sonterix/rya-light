@@ -10,7 +10,12 @@ export default async function RespondentsPage({ searchParams }: Props) {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-semibold tracking-tight">Respondents</h1>
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight">Respondents</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Browse and inspect individual survey respondents. Expand any row to see the full demographic profile and genre interests.
+        </p>
+      </div>
       <RespondentExplorer page={page} />
     </div>
   );
