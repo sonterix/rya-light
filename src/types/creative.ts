@@ -1,7 +1,14 @@
+export interface PersonaTopInterest {
+  genreName: string;
+  interestLevel: number;
+}
+
 export interface PersonaContent {
   name: string;
-  tagline: string;
-  overview?: string;
+  demographicSummary: string;
+  topInterests: PersonaTopInterest[];
+  lifestyleDescription: string;
+  howToReachThem: string;
 }
 
 export interface CampaignContent {

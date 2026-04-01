@@ -4,11 +4,13 @@ import { useState } from 'react';
 
 import { CreativeOutputList } from '@/components/creative/creative-output-list';
 import { NoAudiencePrompt } from '@/components/creative/no-audience-prompt';
+import { PersonaCard } from '@/components/creative/persona-card';
 import { WorkflowTypeSelector } from '@/components/creative/workflow-type-selector';
 import { Button } from '@/components/ui/button';
 import { useAudiences } from '@/hooks/use-audiences';
 import type { WorkflowType } from '@/hooks/use-creative';
 import { useCreativeOutputs, useOpenAIStatus } from '@/hooks/use-creative';
+import { useGeneratePersona } from '@/hooks/use-generate-persona';
 import { useAudienceStore } from '@/stores/audience-store';
 
 export default function CreativePage() {
@@ -19,7 +21,14 @@ export default function CreativePage() {
   const { data: outputs, isLoading: outputsLoading } = useCreativeOutputs(selectedAudienceId, selectedType);
   const { data: openAIConfigured } = useOpenAIStatus();
 
+  const { generate, isGenerating, partialPersona, error: generateError } = useGeneratePersona();
+
   const selectedAudience = audiences?.find((a) => a.id === selectedAudienceId);
+
+  function handleGenerate() {
+    if (!selectedAudienceId) return;
+    generate(selectedAudienceId);
+  }
 
   if (!selectedAudienceId) {
     return <NoAudiencePrompt />;
@@ -51,11 +60,36 @@ export default function CreativePage() {
         onSelectType={setSelectedType}
       />
 
+      {(isGenerating || partialPersona) && (
+        <div className="flex flex-col gap-2">
+          <h2 className="text-lg font-medium">Generating Persona</h2>
+          <PersonaCard persona={partialPersona} isGenerating={isGenerating} />
+        </div>
+      )}
+
+      {generateError && (
+        <div className="flex items-center justify-between rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800 dark:border-red-800 dark:bg-red-950 dark:text-red-200">
+          <span>{generateError}</span>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleGenerate}
+            className="ml-4 border-red-300 text-red-800 hover:bg-red-100 dark:border-red-700 dark:text-red-200"
+          >
+            Try again
+          </Button>
+        </div>
+      )}
+
       <div className="flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-medium">Output History</h2>
-          <Button disabled={!openAIConfigured} aria-disabled={!openAIConfigured}>
-            Generate
+          <Button
+            disabled={!openAIConfigured || isGenerating}
+            aria-disabled={!openAIConfigured || isGenerating}
+            onClick={handleGenerate}
+          >
+            {isGenerating ? 'Generating...' : 'Generate'}
           </Button>
         </div>
 
