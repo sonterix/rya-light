@@ -101,3 +101,18 @@ Shared Utilities (new this iteration)
 - useGenerateCampaign(): streaming consumer hook for campaign generation, lives at src/hooks/use-generate-campaign.ts
 - CampaignConceptsCard: visual card for campaign concepts output, lives at src/components/creative/campaign-concepts-card.tsx
 - POST /api/creative/generate now handles both "persona" and "campaign" types
+
+[2026-04-01] Issue(s) 014, 015: Messaging Angles workflow / Content Opportunity Finder workflow
+- Issue 014: Extended POST /api/creative/generate with "messaging" type. Messaging Zod schema with angles array (name, tone, sampleHeadline, emotionalHook, keyTrait). useGenerateMessaging hook. MessagingAnglesCard with tone labels, accent-bordered sample headlines, keyTrait badges with lightning bolt icon.
+- Issue 015: Extended POST /api/creative/generate with "opportunity" type. Opportunity Zod schema (gapGenre, audienceTrait, crossoverConcept, reasoning, confidence enum). Handler splits genres into high-interest (avg > 3) and low/neutral (avg <= 3) for gap analysis. useGenerateOpportunity hook. OpportunityCard with gap genre titles, TrendingDown icon, confidence color badges (green/yellow/gray).
+- Merge conflicts resolved on generate route, creative page, and route tests (both issues added to same files)
+- 420 total tests across 48 test files, all passing
+
+Shared Utilities (new this iteration)
+- messagingSchema: Zod schema for messaging angles output, lives at src/lib/schemas/messaging-schema.ts
+- useGenerateMessaging(): streaming consumer hook for messaging generation, lives at src/hooks/use-generate-messaging.ts
+- MessagingAnglesCard: visual card for messaging angles output, lives at src/components/creative/messaging-angles-card.tsx
+- opportunitySchema: Zod schema for content opportunities output, lives at src/lib/schemas/opportunity-schema.ts
+- useGenerateOpportunity(): streaming consumer hook for opportunity generation, lives at src/hooks/use-generate-opportunity.ts
+- OpportunityCard: visual card for opportunity output, lives at src/components/creative/opportunity-card.tsx
+- POST /api/creative/generate now handles all 4 types: persona, campaign, messaging, opportunity
