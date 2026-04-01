@@ -1,49 +1,31 @@
 'use client';
 
+import { useEffect } from 'react';
 import { toast } from 'sonner';
 
-import { useAudiences, useAudienceWithRespondents, useDeleteAudience } from '@/hooks/use-audiences';
+import { useAudiences, useDeleteAudience } from '@/hooks/use-audiences';
 import { useAudienceStore } from '@/stores/audience-store';
 
-import { AudienceCard } from './audience-card';
 import { AudienceCardSkeleton } from './audience-card-skeleton';
-
-interface AudienceCardWithCountProps {
-  audienceId: string;
-  isActive: boolean;
-  onSelect: (id: string) => void;
-  onDelete: (id: string) => void;
-}
-
-function AudienceCardWithCount({ audienceId, isActive, onSelect, onDelete }: AudienceCardWithCountProps) {
-  const { data, isLoading } = useAudienceWithRespondents(audienceId);
-  const audience = data?.audience;
-  const respondentCount = data?.respondents.length ?? 0;
-
-  if (isLoading || !audience) {
-    return (
-      <div role="status" aria-label="Loading audience">
-        <AudienceCardSkeleton />
-      </div>
-    );
-  }
-
-  return (
-    <AudienceCard
-      audience={audience}
-      respondentCount={respondentCount}
-      isActive={isActive}
-      onSelect={onSelect}
-      onDelete={onDelete}
-    />
-  );
-}
+import { AudienceCardWithCount } from './audience-card-with-count';
 
 export function AudienceGrid() {
   const { data: audiences, isLoading } = useAudiences();
   const selectedAudienceId = useAudienceStore((state) => state.selectedAudienceId);
   const setSelectedAudienceId = useAudienceStore((state) => state.setSelectedAudienceId);
   const { mutate: deleteAudience } = useDeleteAudience();
+
+  const selectionIsStale =
+    audiences &&
+    audiences.length > 0 &&
+    (!selectedAudienceId || !audiences.some((a) => a.id === selectedAudienceId));
+
+  // Sync Zustand store when the selected audience no longer exists in React Query data
+  useEffect(() => {
+    if (selectionIsStale && audiences && audiences.length > 0) {
+      setSelectedAudienceId(audiences[0].id);
+    }
+  }, [selectionIsStale, audiences, setSelectedAudienceId]);
 
   function handleDelete(id: string) {
     const confirmed = window.confirm(
