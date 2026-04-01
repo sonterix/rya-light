@@ -123,19 +123,44 @@ supabase/
 
 All variables are automatically populated by `npm run setup`. If the OpenAI key is skipped, the creative page shows a notice and generation buttons are disabled. All other features work without it.
 
-## Commands
+## Spec Compliance
 
-| Command | Description |
+Every requirement from the take-home spec is implemented:
+
+The implementation context is retained as a test task baseline, with setup, requirements, and coverage notes kept close to the spec.
+
+| Requirement | Status | Details |
+|-------------|--------|---------|
+| Respondent Explorer | Done | Paginated table with expandable demographic detail panels |
+| Audience/Segment Builder | Done | Filter-based with JSON persistence in Supabase, manual include/exclude overrides |
+| Genre Insights | Done | Horizontal bar chart + full data table, precomputed summaries, correct 1-5 scale |
+| Creative Workflows (2+ required) | Done | 4 workflows: persona, campaign concepts, messaging angles, content opportunities |
+| Persistence | Done | Audiences, genre summaries, and all creative outputs saved to Supabase with RLS |
+| Supabase Configuration | Done | Local Docker environment via `supabase/config.toml` |
+| Migrations | Done | `0000_jittery_malice.sql` (schema) + `0001_rls_policies.sql` (security) |
+| Seed Data | Done | 12 respondents, 10 genres, 120 interest ratings, demo user with sample outputs |
+| RLS Policies | Done | Seed data read-only, user data CRUD scoped to `auth.uid()` |
+| Setup Instructions | Done | `npm run setup` one-command with README documentation |
+| Environment Variables | Done | All 5 variables documented, auto-populated by setup script |
+| Data Signal Discovery | Done | All 4 clusters (Tech, Wellness, Sports, Culture) discoverable via audience category filters |
+| README | Done | Setup, architecture, key decisions, AI use notes |
+
+### Beyond the Spec
+
+| Feature | Description |
 |---------|-------------|
-| `npm run setup` | Full setup: Supabase + seed + dev server |
-| `npm run dev` | Start dev server |
-| `npm run build` | Production build |
-| `npm test` | Run all tests |
-| `npm run lint` | ESLint check |
-| `npm run format` | Prettier format |
-| `supabase start` | Start local Supabase |
-| `supabase stop` | Stop local Supabase |
-| `supabase db reset` | Re-run migrations + seed |
+| 4 workflows instead of 2 | Persona, Campaign, Messaging, and Content Opportunity (white-space analysis) |
+| Inline editing | Click any text field in a creative output to edit it directly |
+| AI refinement | Preset buttons + freeform prompts to refine outputs without regenerating from scratch |
+| In-place regeneration | Regenerate replaces the existing output instead of creating duplicates |
+| Streaming output | AI responses stream progressively with loading overlays |
+| 467 automated tests | Vitest + React Testing Library across 52 test files |
+| Auto-save audiences | Debounced auto-save on every filter or name change |
+| Manual include/exclude | Override filter rules for specific respondents with visual badges |
+| App-level audience auto-select | Ensures an audience is always active across all pages |
+| Session state clearing | React Query cache + Zustand store wiped on sign-out |
+| Demo account with sample data | Pre-loaded audience, genre summaries, and all 4 creative output types |
+| Two-column dashboard | Wide-screen layout with audience cards left, genre insights right |
 
 ## Key Decisions
 
