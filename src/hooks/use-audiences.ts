@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import type { Audience, Respondent } from '@/db/schema';
 import type { AudienceFilters } from '@/lib/filter-matching';
+import { useAudienceStore } from '@/stores/audience-store';
 
 async function fetchAllRespondentsForPreview(): Promise<Respondent[]> {
   const res = await fetch('/api/respondents/preview');
@@ -33,6 +34,14 @@ interface CreateAudienceInput {
   filters: AudienceFilters | null;
   manualIncludes: number[];
   manualExcludes: number[];
+}
+
+interface UpdateAudienceInput {
+  id: string;
+  name?: string;
+  filters?: AudienceFilters | null;
+  manualIncludes?: number[] | null;
+  manualExcludes?: number[] | null;
 }
 
 async function fetchAudiences(): Promise<Audience[]> {
@@ -78,6 +87,35 @@ async function createAudience(input: CreateAudienceInput): Promise<Audience> {
   return successBody.data;
 }
 
+async function updateAudience({ id, ...patch }: UpdateAudienceInput): Promise<Audience> {
+  const res = await fetch(`/api/audiences/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(patch),
+  });
+  const body: unknown = await res.json();
+
+  if (!res.ok) {
+    const errorBody = body as { error?: string };
+    throw new Error(errorBody.error ?? 'Failed to update audience');
+  }
+
+  const successBody = body as { data: Audience };
+  return successBody.data;
+}
+
+async function deleteAudience(id: string): Promise<void> {
+  const res = await fetch(`/api/audiences/${id}`, {
+    method: 'DELETE',
+  });
+  const body: unknown = await res.json();
+
+  if (!res.ok) {
+    const errorBody = body as { error?: string };
+    throw new Error(errorBody.error ?? 'Failed to delete audience');
+  }
+}
+
 export function useAudiences() {
   return useQuery({
     queryKey: ['audiences'],
@@ -102,6 +140,34 @@ export function useCreateAudience() {
   return useMutation({
     mutationFn: createAudience,
     onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['audiences'] });
+    },
+  });
+}
+
+export function useUpdateAudience() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: updateAudience,
+    onSuccess: (updated) => {
+      void queryClient.invalidateQueries({ queryKey: ['audiences'] });
+      void queryClient.invalidateQueries({ queryKey: ['audiences', updated.id] });
+    },
+  });
+}
+
+export function useDeleteAudience() {
+  const queryClient = useQueryClient();
+  const selectedAudienceId = useAudienceStore((state) => state.selectedAudienceId);
+  const clearSelectedAudienceId = useAudienceStore((state) => state.clearSelectedAudienceId);
+
+  return useMutation({
+    mutationFn: deleteAudience,
+    onSuccess: (_, deletedId) => {
+      if (selectedAudienceId === deletedId) {
+        clearSelectedAudienceId();
+      }
       void queryClient.invalidateQueries({ queryKey: ['audiences'] });
     },
   });
