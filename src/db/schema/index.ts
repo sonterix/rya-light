@@ -12,6 +12,8 @@ import {
   uuid,
 } from 'drizzle-orm/pg-core';
 
+import type { CreativeContent, WorkflowType } from '@/types/creative';
+
 // ---------------------------------------------------------------------------
 // Seed-data tables
 // ---------------------------------------------------------------------------
@@ -145,8 +147,8 @@ export const creativeOutputs = pgTable(
     audienceId: uuid('audience_id')
       .notNull()
       .references(() => audiences.id, { onDelete: 'cascade' }),
-    type: text('type').notNull(),
-    content: jsonb('content').notNull(),
+    type: text('type').$type<WorkflowType>().notNull(),
+    content: jsonb('content').$type<CreativeContent>().notNull(),
     createdAt: timestamp('created_at', { withTimezone: true })
       .notNull()
       .defaultNow(),

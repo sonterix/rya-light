@@ -46,3 +46,27 @@ export interface OpportunityItem {
 export interface OpportunityContent {
   opportunities: OpportunityItem[];
 }
+
+export type CreativeContent =
+  | PersonaContent
+  | CampaignContent
+  | MessagingContent
+  | OpportunityContent;
+
+export type WorkflowType = 'persona' | 'campaign' | 'messaging' | 'opportunity';
+
+export function isPersonaContent(content: unknown): content is PersonaContent {
+  return content !== null && typeof content === 'object' && 'name' in content && 'demographicSummary' in content;
+}
+
+export function isCampaignContent(content: unknown): content is CampaignContent {
+  return content !== null && typeof content === 'object' && 'concepts' in content;
+}
+
+export function isMessagingContent(content: unknown): content is MessagingContent {
+  return content !== null && typeof content === 'object' && 'angles' in content;
+}
+
+export function isOpportunityContent(content: unknown): content is OpportunityContent {
+  return content !== null && typeof content === 'object' && 'opportunities' in content;
+}
