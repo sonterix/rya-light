@@ -150,6 +150,7 @@ export default function CreativePage() {
         <CreativeOutputList
           outputs={outputs ?? []}
           isLoading={outputsLoading}
+          audienceId={selectedAudienceId ?? ''}
         />
       </div>
     </div>

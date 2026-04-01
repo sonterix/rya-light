@@ -1,13 +1,16 @@
-import { CreativeOutputCard } from '@/components/creative/creative-output-card';
+import { CreativeOutputEditCard } from '@/components/creative/creative-output-edit-card';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { CreativeOutput } from '@/db/schema';
 
 interface Props {
   outputs: CreativeOutput[];
   isLoading: boolean;
+  audienceId: string;
+  genres?: string[];
+  traits?: string[];
 }
 
-export function CreativeOutputList({ outputs, isLoading }: Props) {
+export function CreativeOutputList({ outputs, isLoading, audienceId, genres, traits }: Props) {
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -29,7 +32,13 @@ export function CreativeOutputList({ outputs, isLoading }: Props) {
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {outputs.map((output) => (
-        <CreativeOutputCard key={output.id} output={output} />
+        <CreativeOutputEditCard
+          key={output.id}
+          output={output}
+          audienceId={audienceId}
+          genres={genres}
+          traits={traits}
+        />
       ))}
     </div>
   );
