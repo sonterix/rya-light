@@ -1,0 +1,13 @@
+respondent_id,wave,wave_id,weight,audience_category,age,gender,ethnicity,region,community_type,marital_status,household_size,education,employment_status,household_income_usd,investable_assets_usd,zip_code,state,dma,parent_status,political_affiliation,home_ownership
+1001,145,9001,1.21,Emerging Tech Professionals,29,Female,Asian,West,Urban,Single,1,Completed 4-year college,Work full-time,118000,85000,94107,CA,San Francisco,Not the parent,Independent,Rent an apartment
+1002,145,9002,1.08,Emerging Tech Professionals,34,Male,White,Northeast,Urban,Living with someone,2,Post-graduate degree,Work full-time,142000,120000,10011,NY,New York,Not the parent,Democrat,Rent an apartment
+1003,144,9003,0.97,Emerging Tech Professionals,41,Non-Binary,Hispanic,West,Suburban,Married,3,Post-graduate degree,Work full-time,165000,240000,78704,TX,Austin,Parent,Democrat,Own a house
+1004,145,9004,1.16,Wellness-Oriented Parents,38,Female,Black,South,Suburban,Married,4,Some college,Work full-time,86000,45000,30309,GA,Atlanta,Parent,Democrat,Own a house
+1005,145,9005,1.03,Wellness-Oriented Parents,45,Male,Hispanic,West,Suburban,Married,4,Completed 4-year college,Work full-time,105000,60000,80211,CO,Denver,Parent,Independent,Own a house
+1006,144,9006,1.11,Wellness-Oriented Parents,36,Female,White,Midwest,Suburban,Living with someone,3,Post-graduate degree,Work part-time,92000,90000,60614,IL,Chicago,Parent,Democrat,Own a condo or a coop
+1007,145,9007,1.18,Competitive Sports Fans,27,Male,White,South,Urban,Single,2,Some college,Work full-time,72000,15000,75201,TX,Dallas,Not the parent,Republican,Rent an apartment
+1008,145,9008,0.94,Competitive Sports Fans,33,Female,Black,South,Suburban,Living with someone,3,Completed 4-year college,Work full-time,88000,35000,28203,NC,Charlotte,Parent,Independent,Own a house
+1009,144,9009,1.05,Competitive Sports Fans,31,Male,Hispanic,Midwest,Urban,Single,2,High school graduate,Work part-time,54000,10000,44113,OH,Cleveland,Not the parent,Independent,Rent an apartment
+1010,145,9010,0.89,Affluent Culture Seekers,52,Female,White,Northeast,Urban,Married,2,Post-graduate degree,Retired,210000,900000,02116,MA,Boston,Not the parent,Democrat,Own a condo or a coop
+1011,145,9011,1.02,Affluent Culture Seekers,47,Male,Asian,West,Urban,Married,2,Post-graduate degree,Work full-time,235000,1250000,98109,WA,Seattle,Parent,Independent,Own a house
+1012,144,9012,0.96,Affluent Culture Seekers,44,Female,Hispanic,West,Urban,Living with someone,2,Completed 4-year college,Work full-time,178000,420000,90048,CA,Los Angeles,Not the parent,Democrat,Own a condo or a coop
