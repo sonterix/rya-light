@@ -1,0 +1,46 @@
+Starting the Ralph loop for **light**. Let me read all project state first.
+
+Good. Three issues are `Ready` (002, 004, 005), all priority 2. Let me read them to check for parallelism.
+
+All three issues touch different files/modules with no overlap:
+- **002**: seed SQL + setup shell script (database/scripts layer)
+- **004**: `/auth` route page (auth UI)
+- **005**: app shell, providers, stores, sidebar (layout layer)
+
+All three can run in parallel. Let me check the current codebase state and set statuses.
+
+Let me read the CSV data files and test setup before spawning.
+
+Good. I have full context. Let me analyze for shared utilities:
+
+**Shared contract:** No new shared utilities needed. All three issues are independent:
+- 002: seed SQL + setup script (no code overlap with 004/005)
+- 004: auth page using existing `createClient()` from `src/lib/supabase/client.ts`
+- 005: app shell with providers/stores (no overlap with 002/004)
+
+Existing shared utilities from iteration 1: `getSupabaseEnv()` at `src/lib/supabase/env.ts`, browser client at `src/lib/supabase/client.ts`, server client at `src/lib/supabase/server.ts`.
+
+Setting all three issues to **In Progress** now.
+
+Now update the index to reflect In Progress status.
+
+Spawning 3 subagents in parallel for issues 002, 004, and 005.
+
+All 3 subagents are running in parallel in isolated worktrees:
+
+| Agent | Issue | Task |
+|-------|-------|------|
+| agent-002 | 002 | Seed data SQL + setup script |
+| agent-004 | 004 | Sign in / sign up auth page |
+| agent-005 | 005 | App shell, sidebar, providers, stores |
+
+Waiting for all agents to complete before merging.
+
+
+
+Agent-002 (Seed data + setup script) completed successfully. Waiting for agents 004 and 005.
+
+
+
+Agent-004 (Auth page) completed successfully. 79 tests passing. Waiting for agent 005.
+

@@ -6,6 +6,7 @@ import { CampaignConceptsCard } from '@/components/creative/campaign-concepts-ca
 import { CreativeOutputList } from '@/components/creative/creative-output-list';
 import { MessagingAnglesCard } from '@/components/creative/messaging-angles-card';
 import { NoAudiencePrompt } from '@/components/creative/no-audience-prompt';
+import { OpportunityCard } from '@/components/creative/opportunity-card';
 import { PersonaCard } from '@/components/creative/persona-card';
 import { WorkflowTypeSelector } from '@/components/creative/workflow-type-selector';
 import { Button } from '@/components/ui/button';
@@ -14,6 +15,7 @@ import type { WorkflowType } from '@/hooks/use-creative';
 import { useCreativeOutputs, useOpenAIStatus } from '@/hooks/use-creative';
 import { useGenerateCampaign } from '@/hooks/use-generate-campaign';
 import { useGenerateMessaging } from '@/hooks/use-generate-messaging';
+import { useGenerateOpportunity } from '@/hooks/use-generate-opportunity';
 import { useGeneratePersona } from '@/hooks/use-generate-persona';
 import { useAudienceStore } from '@/stores/audience-store';
 
@@ -28,6 +30,7 @@ export default function CreativePage() {
   const { generate: generatePersona, isGenerating: isGeneratingPersona, partialPersona, error: personaError } = useGeneratePersona();
   const { generate: generateCampaign, isGenerating: isGeneratingCampaign, partialCampaign, error: campaignError } = useGenerateCampaign();
   const { generate: generateMessaging, isGenerating: isGeneratingMessaging, partialMessaging, error: messagingError } = useGenerateMessaging();
+  const { generate: generateOpportunity, isGenerating: isGeneratingOpportunity, partialOpportunity, error: opportunityError } = useGenerateOpportunity();
 
   const selectedAudience = audiences?.find((a) => a.id === selectedAudienceId);
 
@@ -35,6 +38,7 @@ export default function CreativePage() {
     persona: isGeneratingPersona,
     campaign: isGeneratingCampaign,
     messaging: isGeneratingMessaging,
+    opportunity: isGeneratingOpportunity,
   };
   const isGenerating = generatingMap[selectedType] ?? false;
 
@@ -42,6 +46,7 @@ export default function CreativePage() {
     persona: personaError,
     campaign: campaignError,
     messaging: messagingError,
+    opportunity: opportunityError,
   };
   const generateError = errorMap[selectedType] ?? null;
 
@@ -53,6 +58,8 @@ export default function CreativePage() {
       generateCampaign(selectedAudienceId);
     } else if (selectedType === 'messaging') {
       generateMessaging(selectedAudienceId);
+    } else if (selectedType === 'opportunity') {
+      generateOpportunity(selectedAudienceId);
     }
   }
 
@@ -104,6 +111,13 @@ export default function CreativePage() {
         <div className="flex flex-col gap-2">
           <h2 className="text-lg font-medium">Generating Messaging Angles</h2>
           <MessagingAnglesCard messaging={partialMessaging} isGenerating={isGeneratingMessaging} />
+        </div>
+      )}
+
+      {selectedType === 'opportunity' && (isGeneratingOpportunity || partialOpportunity) && (
+        <div className="flex flex-col gap-2">
+          <h2 className="text-lg font-medium">Finding Content Opportunities</h2>
+          <OpportunityCard opportunity={partialOpportunity} isGenerating={isGeneratingOpportunity} />
         </div>
       )}
 

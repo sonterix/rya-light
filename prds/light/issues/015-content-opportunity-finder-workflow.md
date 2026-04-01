@@ -1,9 +1,9 @@
 ---
 id: 015
 title: Content Opportunity Finder workflow
-status: Ready
+status: In Progress
 priority: 6
-attempts: 0
+attempts: 1
 blocked_by: ["012-persona-workflow-streaming-foundation.md"]
 user_stories: [46, 47]
 created: 2026-04-01

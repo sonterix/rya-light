@@ -1,0 +1,74 @@
+Starting the Ralph loop for **light**. Let me run pre-flight checks first.
+
+**Pre-flight:** Found 3 interrupted issues (002, 004, 005 with `In Progress`). Recovering by resetting to `Ready`. Let me read the issue files and clean up stale worktrees.
+
+Cleaning up stale worktrees and resetting interrupted issues to `Ready`.
+
+Now reset the three interrupted issues to `Ready`:
+
+## Step 1 - Select Issues
+
+Three `Ready` issues, all priority 2:
+
+| # | Title | Touches |
+|---|-------|---------|
+| 002 | Seed data and setup script | `supabase/seed.sql`, `scripts/setup.sh`, `package.json` (scripts) |
+| 004 | Sign in and sign up page | `src/app/auth/`, shadcn components, Supabase browser client |
+| 005 | App shell with sidebar and providers | `src/app/(authenticated)/`, `src/stores/`, `src/providers/`, `package.json` (deps), shadcn components |
+
+**Parallel eligibility analysis:**
+- 002 vs 004: No file overlap. Different modules entirely (seed/scripts vs auth UI). **Parallel OK.**
+- 002 vs 005: Both touch `package.json` but in different sections (scripts vs dependencies). Minimal overlap, easily mergeable. **Parallel OK.**
+- 004 vs 005: Both may install shadcn components, but different ones (tabs/input/card vs sidebar/skeleton). Different route directories. **Parallel OK.**
+
+All three are eligible for parallel execution. Let me set them to `In Progress` and explore the codebase to understand the shared contract.
+
+Now update the index to reflect In Progress status:
+
+Also increment attempts in issue files:
+
+## Step 2 - Shared Contract
+
+Let me explore the existing codebase to understand what's already in place before identifying shared utilities.
+
+## Step 2 - Shared Contract Analysis
+
+After analyzing all three issues, **no new shared utilities are needed** for this iteration. The issues are independent:
+
+| Issue | Primary Files | Dependencies |
+|-------|--------------|-------------|
+| 002 | `supabase/seed.sql`, `scripts/setup.sh`, `package.json` scripts | CSV data in `data/`, DB schema |
+| 004 | `src/app/auth/`, shadcn components (tabs, input, label, card) | Supabase browser client |
+| 005 | `src/app/(authenticated)/`, `src/stores/`, providers, deps | Supabase server client |
+
+Existing shared utilities all three can consume:
+- `getSupabaseEnv()` at `src/lib/supabase/env.ts`
+- Browser client at `src/lib/supabase/client.ts`
+- Server client at `src/lib/supabase/server.ts`
+- `cn()` utility at `src/lib/utils.ts`
+- DB schema + types at `src/db/schema/index.ts`
+
+## Step 3 - Spawning Subagents
+
+Launching 3 subagents in parallel (one per issue), each in an isolated worktree.
+
+All 3 subagents launched in parallel:
+
+| Agent | Issue | Status |
+|-------|-------|--------|
+| agent-002 | Seed data and setup script | Running |
+| agent-004 | Sign in and sign up page | Running |
+| agent-005 | App shell with sidebar and providers | Running |
+
+Waiting for all subagents to complete before proceeding to merge...
+
+
+
+**Agent 002 completed** - Seed data and setup script done. 50 new tests, all passing.
+
+Still waiting for agents 004 and 005...
+
+You've hit your limit · resets 3pm (America/Edmonton)
+
+You've hit your limit · resets 3pm (America/Edmonton)
+
