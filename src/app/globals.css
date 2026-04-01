@@ -80,12 +80,12 @@
   --secondary-foreground: #2d3433;
   --secondary-container: #d8dedd;
   --muted: #f2f4f3;
-  --muted-foreground: #6b7574;
+  --muted-foreground: #546362;
   --accent: #f2f4f3;
   --accent-foreground: #2d3433;
   --destructive: #ac322e;
-  --border: #adb3b226;
-  --input: #e4e9e8;
+  --border: #d4d8d7;
+  --input: #dce2e1;
   --ring: #ac322e;
   --chart-1: #ac322e;
   --chart-2: #77080e;
@@ -146,8 +146,4 @@
     font-size: 0.6875rem;
   }
 
-  *:not([data-allow-shadow]) {
-    --tw-shadow: 0 0 #0000 !important;
-    --tw-shadow-colored: 0 0 #0000 !important;
-  }
 }
