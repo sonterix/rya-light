@@ -18,7 +18,7 @@ export interface UseRefineCreativeResult {
 }
 
 export function useRefineCreative(
-  _outputId: string,
+  outputId: string,
   type: WorkflowType,
 ): UseRefineCreativeResult {
   const queryClient = useQueryClient();
@@ -44,6 +44,7 @@ export function useRefineCreative(
           body: JSON.stringify({
             audience_id: audienceId,
             type,
+            output_id: outputId,
             existing_content: existingContent,
             refinement_instruction: refinementInstruction,
           }),
@@ -95,7 +96,7 @@ export function useRefineCreative(
         setIsRefining(false);
       }
     },
-    [type, queryClient],
+    [outputId, type, queryClient],
   );
 
   return { refine, isRefining, partialContent, error };

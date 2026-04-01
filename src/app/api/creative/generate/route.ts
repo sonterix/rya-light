@@ -1,6 +1,6 @@
 import { openai } from '@ai-sdk/openai';
 import { Output, streamText } from 'ai';
-import { desc, eq } from 'drizzle-orm';
+import { and, desc, eq } from 'drizzle-orm';
 import { type NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 
@@ -26,6 +26,7 @@ export const maxDuration = 60;
 const requestBodySchema = z.object({
   audience_id: z.string().uuid(),
   type: z.union([z.literal('persona'), z.literal('campaign'), z.literal('messaging'), z.literal('opportunity')]),
+  output_id: z.string().uuid().optional(),
   existing_content: z.record(z.string(), z.unknown()).optional(),
   refinement_instruction: z.string().optional(),
 });
@@ -110,7 +111,7 @@ export async function POST(req: NextRequest): Promise<Response> {
     );
   }
 
-  const { audience_id, type, existing_content, refinement_instruction } = parsed.data;
+  const { audience_id, type, output_id, existing_content, refinement_instruction } = parsed.data;
   const isRefinementMode = existing_content !== undefined && refinement_instruction !== undefined;
 
   const [audience] = await db
@@ -217,12 +218,11 @@ export async function POST(req: NextRequest): Promise<Response> {
 
           const content: OpportunityContent = parsedOutput.data;
 
-          await db.insert(creativeOutputs).values({
-            userId,
-            audienceId: audience_id,
-            type: 'opportunity',
-            content,
-          });
+          if (isRefinementMode && output_id) {
+            await db.update(creativeOutputs).set({ content, updatedAt: new Date() }).where(and(eq(creativeOutputs.id, output_id), eq(creativeOutputs.userId, userId)));
+          } else {
+            await db.insert(creativeOutputs).values({ userId, audienceId: audience_id, type: 'opportunity', content });
+          }
         } catch {
           // Save failure does not affect streaming response
         }
@@ -259,12 +259,11 @@ export async function POST(req: NextRequest): Promise<Response> {
 
           const content: PersonaContent = parsedOutput.data;
 
-          await db.insert(creativeOutputs).values({
-            userId,
-            audienceId: audience_id,
-            type: 'persona',
-            content,
-          });
+          if (isRefinementMode && output_id) {
+            await db.update(creativeOutputs).set({ content, updatedAt: new Date() }).where(and(eq(creativeOutputs.id, output_id), eq(creativeOutputs.userId, userId)));
+          } else {
+            await db.insert(creativeOutputs).values({ userId, audienceId: audience_id, type: 'persona', content });
+          }
         } catch {
           // Save failure does not affect streaming response
         }
@@ -301,12 +300,11 @@ export async function POST(req: NextRequest): Promise<Response> {
 
           const content: MessagingContent = parsedOutput.data;
 
-          await db.insert(creativeOutputs).values({
-            userId,
-            audienceId: audience_id,
-            type: 'messaging',
-            content,
-          });
+          if (isRefinementMode && output_id) {
+            await db.update(creativeOutputs).set({ content, updatedAt: new Date() }).where(and(eq(creativeOutputs.id, output_id), eq(creativeOutputs.userId, userId)));
+          } else {
+            await db.insert(creativeOutputs).values({ userId, audienceId: audience_id, type: 'messaging', content });
+          }
         } catch {
           // Save failure does not affect streaming response
         }
@@ -343,12 +341,11 @@ export async function POST(req: NextRequest): Promise<Response> {
 
         const content: CampaignContent = parsedOutput.data;
 
-        await db.insert(creativeOutputs).values({
-          userId,
-          audienceId: audience_id,
-          type: 'campaign',
-          content,
-        });
+        if (isRefinementMode && output_id) {
+          await db.update(creativeOutputs).set({ content, updatedAt: new Date() }).where(and(eq(creativeOutputs.id, output_id), eq(creativeOutputs.userId, userId)));
+        } else {
+          await db.insert(creativeOutputs).values({ userId, audienceId: audience_id, type: 'campaign', content });
+        }
       } catch {
         // Save failure does not affect streaming response
       }
