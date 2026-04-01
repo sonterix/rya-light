@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect } from 'react';
 import { toast } from 'sonner';
 
 import { useAudiences, useDeleteAudience } from '@/hooks/use-audiences';
@@ -18,18 +17,6 @@ export function AudienceGrid({ onEdit }: Props) {
   const selectedAudienceId = useAudienceStore((state) => state.selectedAudienceId);
   const setSelectedAudienceId = useAudienceStore((state) => state.setSelectedAudienceId);
   const { mutate: deleteAudience } = useDeleteAudience();
-
-  const selectionIsStale =
-    audiences &&
-    audiences.length > 0 &&
-    (!selectedAudienceId || !audiences.some((a) => a.id === selectedAudienceId));
-
-  // Sync Zustand store when the selected audience no longer exists in React Query data
-  useEffect(() => {
-    if (selectionIsStale && audiences && audiences.length > 0) {
-      setSelectedAudienceId(audiences[0].id);
-    }
-  }, [selectionIsStale, audiences, setSelectedAudienceId]);
 
   function handleDelete(id: string) {
     const confirmed = window.confirm(
