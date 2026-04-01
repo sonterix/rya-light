@@ -64,7 +64,10 @@ export function useGeneratePersona(): UseGeneratePersonaResult {
             }
           }
 
-          // Final parse - validate against full schema
+          if (!accumulated.trim()) {
+            throw new Error('Generation returned empty response. The AI provider may be unavailable.');
+          }
+
           const finalParsed = personaSchema.safeParse(JSON.parse(accumulated));
           if (finalParsed.success) {
             setPartialPersona(finalParsed.data);

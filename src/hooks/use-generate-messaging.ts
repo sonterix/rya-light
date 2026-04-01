@@ -64,7 +64,10 @@ export function useGenerateMessaging(): UseGenerateMessagingResult {
             }
           }
 
-          // Final parse - validate against full schema
+          if (!accumulated.trim()) {
+            throw new Error('Generation returned empty response. The AI provider may be unavailable.');
+          }
+
           const finalParsed = messagingSchema.safeParse(JSON.parse(accumulated));
           if (finalParsed.success) {
             setPartialMessaging(finalParsed.data);

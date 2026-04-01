@@ -64,7 +64,10 @@ export function useGenerateCampaign(): UseGenerateCampaignResult {
             }
           }
 
-          // Final parse - validate against full schema
+          if (!accumulated.trim()) {
+            throw new Error('Generation returned empty response. The AI provider may be unavailable.');
+          }
+
           const finalParsed = campaignSchema.safeParse(JSON.parse(accumulated));
           if (finalParsed.success) {
             setPartialCampaign(finalParsed.data);

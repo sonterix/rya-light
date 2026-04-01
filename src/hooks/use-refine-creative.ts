@@ -78,13 +78,13 @@ export function useRefineCreative(
           }
         }
 
-        try {
-          const finalParsed = JSON.parse(accumulated) as Record<string, unknown>;
-          setPartialContent(finalParsed);
-          onComplete?.(finalParsed);
-        } catch {
-          // Final parse failed - stream data was not valid JSON
+        if (!accumulated.trim()) {
+          throw new Error('Refinement returned empty response. The AI provider may be unavailable.');
         }
+
+        const finalParsed = JSON.parse(accumulated) as Record<string, unknown>;
+        setPartialContent(finalParsed);
+        onComplete?.(finalParsed);
 
         void queryClient.invalidateQueries({ queryKey: ['creative'] });
       } catch (err) {
