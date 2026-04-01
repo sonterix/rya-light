@@ -60,7 +60,7 @@ export function EditableField({ value, onSave, placeholder, className }: Props) 
   }
 
   return (
-    <span
+    <p
       role="button"
       tabIndex={0}
       onClick={startEditing}
@@ -74,6 +74,6 @@ export function EditableField({ value, onSave, placeholder, className }: Props) 
       )}
     >
       {value || placeholder}
-    </span>
+    </p>
   );
 }
