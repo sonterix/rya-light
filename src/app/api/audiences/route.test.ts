@@ -15,17 +15,10 @@ vi.mock('@/db/schema', () => ({
   audiences: { userId: 'userId', updatedAt: 'updatedAt' },
 }));
 
-vi.mock('drizzle-orm', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('drizzle-orm')>();
-  return {
-    ...actual,
-    eq: (a: unknown, b: unknown) => ({ type: 'eq', a, b }),
-    desc: (a: unknown) => ({ type: 'desc', a }),
-  };
-});
 
 import { db } from '@/db';
 import { getAuthUser } from '@/lib/supabase/auth';
+
 import { GET, POST } from './route';
 
 const mockGetAuthUser = vi.mocked(getAuthUser);

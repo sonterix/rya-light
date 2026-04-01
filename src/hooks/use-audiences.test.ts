@@ -1,7 +1,7 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { renderHook, waitFor } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import React from 'react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
@@ -47,7 +47,7 @@ describe('useAudiences', () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
     expect(result.current.data).toHaveLength(1);
-    expect(result.current.data![0].id).toBe('aud-1');
+    expect(result.current.data?.[0].id).toBe('aud-1');
     expect(mockFetch).toHaveBeenCalledWith('/api/audiences');
   });
 

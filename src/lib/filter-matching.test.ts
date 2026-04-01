@@ -1,6 +1,7 @@
+import type { Respondent } from '@/db/schema';
+
 import { applyFilters } from './filter-matching';
 import type { AudienceFilters } from './filter-matching';
-import type { Respondent } from '@/db/schema';
 
 function makeRespondent(overrides: Partial<Respondent> = {}): Respondent {
   return {
@@ -29,8 +30,6 @@ function makeRespondent(overrides: Partial<Respondent> = {}): Respondent {
     ...overrides,
   };
 }
-
-const baseRespondent = makeRespondent();
 
 describe('applyFilters', () => {
   describe('empty filters', () => {

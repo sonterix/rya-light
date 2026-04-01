@@ -68,7 +68,10 @@ export function useAudiences() {
 export function useAudienceWithRespondents(id: string | null) {
   return useQuery({
     queryKey: ['audiences', id],
-    queryFn: () => fetchAudienceWithRespondents(id!),
+    queryFn: () => {
+      if (!id) throw new Error('Audience ID is required');
+      return fetchAudienceWithRespondents(id);
+    },
     enabled: id !== null,
   });
 }

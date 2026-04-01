@@ -20,22 +20,15 @@ vi.mock('@/db/schema', () => ({
   respondents: {},
 }));
 
-vi.mock('drizzle-orm', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('drizzle-orm')>();
-  return {
-    ...actual,
-    eq: (a: unknown, b: unknown) => ({ type: 'eq', a, b }),
-    and: (...args: unknown[]) => ({ type: 'and', args }),
-  };
-});
 
 vi.mock('@/lib/filter-matching', () => ({
   applyFilters: vi.fn(),
 }));
 
 import { db } from '@/db';
-import { getAuthUser } from '@/lib/supabase/auth';
 import { applyFilters } from '@/lib/filter-matching';
+import { getAuthUser } from '@/lib/supabase/auth';
+
 import { GET } from './route';
 
 const mockGetAuthUser = vi.mocked(getAuthUser);
