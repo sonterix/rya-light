@@ -1,0 +1,42 @@
+import { and, eq } from 'drizzle-orm';
+import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
+
+import { db } from '@/db';
+import { creativeOutputs } from '@/db/schema';
+import { getAuthUser } from '@/lib/supabase/auth';
+
+interface RouteContext {
+  params: Promise<{ id: string }>;
+}
+
+export async function DELETE(
+  _req: NextRequest,
+  { params }: RouteContext,
+): Promise<NextResponse> {
+  const auth = await getAuthUser();
+  if (!auth) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const { id } = await params;
+
+  const [existing] = await db
+    .select()
+    .from(creativeOutputs)
+    .where(eq(creativeOutputs.id, id));
+
+  if (!existing) {
+    return NextResponse.json({ error: 'Not found' }, { status: 404 });
+  }
+
+  if (existing.userId !== auth.user.id) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  }
+
+  await db
+    .delete(creativeOutputs)
+    .where(and(eq(creativeOutputs.id, id), eq(creativeOutputs.userId, auth.user.id)));
+
+  return NextResponse.json({ data: { success: true } });
+}
