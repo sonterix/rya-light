@@ -11,13 +11,13 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
-import type { Respondent } from '@/db/schema';
-import { useAudienceWithRespondents, useUpdateAudience } from '@/hooks/use-audiences';
+import { useAudienceWithRespondents, useRespondentsForPreview, useUpdateAudience } from '@/hooks/use-audiences';
 import type { AudienceFilters } from '@/lib/filter-matching';
 import { applyFilters } from '@/lib/filter-matching';
 import { useAudienceStore } from '@/stores/audience-store';
 
 import { FilterControls } from './filter-controls';
+import { ManualOverridesPanel } from './manual-overrides-panel';
 
 const DEBOUNCE_MS = 800;
 
@@ -25,24 +25,41 @@ interface EditFormInnerProps {
   audienceId: string;
   initialName: string;
   initialFilters: AudienceFilters;
-  allRespondents: Respondent[];
+  initialManualIncludes: number[];
+  initialManualExcludes: number[];
 }
 
-function AudienceEditFormInner({ audienceId, initialName, initialFilters, allRespondents }: EditFormInnerProps) {
+function AudienceEditFormInner({
+  audienceId,
+  initialName,
+  initialFilters,
+  initialManualIncludes,
+  initialManualExcludes,
+}: EditFormInnerProps) {
   const { mutate: updateAudience } = useUpdateAudience();
+  const { data: allRespondents = [] } = useRespondentsForPreview();
 
   const [name, setName] = useState(initialName);
   const [filters, setFilters] = useState<AudienceFilters>(initialFilters);
+  const [manualIncludes, setManualIncludes] = useState<number[]>(initialManualIncludes);
+  const [manualExcludes, setManualExcludes] = useState<number[]>(initialManualExcludes);
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const matchingCount = applyFilters({
+  const matchingRespondents = applyFilters({
     filters,
-    manualIncludes: null,
-    manualExcludes: null,
+    manualIncludes,
+    manualExcludes,
     respondents: allRespondents,
-  }).length;
+  });
 
-  function scheduleSave(updatedName: string, updatedFilters: AudienceFilters) {
+  const matchingCount = matchingRespondents.length;
+
+  function scheduleSave(
+    updatedName: string,
+    updatedFilters: AudienceFilters,
+    updatedIncludes: number[],
+    updatedExcludes: number[],
+  ) {
     if (debounceTimer.current) clearTimeout(debounceTimer.current);
     debounceTimer.current = setTimeout(() => {
       if (!updatedName.trim()) return;
@@ -51,6 +68,8 @@ function AudienceEditFormInner({ audienceId, initialName, initialFilters, allRes
           id: audienceId,
           name: updatedName.trim(),
           filters: Object.keys(updatedFilters).length > 0 ? updatedFilters : null,
+          manualIncludes: updatedIncludes,
+          manualExcludes: updatedExcludes,
         },
         {
           onError: () => {
@@ -63,12 +82,22 @@ function AudienceEditFormInner({ audienceId, initialName, initialFilters, allRes
 
   function handleNameChange(value: string) {
     setName(value);
-    scheduleSave(value, filters);
+    scheduleSave(value, filters, manualIncludes, manualExcludes);
   }
 
   function handleFiltersChange(updatedFilters: AudienceFilters) {
     setFilters(updatedFilters);
-    scheduleSave(name, updatedFilters);
+    scheduleSave(name, updatedFilters, manualIncludes, manualExcludes);
+  }
+
+  function handleManualIncludesChange(updatedIncludes: number[]) {
+    setManualIncludes(updatedIncludes);
+    scheduleSave(name, filters, updatedIncludes, manualExcludes);
+  }
+
+  function handleManualExcludesChange(updatedExcludes: number[]) {
+    setManualExcludes(updatedExcludes);
+    scheduleSave(name, filters, manualIncludes, updatedExcludes);
   }
 
   return (
@@ -103,6 +132,18 @@ function AudienceEditFormInner({ audienceId, initialName, initialFilters, allRes
           </>
         )}
       </div>
+
+      <div className="flex flex-col gap-2">
+        <p className="text-sm font-medium">Matching Respondents</p>
+        <ManualOverridesPanel
+          matchingRespondents={matchingRespondents}
+          allRespondents={allRespondents}
+          manualIncludes={manualIncludes}
+          manualExcludes={manualExcludes}
+          onManualIncludesChange={handleManualIncludesChange}
+          onManualExcludesChange={handleManualExcludesChange}
+        />
+      </div>
     </div>
   );
 }
@@ -124,7 +165,8 @@ function AudienceEditForm({ audienceId }: EditFormProps) {
       audienceId={audienceId}
       initialName={data.audience.name}
       initialFilters={(data.audience.filters as AudienceFilters) ?? {}}
-      allRespondents={data.respondents}
+      initialManualIncludes={data.audience.manualIncludes ?? []}
+      initialManualExcludes={data.audience.manualExcludes ?? []}
     />
   );
 }

@@ -1,11 +1,14 @@
 import { act, render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 const mockUseAudienceWithRespondents = vi.fn();
+const mockUseRespondentsForPreview = vi.fn();
 const mockUpdateMutate = vi.fn();
 const mockUseAudienceStore = vi.fn();
 
 vi.mock('@/hooks/use-audiences', () => ({
   useAudienceWithRespondents: (id: string | null) => mockUseAudienceWithRespondents(id),
+  useRespondentsForPreview: () => mockUseRespondentsForPreview(),
   useUpdateAudience: () => ({ mutate: mockUpdateMutate }),
 }));
 
@@ -65,9 +68,17 @@ function setupStore(selectedId: string | null = null) {
   return { clearSelectedAudienceId };
 }
 
+const NON_MATCHING_RESPONDENT = {
+  ...TEST_RESPONDENT,
+  respondentId: 2,
+  gender: 'Male',
+};
+
 describe('AudienceEditSheet', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Default: preview returns only the female respondent
+    mockUseRespondentsForPreview.mockReturnValue({ data: [TEST_RESPONDENT] });
   });
 
   it('does not render form content when no audience is selected', () => {
@@ -111,7 +122,8 @@ describe('AudienceEditSheet', () => {
 
     render(<AudienceEditSheet />);
 
-    expect(screen.getByText(/matching respondents/i)).toBeInTheDocument();
+    expect(screen.getByText('1')).toBeInTheDocument();
+    expect(screen.getAllByText(/matching respondents/i).length).toBeGreaterThan(0);
   });
 
   it('triggers auto-save after debounce when name changes', async () => {
@@ -165,5 +177,78 @@ describe('AudienceEditSheet', () => {
     render(<AudienceEditSheet />);
 
     expect(screen.getByText(/no respondents match/i)).toBeInTheDocument();
+  });
+
+  it('renders the manual overrides panel', () => {
+    setupStore('aud-1');
+    mockUseAudienceWithRespondents.mockReturnValue({
+      data: { audience: TEST_AUDIENCE, respondents: [TEST_RESPONDENT] },
+      isLoading: false,
+    });
+
+    render(<AudienceEditSheet />);
+
+    expect(screen.getByRole('button', { name: /add respondent/i })).toBeInTheDocument();
+  });
+
+  it('auto-saves with updated manualExcludes when a respondent is excluded', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    setupStore('aud-1');
+    mockUseAudienceWithRespondents.mockReturnValue({
+      data: { audience: TEST_AUDIENCE, respondents: [TEST_RESPONDENT] },
+      isLoading: false,
+    });
+
+    render(<AudienceEditSheet />);
+
+    const excludeButton = screen.getByRole('button', { name: /exclude/i });
+    await userEvent.click(excludeButton);
+
+    act(() => {
+      vi.advanceTimersByTime(800);
+    });
+
+    expect(mockUpdateMutate).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'aud-1', manualExcludes: [1] }),
+      expect.any(Object),
+    );
+
+    vi.useRealTimers();
+  });
+
+  it('auto-saves with updated manualIncludes when a respondent is manually included', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    setupStore('aud-1');
+
+    // Preview returns both respondents (all respondents)
+    mockUseRespondentsForPreview.mockReturnValue({
+      data: [TEST_RESPONDENT, NON_MATCHING_RESPONDENT],
+    });
+
+    mockUseAudienceWithRespondents.mockReturnValue({
+      data: {
+        audience: { ...TEST_AUDIENCE, filters: { gender: ['Female'] } },
+        respondents: [TEST_RESPONDENT],
+      },
+      isLoading: false,
+    });
+
+    render(<AudienceEditSheet />);
+
+    await userEvent.click(screen.getByRole('button', { name: /add respondent/i }));
+
+    const addButton = await screen.findByRole('button', { name: /add #2/i });
+    await userEvent.click(addButton);
+
+    act(() => {
+      vi.advanceTimersByTime(800);
+    });
+
+    expect(mockUpdateMutate).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'aud-1', manualIncludes: [2] }),
+      expect.any(Object),
+    );
+
+    vi.useRealTimers();
   });
 });
