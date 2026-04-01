@@ -2,12 +2,8 @@
 
 import { useState } from 'react';
 
-import { CampaignConceptsCard } from '@/components/creative/campaign-concepts-card';
 import { CreativeOutputList } from '@/components/creative/creative-output-list';
-import { MessagingAnglesCard } from '@/components/creative/messaging-angles-card';
 import { NoAudiencePrompt } from '@/components/creative/no-audience-prompt';
-import { OpportunityCard } from '@/components/creative/opportunity-card';
-import { PersonaCard } from '@/components/creative/persona-card';
 import { WorkflowTypeSelector } from '@/components/creative/workflow-type-selector';
 import { Button } from '@/components/ui/button';
 import { useAudiences } from '@/hooks/use-audiences';
@@ -27,10 +23,10 @@ export default function CreativePage() {
   const { data: outputs, isLoading: outputsLoading } = useCreativeOutputs(selectedAudienceId, selectedType);
   const { data: openAIConfigured } = useOpenAIStatus();
 
-  const { generate: generatePersona, isGenerating: isGeneratingPersona, partialPersona, error: personaError } = useGeneratePersona();
-  const { generate: generateCampaign, isGenerating: isGeneratingCampaign, partialCampaign, error: campaignError } = useGenerateCampaign();
-  const { generate: generateMessaging, isGenerating: isGeneratingMessaging, partialMessaging, error: messagingError } = useGenerateMessaging();
-  const { generate: generateOpportunity, isGenerating: isGeneratingOpportunity, partialOpportunity, error: opportunityError } = useGenerateOpportunity();
+  const { generate: generatePersona, isGenerating: isGeneratingPersona, error: personaError } = useGeneratePersona();
+  const { generate: generateCampaign, isGenerating: isGeneratingCampaign, error: campaignError } = useGenerateCampaign();
+  const { generate: generateMessaging, isGenerating: isGeneratingMessaging, error: messagingError } = useGenerateMessaging();
+  const { generate: generateOpportunity, isGenerating: isGeneratingOpportunity, error: opportunityError } = useGenerateOpportunity();
 
   const selectedAudience = audiences?.find((a) => a.id === selectedAudienceId);
 
@@ -49,6 +45,14 @@ export default function CreativePage() {
     opportunity: opportunityError,
   };
   const generateError = errorMap[selectedType] ?? null;
+
+  const generatingLabelMap: Record<string, string> = {
+    persona: 'persona',
+    campaign: 'campaign concepts',
+    messaging: 'messaging angles',
+    opportunity: 'content opportunities',
+  };
+  const generatingLabel = generatingLabelMap[selectedType] ?? selectedType;
 
   function handleGenerate() {
     if (!selectedAudienceId) return;
@@ -93,31 +97,10 @@ export default function CreativePage() {
         onSelectType={setSelectedType}
       />
 
-      {selectedType === 'persona' && (isGeneratingPersona || partialPersona) && (
-        <div className="flex flex-col gap-2">
-          <h2 className="text-lg font-medium">Generating Persona</h2>
-          <PersonaCard persona={partialPersona} isGenerating={isGeneratingPersona} />
-        </div>
-      )}
-
-      {selectedType === 'campaign' && (isGeneratingCampaign || partialCampaign) && (
-        <div className="flex flex-col gap-2">
-          <h2 className="text-lg font-medium">Generating Campaign Concepts</h2>
-          <CampaignConceptsCard campaign={partialCampaign} isGenerating={isGeneratingCampaign} />
-        </div>
-      )}
-
-      {selectedType === 'messaging' && (isGeneratingMessaging || partialMessaging) && (
-        <div className="flex flex-col gap-2">
-          <h2 className="text-lg font-medium">Generating Messaging Angles</h2>
-          <MessagingAnglesCard messaging={partialMessaging} isGenerating={isGeneratingMessaging} />
-        </div>
-      )}
-
-      {selectedType === 'opportunity' && (isGeneratingOpportunity || partialOpportunity) && (
-        <div className="flex flex-col gap-2">
-          <h2 className="text-lg font-medium">Finding Content Opportunities</h2>
-          <OpportunityCard opportunity={partialOpportunity} isGenerating={isGeneratingOpportunity} />
+      {isGenerating && (
+        <div className="flex items-center gap-3 rounded-lg border border-border bg-muted px-4 py-3 text-sm text-muted-foreground">
+          <div className="size-4 animate-spin rounded-full border-2 border-muted-foreground border-t-transparent" />
+          Generating {generatingLabel}...
         </div>
       )}
 
