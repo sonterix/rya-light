@@ -238,6 +238,10 @@ INSERT INTO audience_genre_summaries (audience_id, genre_slug, avg_interest, pct
 ('a0000000-0000-4000-8000-000000000002', 'RQ.2.173', 1.0000, 0.0000, 3);
 
 -- Pre-generated creative outputs (one per workflow type) for the sample audience
+-- Based on actual Wellness-Oriented Parents data: 3 respondents (IDs 1004-1006)
+-- Demographics: ages 36-45, 67% female, all suburban, all parents, South/West/Midwest, income $86K-$105K
+-- Top genres (1=highest interest): Meditation 1.0, Yoga/Pilates 1.0, Cooking 1.3, How-To 2.0, Travel 2.0
+-- Gap genres (high score=low interest): Fantasy Sports 4.7, Reality TV 4.0, Coding 3.7, Wine 2.7
 INSERT INTO creative_outputs (id, user_id, audience_id, type, content) VALUES
 (
   'a0000000-0000-4000-8000-000000000010',
@@ -245,17 +249,18 @@ INSERT INTO creative_outputs (id, user_id, audience_id, type, content) VALUES
   'a0000000-0000-4000-8000-000000000002',
   'persona',
   '{
-    "name": "Jordan & Alex",
-    "demographicSummary": "Suburban parents aged 35-45, predominantly female, living in the South, West, and Midwest. Household income ranges from $86K to $105K. Most are married with 3-4 person households and hold college or post-graduate degrees.",
+    "name": "Maya Reeves",
+    "demographicSummary": "Maya is a 38-year-old suburban mother living in the South. She represents a segment of 3 respondents aged 36-45, skewing female (67%), all suburban parents spread across the South, West, and Midwest. Household incomes range from $86K to $105K. Education levels are strong: some college to post-graduate degrees. Most work full-time.",
     "topInterests": [
       {"genreName": "Meditation", "interestLevel": 1},
       {"genreName": "Yoga / Pilates", "interestLevel": 1},
-      {"genreName": "Cooking / Baking / Grilling", "interestLevel": 1},
+      {"genreName": "Cooking / Baking / Grilling", "interestLevel": 1.3},
+      {"genreName": "How-To Content", "interestLevel": 2},
       {"genreName": "Travel & tourism content", "interestLevel": 2},
-      {"genreName": "How-To Content", "interestLevel": 2}
+      {"genreName": "Documentary", "interestLevel": 2.3}
     ],
-    "lifestyleDescription": "Jordan and Alex are intentional suburban parents who prioritize wellness, family connection, and mindful consumption. They carve out time for yoga, meditation, and cooking healthy meals. Weekend activities revolve around outdoor exploration and hands-on learning with their kids.",
-    "howToReachThem": "Target wellness and cooking content platforms, parenting podcasts, and travel-related streaming. Co-viewing CTV slots in the evening and wellness app sponsorships are high-attention placements for this audience."
+    "lifestyleDescription": "Maya starts her mornings with meditation or yoga before the household wakes up. She meal-preps on Sundays using recipes she bookmarks from cooking content throughout the week. Weekends are for family hikes, farmers markets, and the occasional documentary night after the kids are in bed. She values practical how-to content that helps her improve daily routines, from home organization to healthy eating. Travel content fuels her family vacation planning, though trips tend to be domestic and activity-focused rather than luxury getaways.",
+    "howToReachThem": "Wellness and mindfulness app sponsorships during morning routines. Cooking and recipe platforms mid-week when she is planning meals. Parenting podcasts during her commute. Travel and documentary streaming platforms for evening co-viewing with her partner. Instagram and Facebook for community-driven content, especially around family wellness challenges."
   }'
 ),
 (
@@ -266,25 +271,25 @@ INSERT INTO creative_outputs (id, user_id, audience_id, type, content) VALUES
   '{
     "concepts": [
       {
-        "name": "Live Well, Play Hard",
-        "tagline": "A life that feels as good as it looks.",
-        "description": "Position healthy choices as smart plays for your family''s future, borrowing the strategy metaphor from sports and wellness culture.",
-        "targetGenres": ["Meditation", "Yoga / Pilates", "Cooking / Baking / Grilling"],
-        "suggestedFormat": "Connected TV series"
+        "name": "The Morning Ritual",
+        "tagline": "Your day starts the night before.",
+        "description": "A content series built around the morning routines of wellness-oriented parents. Each episode shows a real family''s meditation, yoga, or meal-prep ritual, connecting the product to the quiet moments before the day begins. Leverages 100% high-interest in meditation and yoga.",
+        "targetGenres": ["Meditation", "Yoga / Pilates"],
+        "suggestedFormat": "Short-form video series (Instagram Reels, TikTok)"
       },
       {
-        "name": "Behind the Scenes",
-        "tagline": "Real families. Real wellness. No filter.",
-        "description": "Documentary-style content showing real families making wellness work in everyday life, not picture-perfect moments.",
-        "targetGenres": ["Documentary", "Travel & tourism content"],
-        "suggestedFormat": "Short-form social video"
-      },
-      {
-        "name": "Weekend Win",
-        "tagline": "Celebrate the small victories.",
-        "description": "A family bike ride, a home-cooked meal, a Saturday screen-free morning. Celebrate the micro-moments that define a wellness-oriented household.",
+        "name": "Cook It Forward",
+        "tagline": "Every meal is a lesson.",
+        "description": "Partner with family cooking content creators to show parents teaching kids to cook healthy meals. Each piece ties the brand to the intersection of cooking passion (avg score 1.3) and parenting identity. Recipe cards double as product placements.",
         "targetGenres": ["Cooking / Baking / Grilling", "How-To Content"],
-        "suggestedFormat": "Instagram Reels / Stories"
+        "suggestedFormat": "Sponsored cooking content + recipe email series"
+      },
+      {
+        "name": "48-Hour Family Reset",
+        "tagline": "A weekend that changes your week.",
+        "description": "A weekend travel challenge campaign where families document a 48-hour local adventure focused on wellness activities. Taps into travel interest (avg score 2.0) and the documentary sensibility (avg score 2.3) this audience already gravitates toward.",
+        "targetGenres": ["Travel & tourism content", "Documentary"],
+        "suggestedFormat": "Connected TV documentary shorts + social UGC campaign"
       }
     ]
   }'
@@ -297,25 +302,32 @@ INSERT INTO creative_outputs (id, user_id, audience_id, type, content) VALUES
   '{
     "angles": [
       {
-        "name": "The Mindful Parent",
+        "name": "The Intentional Parent",
         "tone": "Warm, grounded",
-        "sampleHeadline": "Wellness that fits your life, not the other way around.",
-        "emotionalHook": "Speaks to the juggle of balancing career, parenting, and self-care without guilt.",
-        "keyTrait": "Meditation interest + parent status"
+        "sampleHeadline": "Wellness that fits between school drop-off and bedtime.",
+        "emotionalHook": "Acknowledges the time scarcity of working parents while validating that small wellness moments count.",
+        "keyTrait": "Meditation + Yoga interest (avg 1.0) combined with full-time employment and parent status"
       },
       {
-        "name": "The Nourisher",
+        "name": "The Family Nourisher",
         "tone": "Inviting, practical",
-        "sampleHeadline": "Simple enough for busy parents, effective enough for real results.",
-        "emotionalHook": "Connects cooking passion with providing for the family.",
-        "keyTrait": "Cooking / Baking interest + suburban lifestyle"
+        "sampleHeadline": "Real food, real fast, really good for them.",
+        "emotionalHook": "Connects the pride of home cooking with the pressure of feeding a family well on a busy schedule.",
+        "keyTrait": "Cooking / Baking interest (avg 1.3) + suburban household with 3-4 members"
       },
       {
-        "name": "The Explorer",
+        "name": "The Curious Explorer",
         "tone": "Aspirational, inclusive",
-        "sampleHeadline": "Start your family''s next adventure this weekend.",
-        "emotionalHook": "Taps into the desire for meaningful experiences over material possessions.",
-        "keyTrait": "Travel interest + household income $85K+"
+        "sampleHeadline": "Your next family adventure is closer than you think.",
+        "emotionalHook": "Taps into the desire for meaningful shared experiences over material consumption, grounded in domestic travel rather than luxury.",
+        "keyTrait": "Travel & tourism interest (avg 2.0) + household income $86K-$105K"
+      },
+      {
+        "name": "The Knowledge Seeker",
+        "tone": "Empowering, direct",
+        "sampleHeadline": "Learn something today that makes tomorrow easier.",
+        "emotionalHook": "Speaks to the self-improvement drive of educated parents who consume how-to and documentary content to level up their routines.",
+        "keyTrait": "How-To Content (avg 2.0) + Documentary (avg 2.3) interest + post-graduate education level"
       }
     ]
   }'
@@ -329,23 +341,23 @@ INSERT INTO creative_outputs (id, user_id, audience_id, type, content) VALUES
     "opportunities": [
       {
         "gapGenre": "Fantasy Sports",
-        "audienceTrait": "Wellness-focused parents aged 35-45 with moderate-to-high household income",
-        "crossoverConcept": "Fantasy wellness leagues where families compete on healthy habit streaks, blending the competitive engagement of fantasy sports with wellness goals.",
-        "reasoning": "This audience rates Fantasy Sports as low interest (4.7 avg) but has high competitive drive from their sports-adjacent lifestyle. Gamifying wellness could bridge the gap.",
+        "audienceTrait": "Competitive parents aged 36-45 with strong community orientation and $86K-$105K income",
+        "crossoverConcept": "Fantasy wellness leagues where families earn points for completing weekly wellness challenges (yoga sessions, new recipes tried, miles hiked). Leaderboards and seasonal competitions borrow the engagement mechanics of fantasy sports but redirect them toward health goals.",
+        "reasoning": "Fantasy Sports scores 4.7 avg (near-unfamiliar) for this audience, but their deep engagement with meditation (1.0) and yoga (1.0) shows they already pursue goal-oriented wellness. Adding a competitive social layer could activate a latent interest in gamified health.",
         "confidence": "medium"
       },
       {
         "gapGenre": "Reality programming / Reality TV",
-        "audienceTrait": "Suburban parents who value authenticity and real-life storytelling",
-        "crossoverConcept": "A reality series following wellness-oriented families through seasonal challenges, combining the voyeuristic appeal of reality TV with aspirational healthy living content.",
-        "reasoning": "Low interest (4.0 avg) in traditional reality TV, but high interest in documentary and cooking content suggests appetite for authentic, unscripted formats.",
+        "audienceTrait": "Suburban parents who value authenticity and already consume documentary content (avg 2.3)",
+        "crossoverConcept": "An unscripted family wellness series where real households attempt 30-day health transformations. Unlike polished reality TV, it uses the documentary tone this audience prefers (avg 2.3) while delivering the relatable, unscripted format of reality programming.",
+        "reasoning": "Reality TV scores 4.0 avg (low interest), but high interest in documentary (2.3) and cooking (1.3) content suggests appetite for real, unscripted storytelling. The gap is in traditional reality TV''s perceived inauthenticity, not in the format itself.",
         "confidence": "high"
       },
       {
         "gapGenre": "Coding / Robotics",
-        "audienceTrait": "Parents invested in children''s education and future skills",
-        "crossoverConcept": "Family coding workshops marketed through wellness channels, positioning STEM education as part of a holistic approach to raising well-rounded children.",
-        "reasoning": "Moderate disinterest (3.7 avg) in coding, but parent status and education level suggest openness to educational content framed as family enrichment.",
+        "audienceTrait": "Educated parents (some college to post-graduate) invested in children''s development",
+        "crossoverConcept": "Family STEM workshops marketed through wellness and how-to content channels, positioning coding education as a modern parenting essential alongside nutrition and mindfulness. Weekend coding camps paired with outdoor activities.",
+        "reasoning": "Coding scores 3.7 avg (neutral-to-low), but this audience''s high education level and strong how-to content interest (avg 2.0) suggests openness to learning-oriented content when framed as family enrichment rather than technical skill-building.",
         "confidence": "medium"
       }
     ]
