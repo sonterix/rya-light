@@ -188,7 +188,7 @@ describe('CreativeOutputEditCard', () => {
     const nameInput = inputs[0];
     await user.clear(nameInput);
     await user.type(nameInput, 'Jordan');
-    await user.keyboard('{Enter}');
+    await user.tab();
 
     expect(mockPatchOutput).toHaveBeenCalledWith(
       expect.objectContaining({

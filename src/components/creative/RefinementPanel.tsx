@@ -162,7 +162,7 @@ export function RefinementPanel({
         </div>
       )}
 
-      <div className="flex flex-wrap gap-1.5 rounded-lg bg-muted/50 p-2.5">
+      <div className="flex flex-wrap gap-1.5">
         {presets
           .filter((preset) => {
             if (preset.requiresGenre && genres.length === 0) return false;

@@ -32,17 +32,17 @@ describe('EditableField', () => {
     expect(onSave).toHaveBeenCalledWith('Updated');
   });
 
-  it('calls onSave with new value on Enter key', async () => {
+  it('allows multiline editing with Enter key', async () => {
     const user = userEvent.setup();
     const onSave = vi.fn();
     render(<EditableField value="Hello" onSave={onSave} />);
 
     await user.click(screen.getByText('Hello'));
     await user.clear(screen.getByRole('textbox'));
-    await user.type(screen.getByRole('textbox'), 'New value');
-    await user.keyboard('{Enter}');
+    await user.type(screen.getByRole('textbox'), 'Line 1{Enter}Line 2');
 
-    expect(onSave).toHaveBeenCalledWith('New value');
+    expect(screen.getByRole('textbox')).toHaveValue('Line 1\nLine 2');
+    expect(onSave).not.toHaveBeenCalled();
   });
 
   it('cancels editing on Escape and restores original value', async () => {

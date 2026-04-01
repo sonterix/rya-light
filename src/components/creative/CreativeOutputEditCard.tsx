@@ -96,9 +96,9 @@ export function CreativeOutputEditCard({ output, audienceId, genres, traits }: P
   return (
     <Card className="relative">
       {(isRegenerating || isRefining) && (
-        <div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-background/80">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <div className="size-4 animate-spin rounded-full border-2 border-muted-foreground border-t-transparent" />
+        <div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-card/95">
+          <div className="flex items-center gap-2 rounded-full bg-foreground px-5 py-2.5 text-sm font-medium text-primary-foreground">
+            <div className="size-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
             {isRegenerating ? 'Regenerating...' : 'Refining...'}
           </div>
         </div>
