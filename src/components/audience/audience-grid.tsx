@@ -36,7 +36,7 @@ export function AudienceGrid({ onEdit }: Props) {
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="flex flex-col gap-3">
         {Array.from({ length: 3 }).map((_, i) => (
           <div key={i} role="status" aria-label="Loading">
             <AudienceCardSkeleton />
@@ -56,7 +56,7 @@ export function AudienceGrid({ onEdit }: Props) {
   }
 
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="flex flex-col gap-3">
       {audiences.map((audience) => (
         <AudienceCardWithCount
           key={audience.id}

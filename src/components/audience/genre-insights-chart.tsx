@@ -26,10 +26,16 @@ interface TableRow {
   avgInterest: string;
 }
 
+function shortenGenreName(name: string): string {
+  return name.replace(' / ', ' / \n').length > 25
+    ? name.replace(/\s*\/\s*/g, ' / ').slice(0, 25) + '...'
+    : name;
+}
+
 function toChartEntry(genre: GenreInsight): ChartEntry {
   const pct = Math.round(parseFloat(genre.pctHighlyInterested) * 100);
   return {
-    name: genre.genreName,
+    name: shortenGenreName(genre.genreName),
     pct,
     pctLabel: `${pct}%`,
   };
@@ -65,7 +71,7 @@ function GenreBarChart({ entries }: GenreBarChartProps) {
   }
 
   return (
-    <div style={{ width: '100%', height: visibleEntries.length * 44 + 16 }}>
+    <div style={{ width: '100%', height: visibleEntries.length * 48 + 16 }}>
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
           layout="vertical"
