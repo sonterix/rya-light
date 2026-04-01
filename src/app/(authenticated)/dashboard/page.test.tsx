@@ -130,6 +130,6 @@ describe('DashboardPage', () => {
 
     render(<DashboardPage />);
 
-    expect(screen.getByText(/genre insights/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/genre insights/i).length).toBeGreaterThan(0);
   });
 });

@@ -9,32 +9,51 @@ import { AudienceGrid } from '@/components/audience/audience-grid';
 import { GenreInsightsChart } from '@/components/audience/genre-insights-chart';
 import { Button } from '@/components/ui/button';
 import type { Audience } from '@/db/schema';
+import { useAudiences } from '@/hooks/use-audiences';
 import { useAudienceStore } from '@/stores/audience-store';
 
 export default function DashboardPage() {
   const selectedAudienceId = useAudienceStore((state) => state.selectedAudienceId);
   const setSelectedAudienceId = useAudienceStore((state) => state.setSelectedAudienceId);
+  const { data: audiences } = useAudiences();
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editingAudienceId, setEditingAudienceId] = useState<string | null>(null);
+
+  const selectedAudience = audiences?.find((a) => a.id === selectedAudienceId);
 
   function handleAudienceCreated(audience: Audience) {
     setSelectedAudienceId(audience.id);
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold tracking-tight">Audiences</h1>
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
+          {selectedAudience && (
+            <p className="mt-1 text-sm text-muted-foreground">
+              Viewing insights for <span className="font-medium text-foreground">{selectedAudience.name}</span>
+            </p>
+          )}
+        </div>
         <Button onClick={() => setIsCreateOpen(true)} className="gap-1.5">
           <Plus className="size-4" />
           Create Audience
         </Button>
       </div>
 
-      <AudienceGrid onEdit={setEditingAudienceId} />
+      <div className="grid grid-cols-1 gap-8 xl:grid-cols-[1fr_2fr]">
+        <div className="flex flex-col gap-4">
+          <h2 className="text-sm font-medium uppercase tracking-wider text-muted-foreground">Audiences</h2>
+          <AudienceGrid onEdit={setEditingAudienceId} />
+        </div>
 
-      <GenreInsightsChart audienceId={selectedAudienceId} />
+        <div className="flex flex-col gap-4">
+          <h2 className="text-sm font-medium uppercase tracking-wider text-muted-foreground">Genre Insights</h2>
+          <GenreInsightsChart audienceId={selectedAudienceId} />
+        </div>
+      </div>
 
       <AudienceCreateSheet
         open={isCreateOpen}
