@@ -22,6 +22,7 @@ describe('AudienceCard', () => {
         respondentCount={42}
         isActive={false}
         onSelect={vi.fn()}
+        onDelete={vi.fn()}
       />
     );
 
@@ -35,13 +36,14 @@ describe('AudienceCard', () => {
         respondentCount={42}
         isActive={false}
         onSelect={vi.fn()}
+        onDelete={vi.fn()}
       />
     );
 
     expect(screen.getByText(/42/)).toBeInTheDocument();
   });
 
-  it('calls onSelect with audience id when clicked', async () => {
+  it('calls onSelect with audience id when card button is clicked', async () => {
     const user = userEvent.setup();
     const onSelect = vi.fn();
 
@@ -51,10 +53,11 @@ describe('AudienceCard', () => {
         respondentCount={10}
         isActive={false}
         onSelect={onSelect}
+        onDelete={vi.fn()}
       />
     );
 
-    await user.click(screen.getByRole('button'));
+    await user.click(screen.getByRole('button', { name: 'My Audience' }));
 
     expect(onSelect).toHaveBeenCalledWith('aud-1');
   });
@@ -66,10 +69,11 @@ describe('AudienceCard', () => {
         respondentCount={10}
         isActive={true}
         onSelect={vi.fn()}
+        onDelete={vi.fn()}
       />
     );
 
-    expect(screen.getByRole('button')).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: 'My Audience' })).toHaveAttribute('aria-pressed', 'true');
   });
 
   it('does not apply active styling when isActive is false', () => {
@@ -79,9 +83,62 @@ describe('AudienceCard', () => {
         respondentCount={10}
         isActive={false}
         onSelect={vi.fn()}
+        onDelete={vi.fn()}
       />
     );
 
-    expect(screen.getByRole('button')).toHaveAttribute('aria-pressed', 'false');
+    expect(screen.getByRole('button', { name: 'My Audience' })).toHaveAttribute('aria-pressed', 'false');
+  });
+
+  it('renders a delete button', () => {
+    render(
+      <AudienceCard
+        audience={TEST_AUDIENCE}
+        respondentCount={10}
+        isActive={false}
+        onSelect={vi.fn()}
+        onDelete={vi.fn()}
+      />
+    );
+
+    expect(screen.getByRole('button', { name: 'Delete audience' })).toBeInTheDocument();
+  });
+
+  it('calls onDelete with audience id when delete button is clicked', async () => {
+    const user = userEvent.setup();
+    const onDelete = vi.fn();
+
+    render(
+      <AudienceCard
+        audience={TEST_AUDIENCE}
+        respondentCount={10}
+        isActive={false}
+        onSelect={vi.fn()}
+        onDelete={onDelete}
+      />
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Delete audience' }));
+
+    expect(onDelete).toHaveBeenCalledWith('aud-1');
+  });
+
+  it('does not call onSelect when delete button is clicked', async () => {
+    const user = userEvent.setup();
+    const onSelect = vi.fn();
+
+    render(
+      <AudienceCard
+        audience={TEST_AUDIENCE}
+        respondentCount={10}
+        isActive={false}
+        onSelect={onSelect}
+        onDelete={vi.fn()}
+      />
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Delete audience' }));
+
+    expect(onSelect).not.toHaveBeenCalled();
   });
 });

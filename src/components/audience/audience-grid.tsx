@@ -1,6 +1,8 @@
 'use client';
 
-import { useAudiences, useAudienceWithRespondents } from '@/hooks/use-audiences';
+import { toast } from 'sonner';
+
+import { useAudiences, useAudienceWithRespondents, useDeleteAudience } from '@/hooks/use-audiences';
 import { useAudienceStore } from '@/stores/audience-store';
 
 import { AudienceCard } from './audience-card';
@@ -10,9 +12,10 @@ interface AudienceCardWithCountProps {
   audienceId: string;
   isActive: boolean;
   onSelect: (id: string) => void;
+  onDelete: (id: string) => void;
 }
 
-function AudienceCardWithCount({ audienceId, isActive, onSelect }: AudienceCardWithCountProps) {
+function AudienceCardWithCount({ audienceId, isActive, onSelect, onDelete }: AudienceCardWithCountProps) {
   const { data, isLoading } = useAudienceWithRespondents(audienceId);
   const audience = data?.audience;
   const respondentCount = data?.respondents.length ?? 0;
@@ -31,6 +34,7 @@ function AudienceCardWithCount({ audienceId, isActive, onSelect }: AudienceCardW
       respondentCount={respondentCount}
       isActive={isActive}
       onSelect={onSelect}
+      onDelete={onDelete}
     />
   );
 }
@@ -39,6 +43,23 @@ export function AudienceGrid() {
   const { data: audiences, isLoading } = useAudiences();
   const selectedAudienceId = useAudienceStore((state) => state.selectedAudienceId);
   const setSelectedAudienceId = useAudienceStore((state) => state.setSelectedAudienceId);
+  const { mutate: deleteAudience } = useDeleteAudience();
+
+  function handleDelete(id: string) {
+    const confirmed = window.confirm(
+      'Delete this audience? This will also remove all associated genre summaries and creative outputs.',
+    );
+    if (!confirmed) return;
+
+    deleteAudience(id, {
+      onSuccess: () => {
+        toast.success('Audience deleted');
+      },
+      onError: () => {
+        toast.error('Failed to delete audience');
+      },
+    });
+  }
 
   if (isLoading) {
     return (
@@ -69,6 +90,7 @@ export function AudienceGrid() {
           audienceId={audience.id}
           isActive={selectedAudienceId === audience.id}
           onSelect={setSelectedAudienceId}
+          onDelete={handleDelete}
         />
       ))}
     </div>
