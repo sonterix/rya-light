@@ -12,14 +12,10 @@ export interface TableRow {
   avgInterest: string;
 }
 
-export function shortenGenreName(name: string): string {
-  return name.replace(' / ', ' / \n').length > 25 ? name.replace(/\s*\/\s*/g, ' / ').slice(0, 25) + '...' : name;
-}
-
 export function toChartEntry(genre: GenreInsight): ChartEntry {
   const pct = Math.round(parseFloat(genre.pctHighlyInterested) * 100);
   return {
-    name: shortenGenreName(genre.genreName),
+    name: genre.genreName,
     pct,
     pctLabel: `${pct}%`,
   };
