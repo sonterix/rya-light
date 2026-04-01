@@ -219,7 +219,7 @@ INSERT INTO audiences (id, user_id, name, filters, manual_includes, manual_exclu
   'a0000000-0000-4000-8000-000000000002',
   'a0000000-0000-4000-8000-000000000001',
   'Wellness-Oriented Parents',
-  '{"audience_category": "Wellness-Oriented Parents"}',
+  '{"audienceCategory": ["Wellness-Oriented Parents"]}',
   NULL,
   NULL
 );

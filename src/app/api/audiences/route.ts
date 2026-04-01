@@ -11,6 +11,7 @@ import { getAuthUser } from '@/lib/supabase/auth';
 
 const filterValueSchema = z.union([
   z.array(z.string()),
+  z.string().transform((val) => [val]),
   z.object({ min: z.number().optional(), max: z.number().optional() }),
 ]);
 
