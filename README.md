@@ -9,6 +9,7 @@ A lightweight audience insights platform that helps marketers move from raw surv
 - [Architecture](#architecture)
 - [Environment Variables](#environment-variables)
 - [Spec Compliance](#spec-compliance)
+- [Testing](#testing)
 - [Key Decisions](#key-decisions)
 - [AI Use](#ai-use)
 
@@ -131,6 +132,25 @@ The implementation context is retained as a test task baseline, with setup, requ
 | Manual include/exclude | Override filter rules for specific respondents |
 | Sidebar audience selector | Switch audiences from any page |
 | Session state clearing | Full cache + store wipe on sign-out |
+
+---
+
+## Testing
+
+467 tests across 52 test files, all written test-first following TDD. Tests run in under 10 seconds via Vitest.
+
+| Layer | Files | What's tested |
+|-------|-------|---------------|
+| API routes | 11 | Auth, validation, CRUD, error responses for every endpoint |
+| Components | 20 | Rendering, user interactions, loading/empty/error states |
+| Hooks | 8 | React Query mutations, streaming consumers, store sync |
+| Libraries | 9 | Filter matching, genre computation, Zod schemas, auth helpers |
+| Other | 4 | DB schema types, proxy middleware, store, providers |
+
+```bash
+npm test          # run all tests
+npm run test:watch # watch mode
+```
 
 ---
 
