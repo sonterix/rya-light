@@ -38,13 +38,13 @@ Pre-loaded with a "Wellness-Oriented Parents" audience, precomputed genre insigh
 
 ## Features
 
-**Respondent Explorer** -- Paginated table of survey respondents with expandable demographic detail panels and genre interest ratings.
+**Respondent Explorer** - Paginated table of survey respondents with expandable demographic detail panels and genre interest ratings.
 
-**Audience Builder** -- Create named audiences using demographic filters stored as JSON. Manual include/exclude overrides for fine-tuning. Auto-saves on every change.
+**Audience Builder** - Create named audiences using demographic filters stored as JSON. Manual include/exclude overrides for fine-tuning. Auto-saves on every change.
 
-**Genre Insights** -- Horizontal bar chart of top genres by % highly interested, plus a full data table. Precomputed on audience create/update for fast reads.
+**Genre Insights** - Horizontal bar chart of top genres by % highly interested, plus a full data table. Precomputed on audience create/update for fast reads.
 
-**Creative Workflows** -- Four AI-powered workflows grounded in real audience data:
+**Creative Workflows** - Four AI-powered workflows grounded in real audience data:
 
 | Workflow | Output |
 |----------|--------|
@@ -59,8 +59,8 @@ All outputs auto-save, support inline editing, AI refinement (presets + freeform
 
 ## Architecture
 
-| | |
-|---|---|
+| Layer | Technology |
+|-------|-----------|
 | **Framework** | Next.js 16 (App Router, Turbopack) |
 | **Language** | TypeScript (strict) |
 | **Database** | Supabase (PostgreSQL, local Docker) |
@@ -156,10 +156,10 @@ Built with Claude Code (Anthropic's CLI tool) for planning, implementation, and 
 
 The project followed a structured AI-assisted pipeline using Claude Code skills:
 
-1. **Brainstorm** -- Interactive Q&A to explore the problem space, nail down scope, and resolve design decisions
-2. **PRD creation** -- Full product requirements document with user stories, functional requirements, and technical assumptions
-3. **PRD to issues** -- Broke the PRD into 16 independently-completable vertical slice issues with dependency tracking
-4. **Ralph loop** -- Autonomous execution script (`scripts/ralph.sh`) that orchestrates Claude Code in a loop: picks the next ready issue, spawns subagents in isolated git worktrees, merges results, updates statuses, and unblocks dependents
+1. **Brainstorm** - Interactive Q&A to explore the problem space, nail down scope, and resolve design decisions
+2. **PRD creation** - Full product requirements document with user stories, functional requirements, and technical assumptions
+3. **PRD to issues** - Broke the PRD into 16 independently-completable vertical slice issues with dependency tracking
+4. **Ralph loop** - Autonomous execution script (`scripts/ralph.sh`) that orchestrates Claude Code in a loop: picks the next ready issue, spawns subagents in isolated git worktrees, merges results, updates statuses, and unblocks dependents
 
 ### What AI Did Well
 
